@@ -1,0 +1,129 @@
+/* ======================================
+   LAYOUT DO DASHBOARD
+====================================== */
+
+.dashboard-layout{
+
+    display:grid;
+
+    grid-template-columns:320px 1fr;
+
+    gap:20px;
+
+    align-items:start;
+
+    margin-bottom:20px;
+
+}
+
+/* ======================================
+   COLUNA ESQUERDA
+====================================== */
+
+.dashboard-sidebar{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+/* ======================================
+   COLUNA DIREITA
+====================================== */
+
+.dashboard-main{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+/* ======================================
+   GRÁFICO
+====================================== */
+
+.chart-panel{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.chart-container{
+
+    position:relative;
+
+    height:180px;
+
+}
+
+.chart-container canvas{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100% !important;
+
+    height:100% !important;
+
+}
+
+/* ======================================
+   RANKINGS + MAPA
+====================================== */
+
+.dashboard-middle{
+
+    display:grid;
+
+    grid-template-columns:330px 1fr;
+
+    gap:20px;
+
+    align-items:stretch;
+
+}
+
+.ranking-panel{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.map-panel{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+#worldMap{
+
+    flex:1;
+
+    min-height:650px;
+
+    border-radius:10px;
+
+}
+
+/* ======================================
+   VISITANTES
+====================================== */
+
+.latest-panel{
+
+    margin-top:20px;
+
+}

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel · Visitor Tracker</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/painel.css">
+</head>
+<body>
+
+<!-- ===== TOPBAR ===== -->
+<header class="topbar">
+
+    <div class="topbar-left">
+        <div class="topbar-logo">📊 <span>Visitor Tracker</span></div>
+
+        <nav class="topbar-nav">
+            <a href="#overview"   class="nav-item active" data-section="overview">   📊 Overview</a>
+            <a href="#realtime"   class="nav-item"         data-section="realtime">  🟢 Tempo Real</a>
+            <a href="#mapa"       class="nav-item"         data-section="mapa">      🗺️ Mapa</a>
+            <a href="#paginas"    class="nav-item"         data-section="paginas">   📄 Páginas</a>
+            <a href="#visitantes" class="nav-item"         data-section="visitantes">👥 Visitantes</a>
+            <a href="#paises"     class="nav-item"         data-section="paises">    🌍 Países</a>
+            <a href="#relatorios" class="nav-item"         data-section="relatorios">📈 Relatórios</a>
+            <a href="#porip"      class="nav-item"         data-section="porip">     🔍 Por IP</a>
+            <<a href="meus-sites.html" class="nav-item nav-external">🌐 Meus Sites</a>
+        </nav>
+    </div>
+
+    <div class="topbar-right">
+        <select id="siteSelect" class="site-select">
+            <option value="all">Todos os sites</option>
+        </select>
+
+        <div class="period-filters">
+            <button class="filter active" data-range="today">Hoje</button>
+            <button class="filter" data-range="7">7d</button>
+            <button class="filter" data-range="30">30d</button>
+            <button class="filter" data-range="custom">⚙</button>
+        </div>
+
+        <div id="customRange" class="custom-range hidden">
+            <input type="date" id="dateStart">
+            <span>até</span>
+            <input type="date" id="dateEnd">
+            <button id="applyRange">OK</button>
+        </div>
+
+        <button id="refresh" class="btn-icon" title="Atualizar">↺</button>
+        <div class="user-menu">
+            <span id="userName" class="user-name"></span>
+            <button id="logoutBtn" class="btn-logout">Sair</button>
+        </div>
+    </div>
+
+</header>
+
+<!-- ===== CONTEÚDO PRINCIPAL ===== -->
+<main class="painel-main">
+
+    <!-- OVERVIEW -->
+    <section id="section-overview" class="section active">
+
+        <div class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-icon">👥</div>
+                <div class="metric-body">
+                    <div class="metric-label">Visitas hoje</div>
+                    <div class="metric-value" id="today">0</div>
+                    <div id="todayVariation"></div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">👤</div>
+                <div class="metric-body">
+                    <div class="metric-label">Visitantes únicos</div>
+                    <div class="metric-value" id="unique">0</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🌍</div>
+                <div class="metric-body">
+                    <div class="metric-label">Países</div>
+                    <div class="metric-value" id="countries">0</div>
+                </div>
+            </div>
+            <div class="metric-card pulse-card">
+                <div class="metric-icon">🟢</div>
+                <div class="metric-body">
+                    <div class="metric-label">Online agora</div>
+                    <div class="metric-value" id="online">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overview-grid">
+            <div class="panel chart-panel">
+                <div class="panel-header">
+                    <h2>Visitas por período</h2>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🗺️ Visitantes no mundo</h2>
+                    <a href="#mapa" class="panel-link" data-goto="mapa">Ver mapa completo →</a>
+                </div>
+                <div id="worldMapOverview" class="map-mini"></div>
+            </div>
+        </div>
+
+        <div class="overview-rankings">
+            <div class="panel">
+                <h2>🌐 Navegadores</h2>
+                <div id="rankBrowsers"></div>
+            </div>
+            <div class="panel">
+                <h2>🖥 Sistemas</h2>
+                <div id="rankSystems"></div>
+            </div>
+            <div class="panel">
+                <h2>📱 Dispositivos</h2>
+                <div id="rankDevices"></div>
+            </div>
+            <div class="panel">
+                <h2>📄 Top Páginas</h2>
+                <div id="rankPages"></div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- TEMPO REAL -->
+    <section id="section-realtime" class="section hidden">
+        <div class="section-header">
+            <h1>🟢 Visitantes em Tempo Real</h1>
+            <p>Atualiza a cada 10 segundos</p>
+        </div>
+
+        <div class="realtime-grid">
+            <div class="panel realtime-counter">
+                <div class="realtime-number" id="realtimeCount">0</div>
+                <div class="realtime-label">visitantes online agora</div>
+            </div>
+
+            <div class="panel" style="flex:1">
+                <div class="panel-header">
+                    <h2>Últimas entradas</h2>
+                </div>
+                <div id="realtimeFeed" class="realtime-feed"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAPA -->
+    <section id="section-mapa" class="section hidden">
+        <div class="section-header">
+            <h1>🗺️ Mapa de Visitantes</h1>
+        </div>
+        <div class="panel map-full-panel">
+            <div id="worldMapFull" class="map-full"></div>
+        </div>
+    </section>
+
+    <!-- PÁGINAS -->
+    <section id="section-paginas" class="section hidden">
+        <div class="section-header">
+            <h1>📄 Páginas e Rankings</h1>
+        </div>
+        <div class="rankings-grid">
+            <div class="panel">
+                <h2>📄 Páginas mais visitadas</h2>
+                <div id="rankPagesDetail"></div>
+            </div>
+            <div class="panel">
+                <h2>🌐 Navegadores</h2>
+                <div id="rankBrowsersDetail"></div>
+            </div>
+            <div class="panel">
+                <h2>🖥 Sistemas Operacionais</h2>
+                <div id="rankSystemsDetail"></div>
+            </div>
+            <div class="panel">
+                <h2>📱 Dispositivos</h2>
+                <div id="rankDevicesDetail"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISITANTES -->
+    <section id="section-visitantes" class="section hidden">
+        <div class="section-header">
+            <h1>👥 Visitantes Recentes</h1>
+        </div>
+        <div class="panel">
+            <div class="table-toolbar">
+                <input type="text" id="searchVisits"
+                    placeholder="🔍 Pesquisar por IP, país, cidade, navegador...">
+            </div>
+            <div class="table-wrapper">
+                <table id="visitsTable">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>IP</th>
+                            <th>Site</th>
+                            <th>País</th>
+                            <th>Estado</th>
+                            <th>Cidade</th>
+                            <th>Navegador</th>
+                            <th>Sistema</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="pagination"></div>
+        </div>
+    </section>
+
+    <!-- PAÍSES -->
+    <section id="section-paises" class="section hidden">
+        <div class="section-header">
+            <h1>🌍 Países e Cidades</h1>
+        </div>
+        <div class="paises-grid">
+            <div class="panel">
+                <h2>Países</h2>
+                <div id="countriesList"></div>
+            </div>
+            <div class="panel">
+                <h2>Distribuição no mapa</h2>
+                <div id="worldMapPaises" class="map-medium"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RELATÓRIOS -->
+    <section id="section-relatorios" class="section hidden">
+        <div class="section-header">
+            <h1>📈 Relatórios</h1>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Visitas por período</h2>
+            </div>
+            <div class="chart-wrap chart-wrap-lg">
+                <canvas id="reportChart"></canvas>
+            </div>
+        </div>
+        <div class="relatorio-stats">
+            <div class="panel">
+                <div class="stat-label">Total no período</div>
+                <div class="stat-value" id="reportTotal">—</div>
+            </div>
+            <div class="panel">
+                <div class="stat-label">Média diária</div>
+                <div class="stat-value" id="reportAvg">—</div>
+            </div>
+            <div class="panel">
+                <div class="stat-label">Dia de pico</div>
+                <div class="stat-value" id="reportPeak">—</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POR IP -->
+    <section id="section-porip" class="section hidden">
+        <div class="section-header">
+            <h1>🔍 Busca por IP</h1>
+        </div>
+        <div class="panel">
+            <div class="ip-search-bar">
+                <input type="text" id="ipInput" placeholder="Digite um endereço IP (ex: 189.34.12.45)">
+                <button id="searchIpBtn">Buscar</button>
+            </div>
+            <div id="ipResult" class="ip-result hidden"></div>
+        </div>
+    </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script type="module" src="js/painel.js"></script>
+
+</body>
+</html>

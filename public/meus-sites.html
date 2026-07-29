@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus Sites · Visitor Tracker</title>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/meus-sites.css">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-logo">📊 <span>Visitor Tracker</span></div>
+        <nav class="topbar-nav">
+            <a href="painel.html" class="nav-item">📊 Painel</a>
+            <a href="meus-sites.html" class="nav-item active">🌐 Meus Sites</a>
+        </nav>
+    </div>
+    <div class="topbar-right">
+        <span id="userName" class="user-name"></span>
+        <button id="logoutBtn" class="btn-logout">Sair</button>
+    </div>
+</header>
+
+<main class="page-main">
+
+    <div class="page-header">
+        <div>
+            <h1>🌐 Meus Sites</h1>
+            <p>Gerencie os sites monitorados e copie o script de rastreamento</p>
+        </div>
+        <button id="btnNovoSite" class="btn-primary">+ Adicionar site</button>
+    </div>
+
+    <!-- Lista de sites -->
+    <div id="sitesList" class="sites-list">
+        <div class="loading">Carregando...</div>
+    </div>
+
+    <!-- Estado vazio -->
+    <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">🌐</div>
+        <h2>Nenhum site cadastrado</h2>
+        <p>Adicione seu primeiro site para começar a rastrear visitantes.</p>
+        <button class="btn-primary" onclick="abrirModal()">+ Adicionar site</button>
+    </div>
+
+</main>
+
+<!-- MODAL: Adicionar/Editar site -->
+<div id="modal" class="modal-overlay hidden">
+    <div class="modal">
+
+        <div class="modal-header">
+            <h2 id="modalTitle">Adicionar site</h2>
+            <button id="modalClose" class="modal-close">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <label>
+                Nome do site
+                <input type="text" id="siteName" placeholder="Ex: Meu Blog, Loja Online...">
+            </label>
+            <label>
+                Domínio
+                <input type="text" id="siteDomain" placeholder="Ex: meublog.com.br">
+                <span class="field-hint">Sem http:// ou www — só o domínio</span>
+            </label>
+            <div id="modalError" class="form-error hidden"></div>
+        </div>
+
+        <div class="modal-footer">
+            <button id="modalCancel" class="btn-secondary">Cancelar</button>
+            <button id="modalSave" class="btn-primary">Salvar</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL: Script de embed -->
+<div id="modalEmbed" class="modal-overlay hidden">
+    <div class="modal modal-lg">
+
+        <div class="modal-header">
+            <h2>📋 Script de rastreamento</h2>
+            <button id="embedClose" class="modal-close">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="embed-desc">
+                Cole este código no <code>&lt;head&gt;</code> ou antes do
+                <code>&lt;/body&gt;</code> de todas as páginas que deseja rastrear:
+            </p>
+
+            <div class="embed-box">
+                <pre id="embedCode"></pre>
+                <button id="copyEmbed" class="btn-copy">📋 Copiar</button>
+            </div>
+
+            <div id="copySuccess" class="copy-success hidden">✅ Copiado!</div>
+
+            <div class="embed-info">
+                <h3>Como instalar</h3>
+                <ol>
+                    <li>Copie o código acima</li>
+                    <li>Cole dentro do <code>&lt;head&gt;</code> do seu site</li>
+                    <li>Publique as alterações</li>
+                    <li>Acesse seu site e verifique se a visita aparece no painel</li>
+                </ol>
+                <p class="embed-note">
+                    ⚠️ O token é único para este site. Não compartilhe com outros sites
+                    — cada site deve ter seu próprio script.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL: Confirmar exclusão -->
+<div id="modalDelete" class="modal-overlay hidden">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h2>Excluir site</h2>
+            <button id="deleteClose" class="modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+            <p>Tem certeza que deseja excluir <strong id="deleteSiteName"></strong>?</p>
+            <p class="delete-warning">⚠️ Os dados de visitas associados a este site não serão apagados.</p>
+        </div>
+        <div class="modal-footer">
+            <button id="deleteCancel" class="btn-secondary">Cancelar</button>
+            <button id="deleteConfirm" class="btn-danger">Excluir</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="js/meus-sites.js"></script>
+</body>
+</html>

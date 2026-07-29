@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Visitor Tracker Dashboard</title>
+
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+
+</head>
+
+<body>
+
+<div id="navbar"></div>
+
+<main class="dashboard-container">
+
+    <div class="dashboard-top">
+
+        <!-- COLUNA ESQUERDA -->
+        <aside class="dashboard-left">
+
+            <section class="cards">
+
+                <div class="card">
+                    <div class="icon">👥</div>
+                    <h2>Hoje</h2>
+                    <span id="today">0</span>
+                </div>
+
+                <div class="card">
+                    <div class="icon">👤</div>
+                    <h2>Únicos</h2>
+                    <span id="unique">0</span>
+                </div>
+
+                <div class="card">
+                    <div class="icon">🌍</div>
+                    <h2>Países</h2>
+                    <span id="countries">0</span>
+                </div>
+
+                <div class="card">
+                    <div class="icon">🟢</div>
+                    <h2>Online</h2>
+                    <span id="online">0</span>
+                </div>
+
+            </section>
+
+            <section class="panel ranking-panel">
+
+                <h2>📊 Rankings</h2>
+
+                <div id="rankBrowsers"></div>
+
+                <div id="rankSystems"></div>
+
+                <div id="rankDevices"></div>
+
+                <div id="rankPages"></div>
+
+            </section>
+
+        </aside>
+
+        <!-- COLUNA DIREITA -->
+        <section class="dashboard-right">
+
+            <section class="panel chart-panel">
+
+                <h2>📈 Visitas</h2>
+
+                <div class="chart-container">
+
+                    <canvas id="hourlyChart"></canvas>
+
+                </div>
+
+            </section>
+
+            <section class="panel map-panel">
+
+                <h2>🌍 Visitantes no Mundo</h2>
+
+                <div id="worldMap"></div>
+
+            </section>
+
+        </section>
+
+    </div>
+
+<section class="panel latest-panel">
+
+    <h2>🕒 Últimos visitantes</h2>
+
+    <div id="latestVisitors"></div>
+
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script type="module" src="js/dashboard.js"></script>
+
+</body>
+
+</html>

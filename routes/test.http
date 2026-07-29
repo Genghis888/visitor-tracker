@@ -1,0 +1,29 @@
+### Teste da página inicial
+GET http://localhost:3000/
+
+###
+
+### Teste de saúde
+GET http://localhost:3000/health
+
+###
+
+### Teste do banco
+GET http://localhost:3000/health/db
+
+###
+
+### Registrar visitante
+POST http://localhost:3000/track
+Content-Type: application/json
+
+{
+  "visitor_id": "teste123",
+  "language": "pt-BR",
+  "resolution": "1920x1080",
+  "timezone": "America/Sao_Paulo",
+  "host": "localhost",
+  "page": "/",
+  "query_string": "",
+  "referrer": ""
+}

@@ -1,0 +1,32 @@
+{
+  "name": "visitor-tracker",
+  "version": "1.0.0",
+  "description": "Sistema de rastreamento de visitantes",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.9",
+    "bcryptjs": "^2.4.3",
+    "chart.js": "^4.5.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.18.1",
+    "maxmind": "^5.0.6",
+    "pg": "^8.22.0",
+    "ua-parser-js": "^2.0.10"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

@@ -1,0 +1,179 @@
+/* ======================================
+   CARDS
+====================================== */
+
+.dashboard-left .card{
+
+    background:#1e293b;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.22);
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    min-height:88px;
+
+    transition:.2s;
+
+}
+
+.dashboard-left .card:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.dashboard-left .icon{
+
+    font-size:18px;
+
+    margin-bottom:4px;
+
+}
+
+.dashboard-left h2{
+
+    font-size:14px;
+
+    color:#94a3b8;
+
+    font-weight:600;
+
+}
+
+.dashboard-left span{
+
+    font-size:26px;
+
+    font-weight:700;
+
+    margin-top:4px;
+
+    line-height:1;
+
+}
+
+.card-variation{
+
+    margin-top:6px;
+
+    font-size:11px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+}
+
+/* ======================================
+   RANKINGS
+====================================== */
+
+.ranking-panel{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.ranking-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.ranking-title{
+
+    font-size:13px;
+
+    color:#94a3b8;
+
+    font-weight:600;
+
+}
+
+.rank-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+.rank-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    font-size:13px;
+
+}
+
+.rank-label{
+
+    color:#e2e8f0;
+
+}
+
+.rank-value{
+
+    color:#94a3b8;
+
+    font-size:12px;
+
+}
+
+.rank-bar{
+
+    width:100%;
+
+    height:8px;
+
+    background:#0f172a;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+}
+
+.rank-fill{
+
+    height:100%;
+
+    background:#3b82f6;
+
+    border-radius:999px;
+
+    transition:width .35s ease;
+
+}
+
+.rank-empty{
+
+    color:#94a3b8;
+
+    font-size:13px;
+
+    padding:8px 0;
+
+}

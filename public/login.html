@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar · Visitor Tracker</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+<main class="login-container">
+
+    <div class="login-card">
+
+        <div class="login-logo">📊 Visitor Tracker</div>
+
+        <!-- Abas Login / Cadastro -->
+        <div class="login-tabs">
+            <button class="tab active" data-tab="login">Entrar</button>
+            <button class="tab" data-tab="register">Criar conta</button>
+        </div>
+
+        <!-- Formulário de Login -->
+        <form id="loginForm" class="tab-content active">
+
+            <label>
+                E-mail
+                <input type="email" id="loginEmail" autocomplete="email" required>
+            </label>
+
+            <label>
+                Senha
+                <input type="password" id="loginPassword" autocomplete="current-password" required>
+            </label>
+
+            <div id="loginError" class="form-error hidden"></div>
+
+            <button type="submit" id="loginSubmit">Entrar</button>
+
+            <a href="#" class="forgot-link" id="forgotLink">Esqueci minha senha</a>
+
+        </form>
+
+        <!-- Formulário de Cadastro -->
+        <form id="registerForm" class="tab-content hidden">
+
+            <label>
+                Nome
+                <input type="text" id="registerName" autocomplete="name" required>
+            </label>
+
+            <label>
+                E-mail
+                <input type="email" id="registerEmail" autocomplete="email" required>
+            </label>
+
+            <label>
+                Senha <span class="hint">(mínimo 8 caracteres)</span>
+                <input type="password" id="registerPassword" autocomplete="new-password" required>
+            </label>
+
+            <div id="registerError" class="form-error hidden"></div>
+            <div id="registerSuccess" class="form-success hidden"></div>
+
+            <button type="submit" id="registerSubmit">Criar conta grátis</button>
+
+        </form>
+
+        <!-- Recuperação de senha -->
+        <form id="forgotForm" class="tab-content hidden">
+
+            <p class="forgot-desc">Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
+
+            <label>
+                E-mail
+                <input type="email" id="forgotEmail" autocomplete="email" required>
+            </label>
+
+            <div id="forgotError" class="form-error hidden"></div>
+            <div id="forgotSuccess" class="form-success hidden"></div>
+
+            <button type="submit" id="forgotSubmit">Enviar link</button>
+
+            <a href="#" class="forgot-link" id="backToLogin">← Voltar ao login</a>
+
+        </form>
+
+    </div>
+
+</main>
+
+<script src="js/login.js" type="module"></script>
+
+</body>
+</html>
