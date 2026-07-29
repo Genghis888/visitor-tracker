@@ -2,8 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { ensureGeoDb } from "./scripts/downloadGeo.js";
+import { initGeo } from "./services/geo.js";
 
+// Baixa o .mmdb se não existir, depois inicializa o geo
 await ensureGeoDb();
+await initGeo();
 
 import cors from "cors";
 import express from "express";
