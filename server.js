@@ -49,6 +49,20 @@ app.use("/track",     trackRoutes);
 app.use("/heartbeat", heartbeatRoutes);
 app.use("/auth",      authRoutes);
 
+// tracker.js precisa ser carregável por qualquer site
+app.get("/tracker.js", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.sendFile(path.join(__dirname, "public", "tracker.js"));
+});
+
+// t.html precisa ser acessível por iframe de qualquer domínio
+app.get("/t.html", (req, res) => {
+    res.setHeader("X-Frame-Options", "ALLOWALL");
+    res.setHeader("Content-Security-Policy", "");
+    res.sendFile(path.join(__dirname, "public", "t.html"));
+});
+
+// ===== Arquivos estáticos =====
 app.use(express.static("public"));
 
 app.use("/geo",           requireApiAuth, geoRoutes);

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>html,body{margin:0;padding:0;width:0;height:0;overflow:hidden;}</style>
+</head>
+<body>
+<script>
+(async () => {
+
+    const params = new URLSearchParams(location.search);
+
+    const token       = params.get("token");
+    const host        = params.get("host");
+    const page        = params.get("page");
+    const full_url    = params.get("url");
+    const page_title  = params.get("title");
+    const referrer    = params.get("ref") || "";
+    const query_string= params.get("qs") || "";
+
+    if (!token) return;
+
+    const SERVER = location.origin;
+
+    function getVisitorId() {
+        const key = "_vt_id_" + token;
+        let id = localStorage.getItem(key);
+        if (!id) {
+            id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,
+                c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+            localStorage.setItem(key, id);
+        }
+        return id;
+    }
+
+    const visitor_id = getVisitorId();
+
+    const payload = {
+        token, visitor_id,
+        language:     navigator.language,
+        resolution:   screen.width + "x" + screen.height,
+        timezone:     Intl.DateTimeFormat().resolvedOptions().timeZone,
+        host, page, query_string, full_url, page_title, referrer
+    };
+
+    try {
+        await fetch(SERVER + "/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+    } catch(e) {}
+
+    async function heartbeat() {
+        try {
+            await fetch(SERVER + "/heartbeat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ visitor_id, token })
+            });
+        } catch(e) {}
+    }
+
+    await heartbeat();
+    setInterval(heartbeat, 60000);
+
+})();
+</script>
+</body>
+</html>
