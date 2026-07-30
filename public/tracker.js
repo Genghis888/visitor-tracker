@@ -29,8 +29,11 @@
     iframe.referrerPolicy = "no-referrer-when-downgrade";
     iframe.setAttribute("aria-hidden", "true");
 
-    document.body
-        ? document.body.appendChild(iframe)
-        : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(iframe));
+   function appendIframe() {
+        setTimeout(() => document.body.appendChild(iframe), 1500);
+    }
 
+    document.body
+        ? appendIframe()
+        : document.addEventListener("DOMContentLoaded", appendIframe);
 })();
