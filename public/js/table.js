@@ -30,9 +30,9 @@ export function renderTable(visits) {
                 <td>${v.os ?? "-"}</td>
 
                 <td class="url-cell">
-
-                    ${v.full_url ?? "-"}
-
+                    ${v.full_url
+                        ? `<a href="${v.full_url}" target="_blank" title="${v.full_url}">${v.full_url}</a>`
+                        : "-"}
                 </td>
 
             </tr>

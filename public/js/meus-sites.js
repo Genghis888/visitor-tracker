@@ -99,7 +99,16 @@ function getSite(id) {
 
 function gerarEmbed(site) {
     const origem = location.origin;
-    return `<script src="${origem}/tracker.js"\n  data-token="${site.token}"\n  async><\/script>`;
+    return `<!-- Visitor Tracker -->
+<script src="${origem}/tracker.js" data-token="${site.token}" async><\/script>`;
+}
+
+function gerarEmbedIframe(site) {
+    const origem = location.origin;
+    return `<!-- Visitor Tracker -->
+<iframe src="${origem}/t.html?token=${site.token}&host=${site.domain}&page=/&url=URL_DA_PAGINA&title=TITULO&ref=&qs="
+  style="display:none;width:0;height:0;border:0"
+  referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 }
 
 // ===== Modal: Adicionar / Editar =====
@@ -179,8 +188,17 @@ async function salvarSite() {
 window.verEmbed = function(id) {
     const site = getSite(id);
     if (!site) return;
+
     document.getElementById("embedCode").textContent = gerarEmbed(site);
+    document.getElementById("embedIframeCode").textContent = gerarEmbedIframe(site);
     document.getElementById("copySuccess").classList.add("hidden");
+
+    // Reset abas
+    document.querySelectorAll(".embed-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".embed-option").forEach(o => o.classList.add("hidden"));
+    document.querySelector("[data-embed='script']").classList.add("active");
+    document.getElementById("embedScript").classList.remove("hidden");
+
     document.getElementById("modalEmbed").classList.remove("hidden");
 };
 
@@ -248,6 +266,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         await navigator.clipboard.writeText(code);
         document.getElementById("copySuccess").classList.remove("hidden");
         setTimeout(() => document.getElementById("copySuccess").classList.add("hidden"), 2000);
+    });
+
+    document.getElementById("copyEmbedIframe").addEventListener("click", async () => {
+        const code = document.getElementById("embedIframeCode").textContent;
+        await navigator.clipboard.writeText(code);
+        document.getElementById("copySuccess").classList.remove("hidden");
+        setTimeout(() => document.getElementById("copySuccess").classList.add("hidden"), 2000);
+    });
+
+    // Abas do embed
+    document.querySelectorAll(".embed-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+            document.querySelectorAll(".embed-tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".embed-option").forEach(o => o.classList.add("hidden"));
+            tab.classList.add("active");
+            document.getElementById("embed" + tab.dataset.embed.charAt(0).toUpperCase() + tab.dataset.embed.slice(1)).classList.remove("hidden");
+        });
     });
 
     document.getElementById("deleteConfirm").addEventListener("click", executarDelete);

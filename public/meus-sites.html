@@ -94,9 +94,33 @@
                 <code>&lt;/body&gt;</code> de todas as páginas que deseja rastrear:
             </p>
 
-            <div class="embed-box">
-                <pre id="embedCode"></pre>
-                <button id="copyEmbed" class="btn-copy">📋 Copiar</button>
+            <!-- Abas -->
+            <div class="embed-tabs">
+                <button class="embed-tab active" data-embed="script">📜 Script</button>
+                <button class="embed-tab" data-embed="iframe">🖼 iframe</button>
+            </div>
+
+            <!-- Opção Script -->
+            <div id="embedScript" class="embed-option">
+                <div class="embed-box">
+                    <pre id="embedCode"></pre>
+                    <button id="copyEmbed" class="btn-copy">📋 Copiar</button>
+                </div>
+                <p style="font-size:12px;color:var(--text-soft);margin-top:6px">
+                    ✅ Recomendado — funciona na maioria dos sites.
+                </p>
+            </div>
+
+            <!-- Opção iframe -->
+            <div id="embedIframe" class="embed-option hidden">
+                <div class="embed-box">
+                    <pre id="embedIframeCode"></pre>
+                    <button id="copyEmbedIframe" class="btn-copy">📋 Copiar</button>
+                </div>
+                <p style="font-size:12px;color:var(--warning);margin-top:6px">
+                    ⚠️ Para plataformas que bloqueiam JavaScript (ex: páginas de perfil).
+                    Substitua <b>TITULO</b> e <b>URL_DA_PAGINA</b> pelos valores reais.
+                </p>
             </div>
 
             <div id="copySuccess" class="copy-success hidden">✅ Copiado!</div>

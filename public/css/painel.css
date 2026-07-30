@@ -405,6 +405,9 @@ table{
     width:100%;
     border-collapse:collapse;
     font-size:13px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
 }
 
 thead th{
@@ -414,27 +417,49 @@ thead th{
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:.05em;
+    background:rgba(255,255,255,.03);
     border-bottom:1px solid var(--border);
+    border-right:1px solid var(--border);
     white-space:nowrap;
 }
 
+thead th:last-child{ border-right:none; }
+
 tbody tr{
-    border-bottom:1px solid rgba(255,255,255,.04);
+    border-bottom:1px solid var(--border);
     transition:.15s;
 }
+
+tbody tr:last-child{ border-bottom:none; }
 
 tbody tr:hover{ background:rgba(255,255,255,.04); }
 
 tbody td{
     padding:10px 12px;
     color:var(--text);
-    max-width:240px;
+    border-right:1px solid var(--border);
+    max-width:200px;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
 }
 
-.url-cell{ color:var(--text-soft); font-size:12px; }
+tbody td:last-child{
+    border-right:none;
+    max-width:320px;
+}
+
+.url-cell{
+    color:var(--primary);
+    font-size:12px;
+}
+
+.url-cell a{
+    color:var(--primary);
+    text-decoration:none;
+}
+
+.url-cell a:hover{ text-decoration:underline; }
 
 /* Paginação */
 #pagination{ margin-top:16px; }
