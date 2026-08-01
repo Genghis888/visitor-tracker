@@ -27,12 +27,23 @@ router.post("/", async (req, res) => {
             resolution,
             timezone,
             host,
-            page,
+            page: rawPage,
             query_string,
             full_url,
             page_title,
             referrer
         } = req.body;
+
+        // Normaliza o campo page — deve ser sempre um caminho (/path),
+        // não uma URL completa. Isso evita problemas com o iframe embed.
+        let page = rawPage || "/";
+        if (page.startsWith("http")) {
+            try {
+                page = new URL(page).pathname;
+            } catch {
+                page = "/";
+            }
+        }
 
         // Proteção contra flood por visitor_id
         if (!canRegister(visitor_id)) {
