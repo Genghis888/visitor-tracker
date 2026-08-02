@@ -23,8 +23,9 @@ import mapRoutes from "./routes/map.js";
 import heartbeatRoutes from "./routes/heartbeat.js";
 import authRoutes from "./routes/auth.js";
 import sitesRoutes from "./routes/sites.js";
-
+import adminRoutes from "./routes/admin.js";
 import { requireApiAuth } from "./middlewares/auth.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -71,6 +72,7 @@ app.use("/api/rankings",  requireApiAuth, rankingsRoutes);
 app.use("/api/countries", requireApiAuth, countriesRoutes);
 app.use("/api/map",       requireApiAuth, mapRoutes);
 app.use("/api/sites",     requireApiAuth, sitesRoutes);
+app.use("/api/admin", requireSuperAdmin, adminRoutes);
 
 app.listen(PORT, () => {
     console.log(`Servidor iniciado em http://localhost:${PORT}`);
