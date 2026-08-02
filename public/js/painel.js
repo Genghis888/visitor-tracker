@@ -1,4 +1,4 @@
-import { requireAuth, attachLogoutHandler, getUser } from "./auth.js";
+import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
 import { getStats, getHourly, getRankings, getVisits, getCountries, getMap, getSites } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
@@ -412,6 +412,52 @@ document.addEventListener("DOMContentLoaded", async () => {
         carregarOverview();
         carregarVisitantes();
     });
+
+    // Botão exportar CSV
+    const exportBtn = document.getElementById("exportCsvBtn");
+    if (exportBtn) {
+        // Verifica se o plano permite exportar
+        const token = getToken();
+        const planRes = await fetch("/api/sites/plan", {
+            headers: { Authorization: `Bearer ${token}` }
+        }).then(r => r.json()).catch(() => null);
+
+        if (planRes && !planRes.can_export) {
+            exportBtn.classList.add("locked");
+            exportBtn.title = "Disponível apenas no plano Pro";
+            exportBtn.textContent = "🔒 Exportar CSV (Pro)";
+        }
+
+        exportBtn.addEventListener("click", async () => {
+            if (exportBtn.classList.contains("locked")) {
+                alert("A exportação CSV está disponível apenas no plano Pro.\n\nFale conosco para fazer upgrade.");
+                return;
+            }
+
+            const range  = getCurrentRange();
+            const site   = getCurrentSite();
+            const params = new URLSearchParams({ range });
+            if (site && site !== "all") params.set("site", site);
+
+            const url = `/api/stats/export/csv?${params}`;
+            const res = await fetch(url, {
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.error || "Erro ao exportar.");
+                return;
+            }
+
+            const blob     = await res.blob();
+            const link     = document.createElement("a");
+            link.href      = URL.createObjectURL(blob);
+            link.download  = `visitas_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+    }
 
     setInterval(carregarOverview, 30000);
 });

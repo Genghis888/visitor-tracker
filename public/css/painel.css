@@ -384,10 +384,13 @@ body{
 /* ===== TABELA DE VISITANTES ===== */
 .table-toolbar{
     margin-bottom:14px;
+    display:flex;
+    gap:10px;
+    align-items:center;
 }
 
 .table-toolbar input{
-    width:100%;
+    flex:1;
     background:rgba(255,255,255,.05);
     border:1px solid var(--border);
     border-radius:10px;
@@ -398,6 +401,39 @@ body{
 }
 
 .table-toolbar input:focus{ outline:none; border-color:var(--primary); }
+
+.btn-export{
+    background:rgba(22,199,132,.1);
+    color:var(--success);
+    border:1px solid rgba(22,199,132,.3);
+    border-radius:10px;
+    padding:10px 16px;
+    font-size:13px;
+    font-family:inherit;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.15s;
+}
+
+.btn-export:hover{ background:rgba(22,199,132,.2); }
+
+.btn-export.locked{
+    background:rgba(255,152,0,.08);
+    color:var(--warning);
+    border-color:rgba(255,152,0,.3);
+}
+
+.upgrade-banner{
+    background:rgba(37,99,235,.08);
+    border:1px solid rgba(37,99,235,.2);
+    border-radius:10px;
+    padding:12px 16px;
+    font-size:13px;
+    color:#93c5fd;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
 
 .table-wrapper{ overflow-x:auto; }
 

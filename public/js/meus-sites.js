@@ -165,7 +165,11 @@ async function salvarSite() {
         }
 
         if (result?.error) {
-            errEl.textContent = result.error;
+            if (result.upgrade) {
+                errEl.textContent = `${result.error} Faça upgrade para o plano Pro para adicionar mais sites.`;
+            } else {
+                errEl.textContent = result.error;
+            }
             errEl.classList.remove("hidden");
             return;
         }
