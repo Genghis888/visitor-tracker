@@ -204,30 +204,13 @@
         <div class="panel">
             <div class="table-toolbar">
                 <input type="text" id="searchVisits"
-                    placeholder="🔍 Pesquisar por IP, país, cidade, navegador...">
+                    placeholder="🔍 Pesquisar por IP, país, cidade...">
                 <button id="exportCsvBtn" class="btn-export" title="Exportar CSV">
                     ⬇️ Exportar CSV
                 </button>
             </div>
-            <div class="table-wrapper">
-                <table id="visitsTable">
-                    <thead>
-                        <tr>
-                            <th>Data/Hora</th>
-                            <th>IP</th>
-                            <th>Site</th>
-                            <th>País</th>
-                            <th>Estado</th>
-                            <th>Cidade</th>
-                            <th>Navegador</th>
-                            <th>Sistema</th>
-                            <th>URL</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div id="pagination"></div>
+            <div id="sessionsList" class="sessions-list"></div>
+            <div id="sessionsPagination"></div>
         </div>
     </section>
 

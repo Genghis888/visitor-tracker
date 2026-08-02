@@ -76,3 +76,8 @@ export async function getMap(range) {
 export async function getSites() {
     return apiFetch("/api/sites");
 }
+
+export async function getSessions(range, page = 1, limit = 20) {
+    const query = buildQuery(range) + `&page=${page}&limit=${limit}`;
+    return apiFetch(`/api/stats/sessions?${query}`);
+}

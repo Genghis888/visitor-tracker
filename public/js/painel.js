@@ -1,5 +1,5 @@
 import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
-import { getStats, getHourly, getRankings, getVisits, getCountries, getMap, getSites } from "./api.js";
+import { getStats, getHourly, getRankings, getVisits, getCountries, getMap, getSites, getSessions } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
 import { renderRanking } from "./rankings.js";
@@ -160,16 +160,144 @@ async function carregarOverview() {
     if (mapFull) updateMapLayer(clusterFull, mapData);
 }
 
-// ===== Visitantes =====
-async function carregarVisitantes(page = 1) {
-    currentPage = page;
-    const range   = getCurrentRange();
-    const visits  = await getVisits(range, page, 25);
+// ===== Visitantes (agrupado por sessão) =====
+let currentSessionPage = 1;
+let allSessionsData = [];
 
-    allVisits = visits.rows;
-    renderTable(allVisits);
-    renderPagination(visits, carregarVisitantes);
+async function carregarVisitantes(page = 1) {
+    currentSessionPage = page;
+    const range    = getCurrentRange();
+    const sessions = await getSessions(range, page, 20);
+
+    if (!sessions) return;
+
+    allSessionsData = sessions.rows || [];
+    renderSessions(allSessionsData);
+    renderSessionsPagination(sessions);
 }
+
+function countryFlag(code) {
+    if (!code) return "🏳";
+    return code.toUpperCase().replace(/./g,
+        c => String.fromCodePoint(127397 + c.charCodeAt()));
+}
+
+function formatDuration(seconds) {
+    if (!seconds || seconds < 60) return "< 1 min";
+    const m = Math.floor(seconds / 60);
+    const h = Math.floor(m / 60);
+    if (h > 0) return `${h}h ${m % 60}min`;
+    return `${m} min`;
+}
+
+function formatTime(iso) {
+    return new Date(iso).toLocaleTimeString("pt-BR", {
+        hour: "2-digit", minute: "2-digit"
+    });
+}
+
+function renderSessions(sessions) {
+    const list = document.getElementById("sessionsList");
+
+    if (!sessions.length) {
+        list.innerHTML = `<p style="color:var(--text-soft);font-size:14px;padding:20px 0">Nenhuma sessão encontrada.</p>`;
+        return;
+    }
+
+    list.innerHTML = sessions.map((s, idx) => {
+        const pages   = s.pages || [];
+        const first   = pages[0];
+        const rest    = pages.slice(1);
+        const hasMore = rest.length > 0;
+
+        const firstUrl = first?.url || "/";
+        const flag     = countryFlag(s.country_code);
+        const location = [s.city, s.region, s.country].filter(Boolean).join(", ") || "Desconhecido";
+        const entryDate= new Date(s.entry_time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
+        const entryTime= formatTime(s.entry_time);
+        const duration = formatDuration(s.duration_seconds);
+
+        const restHtml = rest.map(p => `
+            <div class="session-page-item session-hidden" data-session="${idx}">
+                <span class="session-page-time">${formatTime(p.time)}</span>
+                <a href="${p.url || '/'}" target="_blank" rel="noopener"
+                   class="session-page-url" title="${p.url || '/'}">${p.url || "/"}</a>
+            </div>
+        `).join("");
+
+        return `
+            <div class="session-card">
+                <div class="session-header">
+                    <span class="session-flag">${flag}</span>
+                    <div class="session-info">
+                        <div class="session-top">
+                            <span class="session-ip">${s.ip || "?"}</span>
+                            <span class="session-location">— ${location}</span>
+                        </div>
+                        <div class="session-meta">
+                            <span>🌐 ${s.browser || "?"}</span>
+                            <span>🖥 ${s.os || "?"}</span>
+                            <span>📄 ${s.page_count} pág.</span>
+                            <span>⏱ ${duration}</span>
+                            <span>🌍 ${s.host || ""}</span>
+                        </div>
+                    </div>
+                    <span class="session-time">${entryDate} ${entryTime}</span>
+                </div>
+                <div class="session-pages">
+                    <div class="session-page-item">
+                        <span class="session-page-time">${entryTime}</span>
+                        <a href="${firstUrl}" target="_blank" rel="noopener"
+                           class="session-page-url" title="${firstUrl}">${firstUrl}</a>
+                    </div>
+                    ${restHtml}
+                    ${hasMore ? `
+                        <button class="session-expand-btn" data-session="${idx}" data-expanded="false">
+                            ＋ ver mais ${rest.length} página${rest.length !== 1 ? "s" : ""}
+                        </button>
+                    ` : ""}
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    // Handler expandir/recolher
+    list.querySelectorAll(".session-expand-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const idx      = btn.dataset.session;
+            const expanded = btn.dataset.expanded === "true";
+            const hidden   = list.querySelectorAll(`.session-hidden[data-session="${idx}"]`);
+
+            hidden.forEach(el => el.classList.toggle("session-hidden", expanded));
+            btn.dataset.expanded = !expanded;
+            btn.textContent = expanded
+                ? `＋ ver mais ${hidden.length} página${hidden.length !== 1 ? "s" : ""}`
+                : `－ recolher`;
+        });
+    });
+}
+
+function renderSessionsPagination(data) {
+    const container = document.getElementById("sessionsPagination");
+    if (!container) return;
+
+    if (data.pages <= 1) { container.innerHTML = ""; return; }
+
+    container.innerHTML = `
+        <div class="pagination-summary">
+            ${data.total} sessões · página ${data.page} de ${data.pages}
+        </div>
+        <div class="pagination-controls">
+            <button ${data.page <= 1 ? "disabled" : ""}
+                onclick="carregarVisitantes(${data.page - 1})">← Anterior</button>
+            <span>Página ${data.page} de ${data.pages}</span>
+            <button ${data.page >= data.pages ? "disabled" : ""}
+                onclick="carregarVisitantes(${data.page + 1})">Próxima →</button>
+        </div>
+    `;
+}
+
+window.carregarVisitantes = carregarVisitantes;
 
 // ===== Páginas & Rankings =====
 async function carregarPaginas() {
@@ -201,12 +329,6 @@ async function carregarPaises() {
 
     initMapPaises();
     updateMapLayer(clusterPaises, mapData);
-}
-
-function countryFlag(code) {
-    if (!code) return "🏳";
-    return code.toUpperCase().replace(/./g,
-        c => String.fromCodePoint(127397 + c.charCodeAt()));
 }
 
 // ===== Relatórios =====
@@ -337,17 +459,17 @@ async function buscarIP() {
     `;
 }
 
-// ===== Busca na tabela =====
+// ===== Busca na sessão =====
 function initTableSearch() {
     document.getElementById("searchVisits")?.addEventListener("input", (e) => {
         const termo = e.target.value.toLowerCase().trim();
-        if (!termo) { renderTable(allVisits); return; }
-        const filtrados = allVisits.filter(v =>
-            [v.country, v.city, v.browser, v.os, v.ip, v.host, v.page_title, v.full_url]
+        if (!termo) { renderSessions(allSessionsData); return; }
+        const filtrados = allSessionsData.filter(s =>
+            [s.ip, s.country, s.city, s.region, s.browser, s.os, s.host]
             .filter(Boolean)
             .some(val => val.toString().toLowerCase().includes(termo))
         );
-        renderTable(filtrados);
+        renderSessions(filtrados);
     });
 }
 

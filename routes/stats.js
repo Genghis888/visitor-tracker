@@ -2,6 +2,7 @@ import express from "express";
 import { getStats } from "../services/stats.js";
 import { getLastVisits } from "../services/visits.js";
 import { getChartData } from "../services/chart.js";
+import { getSessions } from "../services/sessions.js";
 import { canExport } from "../services/planService.js";
 import { getDateFilter } from "../services/dateFilter.js";
 import { getSiteFilter } from "../services/siteFilter.js";
@@ -35,6 +36,17 @@ router.get("/hourly", async (req, res) => {
         const userId = req.userId || null;
         res.json(await getChartData(range, start, end, site, userId));
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.get("/sessions", async (req, res) => {
+    try {
+        const { range = "today", start, end, site, page = 1, limit = 20 } = req.query;
+        const userId = req.userId || null;
+        res.json(await getSessions(range, start, end, site, userId, Number(page), Number(limit)));
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 });
