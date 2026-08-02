@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Sistema · Visitor Tracker</title>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/admin-sistema.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-logo">📊 <span>Visitor Tracker</span> <span class="admin-badge">ADMIN</span></div>
+        <nav class="topbar-nav">
+            <a href="#overview"  class="nav-item active" data-section="overview">📊 Overview</a>
+            <a href="#usuarios"  class="nav-item" data-section="usuarios">👥 Usuários</a>
+            <a href="#sites"     class="nav-item" data-section="sites">🌐 Sites</a>
+        </nav>
+    </div>
+    <div class="topbar-right">
+        <a href="painel.html" class="btn-secondary-sm">← Meu Painel</a>
+        <span id="userName" class="user-name"></span>
+        <button id="logoutBtn" class="btn-logout">Sair</button>
+    </div>
+</header>
+
+<main class="page-main">
+
+    <!-- OVERVIEW -->
+    <section id="section-overview" class="section active">
+        <div class="section-header">
+            <h1>📊 Visão Geral do Sistema</h1>
+        </div>
+
+        <div class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-icon">👥</div>
+                <div class="metric-body">
+                    <div class="metric-label">Total de usuários</div>
+                    <div class="metric-value" id="totalUsers">—</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🌐</div>
+                <div class="metric-body">
+                    <div class="metric-label">Total de sites</div>
+                    <div class="metric-value" id="totalSites">—</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">📈</div>
+                <div class="metric-body">
+                    <div class="metric-label">Visitas hoje</div>
+                    <div class="metric-value" id="totalVisitsToday">—</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🗄️</div>
+                <div class="metric-body">
+                    <div class="metric-label">Total de visitas</div>
+                    <div class="metric-value" id="totalVisitsAll">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overview-grid">
+            <div class="panel">
+                <h2>Usuários por plano</h2>
+                <div id="planChart" class="plan-chart"></div>
+            </div>
+            <div class="panel">
+                <h2>Últimos cadastros</h2>
+                <div id="recentUsers" class="recent-list"></div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- USUÁRIOS -->
+    <section id="section-usuarios" class="section hidden">
+        <div class="section-header-row">
+            <h1>👥 Usuários</h1>
+            <input type="text" id="searchUsers" placeholder="🔍 Buscar por nome ou e-mail...">
+        </div>
+
+        <div class="panel">
+            <div class="table-wrapper">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Plano</th>
+                            <th>Sites</th>
+                            <th>Visitas</th>
+                            <th>Cadastro</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody">
+                        <tr><td colspan="7" class="loading-cell">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- SITES -->
+    <section id="section-sites" class="section hidden">
+        <div class="section-header-row">
+            <h1>🌐 Sites Cadastrados</h1>
+            <input type="text" id="searchSites" placeholder="🔍 Buscar por domínio ou usuário...">
+        </div>
+
+        <div class="panel">
+            <div class="table-wrapper">
+                <table id="sitesTable">
+                    <thead>
+                        <tr>
+                            <th>Site</th>
+                            <th>Domínio</th>
+                            <th>Usuário</th>
+                            <th>Visitas</th>
+                            <th>Status</th>
+                            <th>Criado em</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sitesBody">
+                        <tr><td colspan="6" class="loading-cell">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- MODAL: Gerenciar usuário -->
+<div id="modalUser" class="modal-overlay hidden">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalUserTitle">Gerenciar usuário</h2>
+            <button id="modalUserClose" class="modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="modalUserInfo" class="user-info-grid"></div>
+
+            <div class="modal-section">
+                <label>Plano</label>
+                <select id="modalUserPlan" class="select-input">
+                    <option value="free">Gratuito</option>
+                    <option value="pro">Pro</option>
+                </select>
+            </div>
+
+            <div id="modalUserError" class="form-error hidden"></div>
+        </div>
+        <div class="modal-footer">
+            <button id="modalUserCancel" class="btn-secondary">Cancelar</button>
+            <button id="modalUserSave" class="btn-primary">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="js/admin-sistema.js"></script>
+</body>
+</html>

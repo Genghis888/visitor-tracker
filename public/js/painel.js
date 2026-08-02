@@ -50,7 +50,7 @@ function initNav() {
 
     navItems.forEach(item => {
         item.addEventListener("click", (e) => {
-            if (item.classList.contains("nav-external")) return;
+            if (item.classList.contains("nav-external")) return; // deixa o browser navegar
             e.preventDefault();
             goTo(item.dataset.section);
         });
@@ -380,6 +380,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Exibe nome do usuário
     const nameEl = document.getElementById("userName");
     if (nameEl) nameEl.textContent = user.name || user.email;
+
+    // Mostra link admin só pra superadmin
+    if (user.role === "superadmin") {
+        document.getElementById("adminLink")?.style.removeProperty("display");
+    }
 
     attachLogoutHandler();
 
