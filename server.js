@@ -24,7 +24,7 @@ import heartbeatRoutes from "./routes/heartbeat.js";
 import authRoutes from "./routes/auth.js";
 import sitesRoutes from "./routes/sites.js";
 import adminRoutes from "./routes/admin.js";
-import { requireApiAuth } from "./middlewares/auth.js";
+import { requireApiAuth, requireSuperAdmin } from "./middlewares/auth.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
