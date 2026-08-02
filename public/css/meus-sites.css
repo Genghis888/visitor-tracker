@@ -475,3 +475,37 @@ input[type="text"]:focus{ outline:none; border-color:var(--primary); }
 }
 
 .hidden{ display:none !important; }
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+
+    .topbar{
+        height:auto;
+        padding:10px 16px;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;
+    }
+
+    .topbar-left{ width:100%; flex-direction:column; gap:8px; }
+    .topbar-nav{ width:100%; overflow-x:auto; scrollbar-width:none; }
+    .topbar-nav::-webkit-scrollbar{ display:none; }
+    .topbar-right{ width:100%; }
+
+    .page-main{ padding:16px 12px; }
+
+    .page-header{ flex-direction:column; align-items:flex-start; gap:12px; }
+    .page-header .btn-primary{ width:100%; text-align:center; }
+
+    .site-card{ flex-direction:column; align-items:flex-start; gap:12px; }
+    .site-actions{ width:100%; flex-wrap:wrap; }
+    .site-actions button{ flex:1; text-align:center; }
+
+    .modal{ margin:0 10px; }
+    .modal-lg{ max-width:100%; }
+
+}
+
+@media (max-width: 480px) {
+    .site-meta{ flex-direction:column; gap:4px; }
+}

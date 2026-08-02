@@ -619,3 +619,156 @@ tbody td:last-child{
 .ip-visit-time{ color:var(--text-soft); width:140px; flex-shrink:0; }
 .ip-visit-location{ flex:1; }
 .ip-visit-url{ color:var(--text-soft); font-size:12px; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablet: <= 1024px */
+@media (max-width: 1024px) {
+
+    .metrics-row{
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .overview-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .overview-rankings{
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rankings-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .paises-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .relatorio-stats{
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .map-mini{ height:240px; }
+    .map-medium{ height:300px; }
+    .map-full{ height:calc(100vh - 200px); }
+
+}
+
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
+
+    /* Topbar vira 2 linhas */
+    .topbar{
+        height:auto;
+        padding:10px 16px;
+        gap:8px;
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .topbar-left{
+        width:100%;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;
+    }
+
+    .topbar-nav{
+        width:100%;
+        overflow-x:auto;
+        gap:2px;
+        padding-bottom:2px;
+        /* Esconde scrollbar mas mantém scroll */
+        scrollbar-width:none;
+    }
+
+    .topbar-nav::-webkit-scrollbar{ display:none; }
+
+    .nav-item{
+        font-size:12px;
+        padding:5px 9px;
+        white-space:nowrap;
+    }
+
+    .topbar-right{
+        width:100%;
+        flex-wrap:wrap;
+        gap:6px;
+    }
+
+    .site-select{ max-width:100%; flex:1; }
+
+    .user-name{ display:none; }
+
+    .period-filters{ flex-wrap:nowrap; }
+
+    /* Main */
+    .painel-main{ padding:16px 12px; }
+
+    .section{ gap:12px; }
+
+    /* Cards em coluna única */
+    .metrics-row{ grid-template-columns:repeat(2,1fr); gap:10px; }
+
+    .metric-card{ padding:14px; gap:12px; }
+    .metric-icon{ font-size:22px; }
+    .metric-value{ font-size:22px; }
+
+    /* Overview grid em coluna */
+    .overview-grid{ grid-template-columns:1fr; }
+
+    .chart-wrap{ height:180px; }
+    .chart-wrap-lg{ height:260px; }
+
+    .map-mini{ height:200px; }
+    .map-medium{ height:260px; }
+    .map-full{ height:calc(100vh - 220px); }
+
+    /* Rankings 1 coluna */
+    .overview-rankings{ grid-template-columns:1fr 1fr; gap:10px; }
+    .rankings-grid{ grid-template-columns:1fr; }
+
+    /* Tempo real */
+    .realtime-grid{ flex-direction:column; }
+    .realtime-counter{ width:100%; }
+    .realtime-number{ font-size:48px; }
+
+    /* Países */
+    .paises-grid{ grid-template-columns:1fr; }
+
+    /* Relatórios */
+    .relatorio-stats{ grid-template-columns:1fr; }
+    .stat-value{ font-size:24px; }
+
+    /* Tabela — scroll horizontal */
+    .table-toolbar{ flex-direction:column; align-items:stretch; }
+    .btn-export{ text-align:center; }
+
+    /* IP search */
+    .ip-search-bar{ flex-direction:column; }
+    .ip-search-bar button{ width:100%; }
+
+    .ip-visit-item{ flex-wrap:wrap; gap:8px; }
+    .ip-visit-time{ width:100%; }
+    .ip-visit-url{ max-width:100%; }
+
+}
+
+/* Mobile pequeno: <= 480px */
+@media (max-width: 480px) {
+
+    .metrics-row{ grid-template-columns:1fr 1fr; gap:8px; }
+
+    .metric-card{ padding:12px; gap:8px; }
+    .metric-icon{ font-size:18px; }
+    .metric-value{ font-size:20px; }
+    .metric-label{ font-size:10px; }
+
+    .overview-rankings{ grid-template-columns:1fr; }
+
+    .nav-item{ font-size:11px; padding:4px 7px; }
+
+    .section-header h1{ font-size:18px; }
+
+}
