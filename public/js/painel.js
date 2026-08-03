@@ -162,24 +162,25 @@ async function carregarOverview() {
 
 // ===== Visitantes (agrupado por sessão) =====
 let currentSessionPage = 1;
-let allSessionsData = [];
+let allSessionsData    = [];
+let searchTimer        = null;
+let currentSearch      = null;
 
-async function carregarVisitantes(page = 1) {
+async function carregarVisitantes(page = 1, search = currentSearch) {
     currentSessionPage = page;
-    const range    = getCurrentRange();
-    const sessions = await getSessions(range, page, 20);
-
+    currentSearch      = search;
+    const range        = getCurrentRange();
+    const sessions     = await getSessions(range, page, 20, search);
     if (!sessions) return;
-
     allSessionsData = sessions.rows || [];
     renderSessions(allSessionsData);
     renderSessionsPagination(sessions);
 }
 
 function countryFlag(code) {
-    if (!code) return "🏳";
-    return code.toUpperCase().replace(/./g,
-        c => String.fromCodePoint(127397 + c.charCodeAt()));
+    if (!code) return `<img src="https://flagcdn.com/16x12/xx.png" alt="?" style="width:16px;height:12px;border-radius:2px;vertical-align:middle">`;
+    const lower = code.toLowerCase();
+    return `<img src="https://flagcdn.com/16x12/${lower}.png" alt="${code}" style="width:16px;height:12px;border-radius:2px;vertical-align:middle">`;
 }
 
 function formatDuration(seconds) {
@@ -196,6 +197,11 @@ function formatTime(iso) {
     });
 }
 
+function decodeUrl(url) {
+    if (!url) return "/";
+    try { return decodeURIComponent(url); } catch { return url; }
+}
+
 function renderSessions(sessions) {
     const list = document.getElementById("sessionsList");
 
@@ -205,25 +211,29 @@ function renderSessions(sessions) {
     }
 
     list.innerHTML = sessions.map((s, idx) => {
-        const pages   = s.pages || [];
-        const first   = pages[0];
-        const rest    = pages.slice(1);
-        const hasMore = rest.length > 0;
+        const pages    = s.pages || [];
+        const first    = pages[0];
+        const rest     = pages.slice(1);
+        const hasMore  = rest.length > 0;
 
-        const firstUrl = first?.url || "/";
-        const flag     = countryFlag(s.country_code);
-        const location = [s.city, s.region, s.country].filter(Boolean).join(", ") || "Desconhecido";
-        const entryDate= new Date(s.entry_time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
-        const entryTime= formatTime(s.entry_time);
-        const duration = formatDuration(s.duration_seconds);
+        const firstUrl     = first?.url || "/";
+        const firstUrlDec  = decodeUrl(firstUrl);
+        const flag         = countryFlag(s.country_code);
+        const location     = [s.city, s.region, s.country].filter(Boolean).join(", ") || "Desconhecido";
+        const entryDate    = new Date(s.entry_time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
+        const entryTime    = formatTime(s.entry_time);
+        const duration     = formatDuration(s.duration_seconds);
 
-        const restHtml = rest.map(p => `
-            <div class="session-page-item session-hidden" data-session="${idx}">
-                <span class="session-page-time">${formatTime(p.time)}</span>
-                <a href="${p.url || '/'}" target="_blank" rel="noopener"
-                   class="session-page-url" title="${p.url || '/'}">${p.url || "/"}</a>
-            </div>
-        `).join("");
+        const restHtml = rest.map(p => {
+            const urlDec = decodeUrl(p.url);
+            return `
+                <div class="session-page-item session-hidden" data-session="${idx}">
+                    <span class="session-page-time">${formatTime(p.time)}</span>
+                    <a href="${p.url || '/'}" target="_blank" rel="noopener"
+                       class="session-page-url" title="${urlDec}">${urlDec}</a>
+                </div>
+            `;
+        }).join("");
 
         return `
             <div class="session-card">
@@ -248,7 +258,7 @@ function renderSessions(sessions) {
                     <div class="session-page-item">
                         <span class="session-page-time">${entryTime}</span>
                         <a href="${firstUrl}" target="_blank" rel="noopener"
-                           class="session-page-url" title="${firstUrl}">${firstUrl}</a>
+                           class="session-page-url" title="${firstUrlDec}">${firstUrlDec}</a>
                     </div>
                     ${restHtml}
                     ${hasMore ? `
@@ -267,7 +277,6 @@ function renderSessions(sessions) {
             const idx      = btn.dataset.session;
             const expanded = btn.dataset.expanded === "true";
             const hidden   = list.querySelectorAll(`.session-hidden[data-session="${idx}"]`);
-
             hidden.forEach(el => el.classList.toggle("session-hidden", expanded));
             btn.dataset.expanded = !expanded;
             btn.textContent = expanded
@@ -459,40 +468,19 @@ async function buscarIP() {
     `;
 }
 
-// ===== Busca na sessão =====
+// ===== Busca na sessão (server-side com debounce) =====
 function initTableSearch() {
     document.getElementById("searchVisits")?.addEventListener("input", (e) => {
-        const termo = e.target.value.toLowerCase().trim();
-        if (!termo) { renderSessions(allSessionsData); return; }
-        const filtrados = allSessionsData.filter(s =>
-            [s.ip, s.country, s.city, s.region, s.browser, s.os, s.host]
-            .filter(Boolean)
-            .some(val => val.toString().toLowerCase().includes(termo))
-        );
-        renderSessions(filtrados);
+        const termo = e.target.value.trim();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            carregarVisitantes(1, termo || null);
+        }, 400);
     });
 }
 
 // ===== Seletor de site =====
-async function initSites() {
-    const sites = await getSites();
-    const sel   = document.getElementById("siteSelect");
-
-    sel.innerHTML = `<option value="all">Todos os sites</option>`;
-    sites.forEach(({ host, total }) => {
-        const opt = document.createElement("option");
-        opt.value = host;
-        opt.textContent = `${host} (${total})`;
-        sel.appendChild(opt);
-    });
-
-    if (sites.length <= 1) sel.closest(".topbar-right").querySelector(".site-select")?.classList.add("hidden");
-
-    sel.addEventListener("change", () => {
-        // getCurrentSite() já vai retornar o novo valor via siteFilter.js
-        carregarOverview();
-    });
-}
+// initSites removido — initSiteFilter (siteFilter.js) já popula e monitora o seletor
 
 // ===== Bootstrap =====
 document.addEventListener("DOMContentLoaded", async () => {
@@ -512,12 +500,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initNav();
     initFilters(() => {
+        currentSearch = null;
+        const searchInput = document.getElementById("searchVisits");
+        if (searchInput) searchInput.value = "";
         carregarOverview();
-        carregarVisitantes();
+        carregarVisitantes(1, null);
     });
     initSiteFilter(() => {
+        currentSearch = null;
+        const searchInput = document.getElementById("searchVisits");
+        if (searchInput) searchInput.value = "";
         carregarOverview();
-        carregarVisitantes();
+        carregarVisitantes(1, null);
     });
     initTableSearch();
     initIpSearch();

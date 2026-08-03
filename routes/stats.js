@@ -42,9 +42,9 @@ router.get("/hourly", async (req, res) => {
 
 router.get("/sessions", async (req, res) => {
     try {
-        const { range = "today", start, end, site, page = 1, limit = 20 } = req.query;
+        const { range = "today", start, end, site, page = 1, limit = 20, search } = req.query;
         const userId = req.userId || null;
-        res.json(await getSessions(range, start, end, site, userId, Number(page), Number(limit)));
+        res.json(await getSessions(range, start, end, site, userId, Number(page), Number(limit), search || null));
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });

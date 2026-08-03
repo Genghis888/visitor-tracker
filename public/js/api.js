@@ -77,7 +77,10 @@ export async function getSites() {
     return apiFetch("/api/sites");
 }
 
-export async function getSessions(range, page = 1, limit = 20) {
-    const query = buildQuery(range) + `&page=${page}&limit=${limit}`;
-    return apiFetch(`/api/stats/sessions?${query}`);
+export async function getSessions(range, page = 1, limit = 20, search = null) {
+    const params = new URLSearchParams(buildQuery(range));
+    params.set("page", page);
+    params.set("limit", limit);
+    if (search) params.set("search", search);
+    return apiFetch(`/api/stats/sessions?${params.toString()}`);
 }
