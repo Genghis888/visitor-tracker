@@ -2,7 +2,10 @@ import pool from "../db.js";
 import { getDateFilter } from "./dateFilter.js";
 import { getSiteFilter } from "./siteFilter.js";
 
-// Agrupa visitas por visitor_id dentro do período selecionado
+// Agrupa visitas de acordo com o modo escolhido:
+// - "visitor" → por visitor_id (padrão)
+// - "ip"      → por IP (todos os visitor_ids do mesmo IP viram 1 sessão)
+// - "ip_day"  → por IP + dia (mesmo IP em dias diferentes = sessões separadas)
 export async function getSessions(
     range = "today",
     start = null,
@@ -11,13 +14,13 @@ export async function getSessions(
     userId = null,
     page = 1,
     limit = 20,
-    search = null
+    search = null,
+    groupBy = "visitor"
 ) {
     const where     = getDateFilter(range, start, end);
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
 
-    // Filtro de busca server-side
     const searchWhere = search
         ? `AND (ip ILIKE '%${search.replace(/'/g, "''")}%'
               OR country ILIKE '%${search.replace(/'/g, "''")}%'
@@ -28,11 +31,28 @@ export async function getSessions(
               OR host ILIKE '%${search.replace(/'/g, "''")}%')`
         : "";
 
+    // Define o GROUP BY conforme o modo
+    let groupExpr, orderExpr;
+
+    if (groupBy === "ip") {
+        groupExpr = "ip";
+        orderExpr = "MIN(created_at) DESC";
+    } else if (groupBy === "ip_day") {
+        groupExpr = "ip, DATE(created_at AT TIME ZONE 'America/Sao_Paulo')";
+        orderExpr = "MIN(created_at) DESC";
+    } else if (groupBy === "ip_city") {
+        groupExpr = "ip, city";
+        orderExpr = "MIN(created_at) DESC";
+    } else {
+        groupExpr = "visitor_id";
+        orderExpr = "MIN(created_at) DESC";
+    }
+
     const offset = (page - 1) * limit;
 
     const result = await pool.query(`
         SELECT
-            visitor_id,
+            ${groupBy === "visitor" ? "visitor_id," : ""}
             MIN(ip) AS ip,
             MIN(country) AS country,
             MIN(country_code) AS country_code,
@@ -58,13 +78,13 @@ export async function getSessions(
           AND ${siteWhere}
           AND ${userWhere}
           ${searchWhere}
-        GROUP BY visitor_id
-        ORDER BY entry_time DESC
+        GROUP BY ${groupExpr}
+        ORDER BY ${orderExpr}
         LIMIT $1 OFFSET $2
     `, [limit, offset]);
 
     const countResult = await pool.query(`
-        SELECT COUNT(DISTINCT visitor_id)::INT AS total
+        SELECT COUNT(DISTINCT (${groupExpr}))::INT AS total
         FROM visits
         WHERE ${where}
           AND ${siteWhere}

@@ -423,6 +423,28 @@ body{
     border-color:rgba(255,152,0,.3);
 }
 
+.groupby-selector{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+    font-size:12px;
+    color:var(--text-soft);
+}
+
+.groupby-selector select{
+    background:rgba(255,255,255,.05);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:6px 10px;
+    font-size:12px;
+    font-family:inherit;
+    cursor:pointer;
+}
+
+.groupby-selector select:focus{ outline:none; border-color:var(--primary); }
+
 .upgrade-banner{
     background:rgba(37,99,235,.08);
     border:1px solid rgba(37,99,235,.2);

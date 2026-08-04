@@ -165,12 +165,14 @@ let currentSessionPage = 1;
 let allSessionsData    = [];
 let searchTimer        = null;
 let currentSearch      = null;
+let currentGroupBy     = "visitor";
 
-async function carregarVisitantes(page = 1, search = currentSearch) {
+async function carregarVisitantes(page = 1, search = currentSearch, groupBy = currentGroupBy) {
     currentSessionPage = page;
     currentSearch      = search;
+    currentGroupBy     = groupBy;
     const range        = getCurrentRange();
-    const sessions     = await getSessions(range, page, 20, search);
+    const sessions     = await getSessions(range, page, 20, search, groupBy);
     if (!sessions) return;
     allSessionsData = sessions.rows || [];
     renderSessions(allSessionsData);
@@ -515,6 +517,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     initTableSearch();
     initIpSearch();
+
+    // Seletor de agrupamento
+    document.getElementById("groupBySelect")?.addEventListener("change", (e) => {
+        currentGroupBy = e.target.value;
+        carregarVisitantes(1, currentSearch, currentGroupBy);
+    });
 
     await carregarOverview();
     await carregarVisitantes();

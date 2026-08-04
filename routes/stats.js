@@ -42,9 +42,11 @@ router.get("/hourly", async (req, res) => {
 
 router.get("/sessions", async (req, res) => {
     try {
-        const { range = "today", start, end, site, page = 1, limit = 20, search } = req.query;
+        const { range = "today", start, end, site, page = 1, limit = 20, search, groupBy = "visitor" } = req.query;
         const userId = req.userId || null;
-        res.json(await getSessions(range, start, end, site, userId, Number(page), Number(limit), search || null));
+        const validGroups = ["visitor", "ip", "ip_day", "ip_city"];
+        const group = validGroups.includes(groupBy) ? groupBy : "visitor";
+        res.json(await getSessions(range, start, end, site, userId, Number(page), Number(limit), search || null, group));
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
