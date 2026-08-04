@@ -37,11 +37,11 @@ export async function getSessions(
     if (groupBy === "ip") {
         groupExpr = "ip";
         orderExpr = "MIN(created_at) DESC";
-    } else if (groupBy === "ip_day") {
-        groupExpr = "ip, DATE(created_at AT TIME ZONE 'America/Sao_Paulo')";
-        orderExpr = "MIN(created_at) DESC";
-    } else if (groupBy === "ip_city") {
-        groupExpr = "ip, city";
+    } else if (groupBy === "day") {
+        groupExpr = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo')";
+        orderExpr = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo') DESC";
+    } else if (groupBy === "city") {
+        groupExpr = "city";
         orderExpr = "MIN(created_at) DESC";
     } else {
         groupExpr = "visitor_id";
@@ -53,6 +53,8 @@ export async function getSessions(
     const result = await pool.query(`
         SELECT
             ${groupBy === "visitor" ? "visitor_id," : ""}
+            ${groupBy === "day" ? "DATE(created_at AT TIME ZONE 'America/Sao_Paulo') AS group_day," : ""}
+            ${groupBy === "city" ? "city AS group_city," : ""}
             MIN(ip) AS ip,
             MIN(country) AS country,
             MIN(country_code) AS country_code,

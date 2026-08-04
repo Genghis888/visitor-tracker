@@ -226,10 +226,28 @@ function renderSessions(sessions) {
         const entryTime    = formatTime(s.entry_time);
         const duration     = formatDuration(s.duration_seconds);
 
+        // Linha de destaque (negrito) conforme modo de agrupamento
+        let headerTop;
+        if (currentGroupBy === "day") {
+            // Negrito = data completa do dia
+            const dayLabel = new Date(s.entry_time).toLocaleDateString("pt-BR", {
+                weekday: "short", day: "2-digit", month: "2-digit", year: "numeric"
+            });
+            headerTop = `<span class="session-ip">${dayLabel}</span>`;
+        } else if (currentGroupBy === "city") {
+            // Negrito = cidade
+            const cityLabel = [s.city, s.country].filter(Boolean).join(", ") || "Cidade desconhecida";
+            headerTop = `<span class="session-ip">${cityLabel}</span>`;
+        } else {
+            // visitor ou ip: negrito = IP, depois localização
+            headerTop = `<span class="session-ip">${s.ip || "?"}</span>
+                         <span class="session-location">— ${location}</span>`;
+        }
+
         const restHtml = rest.map(p => {
             const urlDec = decodeUrl(p.url);
             return `
-                <div class="session-page-item session-hidden" data-session="${idx}">
+                <div class="session-page-item session-collapsed" data-session="${idx}">
                     <span class="session-page-time">${formatTime(p.time)}</span>
                     <a href="${p.url || '/'}" target="_blank" rel="noopener"
                        class="session-page-url" title="${urlDec}">${urlDec}</a>
@@ -243,8 +261,7 @@ function renderSessions(sessions) {
                     <span class="session-flag">${flag}</span>
                     <div class="session-info">
                         <div class="session-top">
-                            <span class="session-ip">${s.ip || "?"}</span>
-                            <span class="session-location">— ${location}</span>
+                            ${headerTop}
                         </div>
                         <div class="session-meta">
                             <span>🌐 ${s.browser || "?"}</span>
@@ -273,18 +290,26 @@ function renderSessions(sessions) {
         `;
     }).join("");
 
-    // Handler expandir/recolher
+    // Handler expandir/recolher — usa session-collapsed (sem conflito com CSS externo)
     list.querySelectorAll(".session-expand-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const idx      = btn.dataset.session;
             const expanded = btn.dataset.expanded === "true";
-            const hidden   = list.querySelectorAll(`.session-hidden[data-session="${idx}"]`);
-            hidden.forEach(el => el.classList.toggle("session-hidden", expanded));
-            btn.dataset.expanded = !expanded;
+            const items    = list.querySelectorAll(`.session-collapsed[data-session="${idx}"]`);
+            items.forEach(el => {
+                el.style.display = expanded ? "none" : "";
+            });
+            btn.dataset.expanded = String(!expanded);
+            const count = items.length;
             btn.textContent = expanded
-                ? `＋ ver mais ${hidden.length} página${hidden.length !== 1 ? "s" : ""}`
+                ? `＋ ver mais ${count} página${count !== 1 ? "s" : ""}`
                 : `－ recolher`;
         });
+    });
+
+    // Estado inicial: páginas extras ocultas
+    list.querySelectorAll(".session-collapsed").forEach(el => {
+        el.style.display = "none";
     });
 }
 

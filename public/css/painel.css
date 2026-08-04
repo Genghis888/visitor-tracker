@@ -433,7 +433,7 @@ body{
 }
 
 .groupby-selector select{
-    background:rgba(255,255,255,.05);
+    background:#1e293b;
     color:var(--text);
     border:1px solid var(--border);
     border-radius:8px;
@@ -441,6 +441,11 @@ body{
     font-size:12px;
     font-family:inherit;
     cursor:pointer;
+}
+
+.groupby-selector select option{
+    background:#1e293b;
+    color:#f1f5f9;
 }
 
 .groupby-selector select:focus{ outline:none; border-color:var(--primary); }
@@ -643,6 +648,7 @@ tbody td:last-child{
 .session-expand-btn:hover{ color:#60a5fa; }
 
 .session-hidden{ display:none; }
+/* session-collapsed: estado inicial controlado via JS (display inline) */
 
 /* Paginação */
 #pagination{ margin-top:16px; }
