@@ -244,11 +244,14 @@ function renderSessions(sessions) {
                          <span class="session-location">— ${location}</span>`;
         }
 
+        const showIp = currentGroupBy === "day" || currentGroupBy === "city";
+
         const restHtml = rest.map(p => {
             const urlDec = decodeUrl(p.url);
             return `
                 <div class="session-page-item session-collapsed" data-session="${idx}">
                     <span class="session-page-time">${formatTime(p.time)}</span>
+                    ${showIp && s.ip ? `<span class="session-page-ip">${s.ip}</span>` : ""}
                     <a href="${p.url || '/'}" target="_blank" rel="noopener"
                        class="session-page-url" title="${urlDec}">${urlDec}</a>
                 </div>
@@ -276,6 +279,7 @@ function renderSessions(sessions) {
                 <div class="session-pages">
                     <div class="session-page-item">
                         <span class="session-page-time">${entryTime}</span>
+                        ${showIp && s.ip ? `<span class="session-page-ip">${s.ip}</span>` : ""}
                         <a href="${firstUrl}" target="_blank" rel="noopener"
                            class="session-page-url" title="${firstUrlDec}">${firstUrlDec}</a>
                     </div>

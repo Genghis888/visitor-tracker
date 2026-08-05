@@ -650,6 +650,15 @@ tbody td:last-child{
 .session-hidden{ display:none; }
 /* session-collapsed: estado inicial controlado via JS (display inline) */
 
+.session-page-ip{
+    font-size:12px;
+    font-weight:600;
+    color:var(--text);
+    margin-right:6px;
+    font-family:monospace;
+    flex-shrink:0;
+}
+
 /* Paginação */
 #pagination{ margin-top:16px; }
 
