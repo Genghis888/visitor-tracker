@@ -72,7 +72,8 @@ export async function getSessions(
                 JSON_BUILD_OBJECT(
                     'url', COALESCE(full_url, page, '/'),
                     'title', page_title,
-                    'time', created_at
+                    'time', created_at,
+                    'ip', ip
                 ) ORDER BY created_at
             ) AS pages
         FROM visits
