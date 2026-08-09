@@ -13,7 +13,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import healthRoutes from "./routes/health.js";
-import pool from "./db.js";
 import trackRoutes from "./routes/track.js";
 import geoRoutes from "./routes/geo.js";
 import statsRoutes from "./routes/stats.js";
@@ -77,9 +76,10 @@ app.use("/api/map",       requireApiAuth, mapRoutes);
 app.use("/api/sites",     requireApiAuth,    sitesRoutes);
 app.use("/api/admin",     requireSuperAdmin, adminRoutes);
 
-// Rota temporária sem auth — remover após uso
+// Rota utilitária protegida — preenche page_title via query_string
 app.get("/fix-titles", async (req, res) => {
-    if (req.query.secret !== "vt-fix-2026") {
+    const secret = process.env.FIX_SECRET;
+    if (!secret || req.query.secret !== secret) {
         return res.status(401).json({ error: "Não autorizado" });
     }
     try {
