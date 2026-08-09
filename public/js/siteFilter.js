@@ -18,13 +18,13 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
 
         select.innerHTML = `<option value="all">Todos os sites</option>`;
 
-        sites.forEach(({ host, total }) => {
+        sites.forEach((site) => {
 
             const option = document.createElement("option");
 
-            option.value = host;
+            option.value = site.domain || site.host || '';
 
-            option.textContent = `${host} (${total})`;
+            option.textContent = `${site.name || site.domain || site.host} (${site.total_visits ?? site.total ?? 0})`;
 
             select.appendChild(option);
 
