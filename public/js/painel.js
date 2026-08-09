@@ -248,12 +248,14 @@ function renderSessions(sessions) {
 
         const restHtml = rest.map(p => {
             const urlDec = decodeUrl(p.url);
+            const titleBadge = p.title ? `<span class="session-page-title">${p.title}</span>` : "";
             return `
                 <div class="session-page-item session-collapsed" data-session="${idx}">
                     <span class="session-page-time">${formatTime(p.time)}</span>
                     ${showIp && p.ip ? `<span class="session-page-ip">${p.ip}</span>` : ""}
                     <a href="${p.url || '/'}" target="_blank" rel="noopener"
                        class="session-page-url" title="${urlDec}">${urlDec}</a>
+                    ${titleBadge}
                 </div>
             `;
         }).join("");
@@ -282,6 +284,7 @@ function renderSessions(sessions) {
                         ${showIp && first?.ip ? `<span class="session-page-ip">${first.ip}</span>` : ""}
                         <a href="${firstUrl}" target="_blank" rel="noopener"
                            class="session-page-url" title="${firstUrlDec}">${firstUrlDec}</a>
+                        ${first?.title ? `<span class="session-page-title">${first.title}</span>` : ""}
                     </div>
                     ${restHtml}
                     ${hasMore ? `

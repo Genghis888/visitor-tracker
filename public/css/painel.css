@@ -562,13 +562,14 @@ tbody td:last-child{
 }
 
 .session-ip{
-    font-size:13px;
-    font-weight:600;
+    font-size:14px;
+    font-weight:700;
     color:var(--text);
 }
 
 .session-location{
-    font-size:13px;
+    font-size:14px;
+    font-weight:500;
     color:var(--text-soft);
 }
 
@@ -577,7 +578,8 @@ tbody td:last-child{
     align-items:center;
     gap:10px;
     flex-wrap:wrap;
-    font-size:12px;
+    font-size:13px;
+    font-weight:500;
     color:var(--text-soft);
 }
 
@@ -588,7 +590,8 @@ tbody td:last-child{
 }
 
 .session-time{
-    font-size:12px;
+    font-size:13px;
+    font-weight:500;
     color:var(--text-soft);
     white-space:nowrap;
     flex-shrink:0;
@@ -608,13 +611,14 @@ tbody td:last-child{
     gap:10px;
     padding:5px 0;
     border-bottom:1px solid rgba(255,255,255,.04);
-    font-size:12px;
+    font-size:13px;
 }
 
 .session-page-item:last-child{ border-bottom:none; }
 
 .session-page-time{
     color:var(--text-soft);
+    font-weight:500;
     white-space:nowrap;
     flex-shrink:0;
     width:50px;
@@ -622,6 +626,7 @@ tbody td:last-child{
 
 .session-page-url{
     color:#60a5fa;
+    font-weight:500;
     text-decoration:none;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -631,6 +636,19 @@ tbody td:last-child{
 
 .session-page-url:hover{ color:#93c5fd; text-decoration:underline; }
 
+.session-page-title{
+    font-size:11px;
+    font-weight:500;
+    color:#a78bfa;
+    background:rgba(167,139,250,.10);
+    border:1px solid rgba(167,139,250,.25);
+    border-radius:4px;
+    padding:1px 7px;
+    white-space:nowrap;
+    flex-shrink:0;
+    font-style:italic;
+}
+
 .session-expand-btn{
     display:flex;
     align-items:center;
@@ -639,7 +657,8 @@ tbody td:last-child{
     background:transparent;
     border:none;
     color:#f59e0b;
-    font-size:12px;
+    font-size:13px;
+    font-weight:500;
     cursor:pointer;
     padding:3px 0;
     font-family:inherit;
@@ -651,8 +670,8 @@ tbody td:last-child{
 /* session-collapsed: estado inicial controlado via JS (display inline) */
 
 .session-page-ip{
-    font-size:12px;
-    font-weight:600;
+    font-size:13px;
+    font-weight:700;
     color:var(--text);
     margin-right:6px;
     font-family:monospace;
