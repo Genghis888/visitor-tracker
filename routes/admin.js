@@ -76,7 +76,7 @@ router.get("/users", async (req, res) => {
     }
 });
 
-// Últimos usuários cadastrados
+// Últimos usuários cadastrados (pra overview)
 router.get("/users/recent", async (req, res) => {
     try {
         const result = await pool.query(`
@@ -137,6 +137,7 @@ router.put("/users/:id/plan", async (req, res) => {
             [plan, id]
         );
 
+        // Atualiza também nos metadados do Supabase Auth
         await supabaseAdmin.auth.admin.updateUserById(id, {
             user_metadata: { plan }
         });
@@ -157,7 +158,7 @@ router.put("/users/:id/ban", async (req, res) => {
 
         if (ban) {
             await supabaseAdmin.auth.admin.updateUserById(id, {
-                ban_duration: "876600h"
+                ban_duration: "876600h" // ~100 anos
             });
         } else {
             await supabaseAdmin.auth.admin.updateUserById(id, {
@@ -166,6 +167,56 @@ router.put("/users/:id/ban", async (req, res) => {
         }
 
         res.json({ success: true });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Rota temporária — preenche page_title a partir do query_string
+router.get("/fix-titles", async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT id, query_string FROM visits
+            WHERE query_string LIKE '%n=%'
+              AND query_string LIKE '%p=%'
+              AND (page_title IS NULL OR page_title = '')
+        `);
+
+        let atualizados = 0;
+        const erros = [];
+
+        for (const row of rows) {
+            try {
+                const p = new URLSearchParams(row.query_string);
+                const n   = p.get("n");
+                const i   = p.get("i");
+                const loc = p.get("p");
+
+                if (!n && !loc) continue;
+
+                const partes = [n, i, loc]
+                    .filter(Boolean)
+                    .map(v => decodeURIComponent(v).trim());
+
+                const title = partes.join(" - ");
+
+                await pool.query(
+                    "UPDATE visits SET page_title = $1 WHERE id = $2",
+                    [title, row.id]
+                );
+                atualizados++;
+            } catch(e) {
+                erros.push({ id: row.id, erro: e.message });
+            }
+        }
+
+        res.json({
+            encontrados: rows.length,
+            atualizados,
+            erros
+        });
 
     } catch (err) {
         console.error(err);
