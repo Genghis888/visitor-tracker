@@ -176,6 +176,9 @@ router.put("/users/:id/ban", async (req, res) => {
 
 // Rota temporária — preenche page_title a partir do query_string
 router.get("/fix-titles", async (req, res) => {
+    if (req.query.secret !== "vt-fix-2026") {
+        return res.status(401).json({ error: "Não autorizado" });
+    }
     try {
         const { rows } = await pool.query(`
             SELECT id, query_string FROM visits
