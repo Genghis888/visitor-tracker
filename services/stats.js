@@ -41,9 +41,9 @@ export async function getStats(range = "today", start = null, end = null, site =
             WHERE ${where} AND ${siteWhere} AND ${userWhere}
             GROUP BY device_type ORDER BY total DESC LIMIT 5`),
 
-        pool.query(`SELECT COALESCE(NULLIF(full_url,''), page, '/') AS page, COUNT(*) total FROM visits
+        pool.query(`SELECT page, COUNT(*) total FROM visits
             WHERE ${where} AND ${siteWhere} AND ${userWhere}
-            GROUP BY 1 ORDER BY total DESC LIMIT 5`)
+            GROUP BY page ORDER BY total DESC LIMIT 5`)
     ]);
 
     const todayCount     = Number(today.rows[0].total);
