@@ -568,7 +568,7 @@ tbody td:last-child{
 }
 
 .session-location{
-    font-size:12px;
+    font-size:13px;
     color:var(--text-soft);
 }
 
@@ -577,7 +577,7 @@ tbody td:last-child{
     align-items:center;
     gap:10px;
     flex-wrap:wrap;
-    font-size:11px;
+    font-size:12px;
     color:var(--text-soft);
 }
 
@@ -588,7 +588,7 @@ tbody td:last-child{
 }
 
 .session-time{
-    font-size:11px;
+    font-size:12px;
     color:var(--text-soft);
     white-space:nowrap;
     flex-shrink:0;
@@ -608,7 +608,7 @@ tbody td:last-child{
     gap:10px;
     padding:5px 0;
     border-bottom:1px solid rgba(255,255,255,.04);
-    font-size:11px;
+    font-size:12px;
 }
 
 .session-page-item:last-child{ border-bottom:none; }
@@ -638,14 +638,14 @@ tbody td:last-child{
     margin-top:6px;
     background:transparent;
     border:none;
-    color:var(--primary);
-    font-size:11px;
+    color:#f59e0b;
+    font-size:12px;
     cursor:pointer;
     padding:3px 0;
     font-family:inherit;
 }
 
-.session-expand-btn:hover{ color:#60a5fa; }
+.session-expand-btn:hover{ color:#fcd34d; }
 
 .session-hidden{ display:none; }
 /* session-collapsed: estado inicial controlado via JS (display inline) */
