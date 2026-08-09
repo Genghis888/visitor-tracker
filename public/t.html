@@ -10,15 +10,29 @@
 
     const params = new URLSearchParams(location.search);
 
-    const token       = params.get("token");
-    const host        = params.get("host");
-    const page        = params.get("page");
-    const full_url    = params.get("url");
-    const page_title  = params.get("title");
-    const referrer    = params.get("ref") || "";
-    const query_string= params.get("qs") || "";
-
+    const token = params.get("token");
     if (!token) return;
+
+    // Lê a URL da página pai via document.referrer
+    // (o browser preenche automaticamente com a URL de quem embutiu o iframe)
+    const parentUrl  = document.referrer || "";
+    let host         = params.get("host") || "";
+    let page         = params.get("page") || "";
+    let full_url     = params.get("url")  || "";
+    let page_title   = params.get("title") || "";
+    let referrer     = params.get("ref")  || "";
+    let query_string = params.get("qs")   || "";
+
+    // Se não vieram como parâmetro, extrai do referrer automaticamente
+    if (parentUrl) {
+        try {
+            const u = new URL(parentUrl);
+            if (!host)         host         = u.hostname;
+            if (!page)         page         = u.pathname;
+            if (!full_url)     full_url     = parentUrl;
+            if (!query_string) query_string = u.search;
+        } catch(e) {}
+    }
 
     const SERVER = location.origin;
 
@@ -36,11 +50,17 @@
     const visitor_id = getVisitorId();
 
     const payload = {
-        token, visitor_id,
+        token,
+        visitor_id,
         language:     navigator.language,
         resolution:   screen.width + "x" + screen.height,
         timezone:     Intl.DateTimeFormat().resolvedOptions().timeZone,
-        host, page, query_string, full_url, page_title, referrer
+        host,
+        page,
+        query_string,
+        full_url,
+        page_title,
+        referrer
     };
 
     try {

@@ -106,7 +106,7 @@ function gerarEmbed(site) {
 function gerarEmbedIframe(site) {
     const origem = location.origin;
     return `<!-- Visitor Tracker -->
-<iframe src="${origem}/t.html?token=${site.token}&host=${site.domain}&page=/&url=URL_DA_PAGINA&title=TITULO&ref=&qs="
+<iframe src="${origem}/t.html?token=${site.token}"
   style="display:none;width:0;height:0;border:0"
   referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 }
