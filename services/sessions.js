@@ -36,16 +36,16 @@ export async function getSessions(
 
     if (groupBy === "ip") {
         groupExpr = "ip";
-        orderExpr = "MIN(created_at) DESC";
+        orderExpr = "MAX(created_at) DESC";
     } else if (groupBy === "day") {
         groupExpr = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo')";
         orderExpr = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo') DESC";
     } else if (groupBy === "city") {
         groupExpr = "city";
-        orderExpr = "MIN(created_at) DESC";
+        orderExpr = "MAX(created_at) DESC";
     } else {
         groupExpr = "visitor_id";
-        orderExpr = "MIN(created_at) DESC";
+        orderExpr = "MAX(created_at) DESC";
     }
 
     const offset = (page - 1) * limit;
@@ -74,7 +74,7 @@ export async function getSessions(
                     'title', page_title,
                     'time', created_at,
                     'ip', ip
-                ) ORDER BY created_at
+                ) ORDER BY created_at DESC
             ) AS pages
         FROM visits
         WHERE ${where}

@@ -222,8 +222,9 @@ function renderSessions(sessions) {
         const firstUrlDec  = decodeUrl(firstUrl);
         const flag         = countryFlag(s.country_code);
         const location     = [s.city, s.region, s.country].filter(Boolean).join(", ") || "Desconhecido";
-        const entryDate    = new Date(s.entry_time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
+        const entryDate    = new Date(s.last_time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
         const entryTime    = formatTime(s.entry_time);
+        const lastTime     = formatTime(s.last_time);
         const duration     = formatDuration(s.duration_seconds);
 
         // Linha de destaque (negrito) conforme modo de agrupamento
@@ -276,7 +277,7 @@ function renderSessions(sessions) {
                             <span>🌍 ${s.host || ""}</span>
                         </div>
                     </div>
-                    <span class="session-time">${entryDate} ${entryTime}</span>
+                    <span class="session-time">${entryDate} ${lastTime}</span>
                 </div>
                 <div class="session-pages">
                     <div class="session-page-item">
