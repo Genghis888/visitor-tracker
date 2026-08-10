@@ -281,7 +281,7 @@ function renderSessions(sessions) {
                 </div>
                 <div class="session-pages">
                     <div class="session-page-item">
-                        <span class="session-page-time">${entryTime}</span>
+                        <span class="session-page-time">${formatTime(first?.time || s.entry_time)}</span>
                         ${showIp && first?.ip ? `<span class="session-page-ip">${first.ip}</span>` : ""}
                         <a href="${firstUrl}" target="_blank" rel="noopener"
                            class="session-page-url" title="${firstUrlDec}">${firstUrlDec}</a>
