@@ -13,6 +13,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import healthRoutes from "./routes/health.js";
+import pool from "./db.js";
 import trackRoutes from "./routes/track.js";
 import geoRoutes from "./routes/geo.js";
 import statsRoutes from "./routes/stats.js";
@@ -75,6 +76,51 @@ app.use("/api/countries", requireApiAuth, countriesRoutes);
 app.use("/api/map",       requireApiAuth, mapRoutes);
 app.use("/api/sites",     requireApiAuth,    sitesRoutes);
 app.use("/api/admin",     requireSuperAdmin, adminRoutes);
+
+// Rota utilitária — preenche geo de registros que ficaram nulos
+app.get("/fix-geo", async (req, res) => {
+    const secret = process.env.FIX_SECRET;
+    if (!secret || req.query.secret !== secret) {
+        return res.status(401).json({ error: "Não autorizado" });
+    }
+    try {
+        const { getLocation } = await import("./services/geo.js");
+        const { rows } = await pool.query(`
+            SELECT id, ip FROM visits
+            WHERE country IS NULL AND ip IS NOT NULL
+            LIMIT 500
+        `);
+
+        let atualizados = 0;
+        const erros = [];
+
+        for (const row of rows) {
+            try {
+                const loc = getLocation(row.ip);
+                if (!loc) continue;
+                await pool.query(`
+                    UPDATE visits SET
+                        country      = $1,
+                        country_code = $2,
+                        region       = $3,
+                        city         = $4,
+                        latitude     = $5,
+                        longitude    = $6,
+                        geo_timezone = $7
+                    WHERE id = $8
+                `, [loc.country, loc.countryCode, loc.region, loc.city,
+                    loc.latitude, loc.longitude, loc.timezone, row.id]);
+                atualizados++;
+            } catch(e) {
+                erros.push({ id: row.id, erro: e.message });
+            }
+        }
+
+        res.json({ encontrados: rows.length, atualizados, erros });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // Rota utilitária protegida — preenche page_title via query_string
 app.get("/fix-titles", async (req, res) => {
