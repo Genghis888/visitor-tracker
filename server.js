@@ -84,7 +84,7 @@ app.get("/fix-geo", async (req, res) => {
         return res.status(401).json({ error: "Não autorizado" });
     }
     try {
-        const { getLocation } = await import("./services/geo.js");
+        const { getLocation, getLocationFallback } = await import("./services/geo.js");
         const { rows } = await pool.query(`
             SELECT id, ip FROM visits
             WHERE country IS NULL AND ip IS NOT NULL
@@ -96,7 +96,7 @@ app.get("/fix-geo", async (req, res) => {
 
         for (const row of rows) {
             try {
-                const loc = getLocation(row.ip);
+                const loc = getLocation(row.ip) || await getLocationFallback(row.ip);
                 if (!loc) continue;
                 await pool.query(`
                     UPDATE visits SET

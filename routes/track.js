@@ -1,6 +1,6 @@
 import express from "express";
 import { UAParser } from "ua-parser-js";
-import { getLocation } from "../services/geo.js";
+import { getLocation, getLocationFallback } from "../services/geo.js";
 import { insert } from "../services/database.js";
 import { normalizeIP } from "../services/ip.js";
 import { canRegister } from "../services/flood.js";
@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
             req.socket.remoteAddress
         );
 
-        const location = getLocation(ip);
+        const location = getLocation(ip) || await getLocationFallback(ip);
         const ua = new UAParser(req.headers["user-agent"]).getResult();
         const visitor_type = detectVisitorType(req.headers["user-agent"]);
 
