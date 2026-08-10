@@ -642,11 +642,11 @@ tbody td:last-child{
 .session-page-url:hover{ color:#93c5fd; text-decoration:underline; }
 
 .session-page-title{
-    font-size:11px;
-    font-weight:500;
-    color:#a78bfa;
-    background:rgba(167,139,250,.10);
-    border:1px solid rgba(167,139,250,.25);
+    font-size:13px;
+    font-weight:600;
+    color:#fffb50;
+    background:rgba(255,251,80,.08);
+    border:1px solid rgba(255,251,80,.30);
     border-radius:4px;
     padding:1px 7px;
     white-space:nowrap;
