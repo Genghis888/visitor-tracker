@@ -442,6 +442,42 @@ async function carregarRealtime() {
     document.getElementById("realtimeCountries").textContent = stats.countries ?? 0;
     document.getElementById("realtimeUnique").textContent    = stats.unique ?? 0;
 
+    // Top cidades e países a partir das visitas
+    const allVisits = await getVisits("today", 1, 200);
+    const rows = allVisits.rows || [];
+
+    const cityCount = {};
+    const countryCount = {};
+    rows.forEach(v => {
+        if (v.city)    cityCount[v.city]       = (cityCount[v.city] || 0) + 1;
+        if (v.country) countryCount[v.country] = (countryCount[v.country] || 0) + 1;
+    });
+
+    const topCities   = Object.entries(cityCount).sort((a,b) => b[1]-a[1]).slice(0,3);
+    const topCountries = Object.entries(countryCount).sort((a,b) => b[1]-a[1]).slice(0,3);
+
+    const breakdown = document.getElementById("realtimeBreakdown");
+    breakdown.innerHTML = `
+        ${topCountries.length ? `
+            <div class="breakdown-title">🌍 Países</div>
+            ${topCountries.map(([name, count]) => `
+                <div class="breakdown-item">
+                    <span class="breakdown-name">${name}</span>
+                    <span class="breakdown-count">${count}</span>
+                </div>
+            `).join("")}
+        ` : ""}
+        ${topCities.length ? `
+            <div class="breakdown-title" style="margin-top:10px">📍 Cidades</div>
+            ${topCities.map(([name, count]) => `
+                <div class="breakdown-item">
+                    <span class="breakdown-name">${name}</span>
+                    <span class="breakdown-count">${count}</span>
+                </div>
+            `).join("")}
+        ` : ""}
+    `;
+
     const feed = document.getElementById("realtimeFeed");
     feed.innerHTML = visits.rows.map(v => {
         const ago      = timeSince(new Date(v.created_at));

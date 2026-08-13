@@ -19,7 +19,7 @@ export async function getStats(range = "today", start = null, end = null, site =
                 = DATE(NOW() AT TIME ZONE 'America/Sao_Paulo') - 1
             AND ${siteWhere} AND ${userWhere}`),
 
-        pool.query(`SELECT COUNT(DISTINCT visitor_id) total FROM visits
+        pool.query(`SELECT COUNT(DISTINCT ip) total FROM visits
             WHERE ${where} AND ${siteWhere} AND ${userWhere}`),
 
         pool.query(`SELECT COUNT(DISTINCT country) total FROM visits
