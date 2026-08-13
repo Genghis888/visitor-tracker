@@ -344,6 +344,35 @@ body{
     color:var(--text-soft);
 }
 
+.realtime-stats{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:20px;
+    border-top:1px solid var(--border);
+    padding-top:16px;
+}
+
+.realtime-stat{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 10px;
+    background:rgba(255,255,255,.04);
+    border-radius:8px;
+}
+
+.realtime-stat-value{
+    font-size:18px;
+    font-weight:700;
+    color:var(--text);
+}
+
+.realtime-stat-label{
+    font-size:12px;
+    color:var(--text-soft);
+}
+
 .realtime-feed{
     display:flex;
     flex-direction:column;
@@ -354,7 +383,7 @@ body{
 
 .feed-item{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     gap:12px;
     padding:10px 14px;
     background:rgba(255,255,255,.04);
@@ -366,10 +395,62 @@ body{
 
 @keyframes fadeIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:none; } }
 
-.feed-flag{ font-size:18px; }
-.feed-info{ flex:1; }
-.feed-url{ color:var(--text-soft); font-size:12px; }
-.feed-time{ font-size:11px; color:var(--text-soft); white-space:nowrap; }
+.feed-flag{ font-size:18px; flex-shrink:0; margin-top:2px; }
+
+.feed-info{ flex:1; min-width:0; }
+
+.feed-top{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:3px;
+    flex-wrap:wrap;
+}
+
+.feed-ip{
+    font-weight:700;
+    color:var(--text);
+    font-size:13px;
+}
+
+.feed-location{
+    font-size:12px;
+    color:var(--text-soft);
+}
+
+.feed-bottom{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.feed-url{
+    color:#60a5fa;
+    font-size:12px;
+    text-decoration:none;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    flex:1;
+}
+
+.feed-url:hover{ color:#93c5fd; text-decoration:underline; }
+
+.feed-badge{
+    font-size:11px;
+    font-weight:600;
+    color:#fffb50;
+    background:rgba(255,251,80,.08);
+    border:1px solid rgba(255,251,80,.30);
+    border-radius:4px;
+    padding:1px 7px;
+    white-space:nowrap;
+    flex-shrink:0;
+    font-style:italic;
+}
+
+.feed-time{ font-size:11px; color:var(--text-soft); white-space:nowrap; flex-shrink:0; }
 
 /* ===== RANKINGS ===== */
 .rankings-grid{

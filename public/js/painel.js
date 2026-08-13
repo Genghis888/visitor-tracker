@@ -437,17 +437,31 @@ async function carregarRealtime() {
     const stats  = await getStats("today");
     const visits = await getVisits("today", 1, 20);
 
-    document.getElementById("realtimeCount").textContent = stats.online ?? 0;
+    document.getElementById("realtimeCount").textContent     = stats.online ?? 0;
+    document.getElementById("realtimeToday").textContent     = stats.today ?? 0;
+    document.getElementById("realtimeCountries").textContent = stats.countries ?? 0;
+    document.getElementById("realtimeUnique").textContent    = stats.unique ?? 0;
 
     const feed = document.getElementById("realtimeFeed");
     feed.innerHTML = visits.rows.map(v => {
-        const ago = timeSince(new Date(v.created_at));
+        const ago      = timeSince(new Date(v.created_at));
+        const location = [v.city, v.region, v.country].filter(Boolean).join(", ") || "Desconhecido";
+        const url      = v.full_url || v.page || "/";
+        const badge    = v.page_title
+            ? `<span class="feed-badge">${v.page_title}</span>`
+            : "";
         return `
             <div class="feed-item">
                 <span class="feed-flag">${countryFlag(v.country_code)}</span>
                 <div class="feed-info">
-                    <div>${v.city || v.country || "Desconhecido"} · ${v.browser || "?"}</div>
-                    <div class="feed-url">${v.full_url || v.page || "/"}</div>
+                    <div class="feed-top">
+                        <span class="feed-ip">${v.ip || "?"}</span>
+                        <span class="feed-location">— ${location} · ${v.browser || "?"}</span>
+                    </div>
+                    <div class="feed-bottom">
+                        <a href="${url}" target="_blank" rel="noopener" class="feed-url" title="${url}">${url}</a>
+                        ${badge}
+                    </div>
                 </div>
                 <span class="feed-time">${ago}</span>
             </div>
