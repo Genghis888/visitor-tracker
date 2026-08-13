@@ -319,9 +319,47 @@ body{
 }
 
 /* ===== TEMPO REAL ===== */
+.realtime-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:16px;
+}
+
+.realtime-title-group h1{ font-size:22px; font-weight:700; }
+.realtime-title-group p{ font-size:13px; color:var(--text-soft); margin-top:4px; }
+
+.realtime-stats-inline{
+    display:flex;
+    gap:12px;
+}
+
+.realtime-stat-inline{
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 20px;
+    text-align:center;
+    min-width:90px;
+}
+
+.realtime-stat-inline .realtime-stat-value{
+    font-size:22px;
+    font-weight:700;
+    color:var(--text);
+}
+
+.realtime-stat-inline .realtime-stat-label{
+    font-size:11px;
+    color:var(--text-soft);
+    margin-top:2px;
+}
+
 .realtime-grid{
     display:flex;
-    gap:18px;
+    gap:16px;
     align-items:flex-start;
 }
 
@@ -341,35 +379,6 @@ body{
 
 .realtime-label{
     font-size:13px;
-    color:var(--text-soft);
-}
-
-.realtime-stats{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    margin-top:20px;
-    border-top:1px solid var(--border);
-    padding-top:16px;
-}
-
-.realtime-stat{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:6px 10px;
-    background:rgba(255,255,255,.04);
-    border-radius:8px;
-}
-
-.realtime-stat-value{
-    font-size:18px;
-    font-weight:700;
-    color:var(--text);
-}
-
-.realtime-stat-label{
-    font-size:12px;
     color:var(--text-soft);
 }
 
@@ -455,6 +464,8 @@ body{
     border-top:1px solid var(--border);
     padding-top:14px;
     text-align:left;
+    max-height:350px;
+    overflow-y:auto;
 }
 
 .breakdown-title{

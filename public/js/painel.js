@@ -33,6 +33,15 @@ function initNav() {
         if (targetNav) targetNav.classList.add("active");
         if (targetSec) targetSec.classList.remove("hidden");
 
+        // Oculta controles na aba Tempo Real
+        const controls = document.querySelector(".site-filter-wrapper");
+        const filters  = document.querySelector(".period-filters");
+        const refresh  = document.getElementById("refresh");
+        const isRT     = sectionId === "realtime";
+        if (controls) controls.style.display = isRT ? "none" : "";
+        if (filters)  filters.style.display  = isRT ? "none" : "";
+        if (refresh)  refresh.style.display  = isRT ? "none" : "";
+
         // Inicializa mapa quando a seção ficar visível
         if (sectionId === "mapa" && !mapFull) initMapFull();
         if (sectionId === "paises" && !mapPaises) initMapPaises();
@@ -446,21 +455,33 @@ async function carregarRealtime() {
     const allVisits = await getVisits("today", 1, 200);
     const rows = allVisits.rows || [];
 
-    const cityCount = {};
+    const cityCount    = {};
     const countryCount = {};
+    const regionCount  = {};
     rows.forEach(v => {
         if (v.city)    cityCount[v.city]       = (cityCount[v.city] || 0) + 1;
         if (v.country) countryCount[v.country] = (countryCount[v.country] || 0) + 1;
+        if (v.region)  regionCount[v.region]   = (regionCount[v.region] || 0) + 1;
     });
 
-    const topCities   = Object.entries(cityCount).sort((a,b) => b[1]-a[1]).slice(0,3);
-    const topCountries = Object.entries(countryCount).sort((a,b) => b[1]-a[1]).slice(0,3);
+    const topCities    = Object.entries(cityCount).sort((a,b) => b[1]-a[1]).slice(0,5);
+    const topCountries = Object.entries(countryCount).sort((a,b) => b[1]-a[1]).slice(0,5);
+    const topRegions   = Object.entries(regionCount).sort((a,b) => b[1]-a[1]).slice(0,5);
 
     const breakdown = document.getElementById("realtimeBreakdown");
     breakdown.innerHTML = `
         ${topCountries.length ? `
             <div class="breakdown-title">🌍 Países</div>
             ${topCountries.map(([name, count]) => `
+                <div class="breakdown-item">
+                    <span class="breakdown-name">${name}</span>
+                    <span class="breakdown-count">${count}</span>
+                </div>
+            `).join("")}
+        ` : ""}
+        ${topRegions.length ? `
+            <div class="breakdown-title" style="margin-top:10px">🗺️ Regiões</div>
+            ${topRegions.map(([name, count]) => `
                 <div class="breakdown-item">
                     <span class="breakdown-name">${name}</span>
                     <span class="breakdown-count">${count}</span>

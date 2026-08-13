@@ -143,29 +143,31 @@
 
     <!-- TEMPO REAL -->
     <section id="section-realtime" class="section hidden">
-        <div class="section-header">
-            <h1>🟢 Visitantes em Tempo Real</h1>
-            <p>Atualiza a cada 10 segundos</p>
+        <div class="realtime-header">
+            <div class="realtime-title-group">
+                <h1>🟢 Visitantes em Tempo Real</h1>
+                <p>Atualiza a cada 10 segundos</p>
+            </div>
+            <div class="realtime-stats-inline">
+                <div class="realtime-stat-inline">
+                    <div class="realtime-stat-value" id="realtimeToday">0</div>
+                    <div class="realtime-stat-label">visitas hoje</div>
+                </div>
+                <div class="realtime-stat-inline">
+                    <div class="realtime-stat-value" id="realtimeCountries">0</div>
+                    <div class="realtime-stat-label">países</div>
+                </div>
+                <div class="realtime-stat-inline">
+                    <div class="realtime-stat-value" id="realtimeUnique">0</div>
+                    <div class="realtime-stat-label">únicos por IP</div>
+                </div>
+            </div>
         </div>
 
         <div class="realtime-grid">
             <div class="panel realtime-counter">
                 <div class="realtime-number" id="realtimeCount">0</div>
-                <div class="realtime-label">visitantes online agora</div>
-                <div class="realtime-stats">
-                    <div class="realtime-stat">
-                        <div class="realtime-stat-value" id="realtimeToday">0</div>
-                        <div class="realtime-stat-label">visitas hoje</div>
-                    </div>
-                    <div class="realtime-stat">
-                        <div class="realtime-stat-value" id="realtimeCountries">0</div>
-                        <div class="realtime-stat-label">países</div>
-                    </div>
-                    <div class="realtime-stat">
-                        <div class="realtime-stat-value" id="realtimeUnique">0</div>
-                        <div class="realtime-stat-label">únicos por IP</div>
-                    </div>
-                </div>
+                <div class="realtime-label">online agora</div>
                 <div class="realtime-breakdown" id="realtimeBreakdown"></div>
             </div>
 
