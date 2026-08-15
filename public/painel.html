@@ -68,34 +68,52 @@
     <!-- OVERVIEW -->
     <section id="section-overview" class="section active">
 
-        <div class="metrics-row">
-            <div class="metric-card">
-                <div class="metric-icon">👥</div>
-                <div class="metric-body">
-                    <div class="metric-label">Visitas hoje</div>
-                    <div class="metric-value" id="today">0</div>
-                    <div id="todayVariation"></div>
+        <div class="overview-header">
+            <div class="overview-controls">
+                <select id="siteSelectOverview" class="site-select site-select-inline"></select>
+                <div class="period-filters period-filters-inline">
+                    <button class="filter active" data-range="today">Hoje</button>
+                    <button class="filter" data-range="7">7d</button>
+                    <button class="filter" data-range="30">30d</button>
+                    <button class="filter" data-range="custom">⚙</button>
                 </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon">👤</div>
-                <div class="metric-body">
-                    <div class="metric-label">Visitantes únicos</div>
-                    <div class="metric-value" id="unique">0</div>
+                <div id="customRangeOverview" class="custom-range hidden">
+                    <input type="date" id="dateStartOverview">
+                    <span>até</span>
+                    <input type="date" id="dateEndOverview">
+                    <button id="applyRangeOverview">OK</button>
                 </div>
+                <button id="refreshOverview" class="btn-icon" title="Atualizar">↺</button>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon">🌍</div>
-                <div class="metric-body">
-                    <div class="metric-label">Países</div>
-                    <div class="metric-value" id="countries">0</div>
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-icon">👥</div>
+                    <div class="metric-body">
+                        <div class="metric-label">Visitas hoje</div>
+                        <div class="metric-value" id="today">0</div>
+                        <div id="todayVariation"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="metric-card pulse-card">
-                <div class="metric-icon">🟢</div>
-                <div class="metric-body">
-                    <div class="metric-label">Online agora</div>
-                    <div class="metric-value" id="online">0</div>
+                <div class="metric-card">
+                    <div class="metric-icon">👤</div>
+                    <div class="metric-body">
+                        <div class="metric-label">Visitantes únicos</div>
+                        <div class="metric-value" id="unique">0</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🌍</div>
+                    <div class="metric-body">
+                        <div class="metric-label">Países</div>
+                        <div class="metric-value" id="countries">0</div>
+                    </div>
+                </div>
+                <div class="metric-card pulse-card">
+                    <div class="metric-icon">🟢</div>
+                    <div class="metric-body">
+                        <div class="metric-label">Online agora</div>
+                        <div class="metric-value" id="online">0</div>
+                    </div>
                 </div>
             </div>
         </div>

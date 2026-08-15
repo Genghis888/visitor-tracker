@@ -33,11 +33,10 @@ function initNav() {
         if (targetNav) targetNav.classList.add("active");
         if (targetSec) targetSec.classList.remove("hidden");
 
-        // Oculta controles na aba Tempo Real e Visitantes
+        // Oculta controles da topbar nas abas com controles próprios
         const controls = document.getElementById("topbarControls");
-        const isRT     = sectionId === "realtime";
-        const isVis    = sectionId === "visitantes";
-        if (controls) controls.style.display = (isRT || isVis) ? "none" : "";
+        const hiddenSections = ["realtime", "visitantes", "overview"];
+        if (controls) controls.style.display = hiddenSections.includes(sectionId) ? "none" : "";
 
         // Inicializa mapa quando a seção ficar visível
         if (sectionId === "mapa" && !mapFull) initMapFull();
@@ -620,6 +619,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         carregarOverview();
         carregarVisitantes(1, null);
     });
+
+    // Seletor de sites da aba Overview
+    initSiteFilter(() => {
+        carregarOverview();
+    }, "siteSelectOverview");
+
+    // Refresh da aba Overview
+    document.getElementById("refreshOverview")?.addEventListener("click", () => {
+        carregarOverview();
+    });
+
     initSiteFilter(() => {
         currentSearch = null;
         const searchInput = document.getElementById("searchVisits");
