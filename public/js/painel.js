@@ -72,6 +72,11 @@ function initNav() {
     // Suporte à URL hash
     const hash = location.hash.replace("#", "");
     if (hash) goTo(hash);
+    else {
+        // Overview é a seção inicial — oculta controles da topbar
+        const controls = document.getElementById("topbarControls");
+        if (controls) controls.style.display = "none";
+    }
 }
 
 // ===== Inicialização de mapas =====
