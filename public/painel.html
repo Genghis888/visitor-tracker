@@ -392,9 +392,9 @@
 
     <!-- POR IP -->
     <section id="section-porip" class="section hidden">
-        <div class="section-header-new">
-            <h1>🔍 Por IP</h1>
-            <div class="section-controls">
+        <div class="porip-header">
+            <div class="porip-header-left">
+                <h1>🔍 Por IP</h1>
                 <div class="period-filters period-filters-inline">
                     <button class="filter active" data-range="today">Hoje</button>
                     <button class="filter" data-range="7">7d</button>
@@ -408,9 +408,9 @@
                     <button id="applyRangePorIP">OK</button>
                 </div>
                 <button id="refreshPorIP" class="btn-icon" title="Atualizar">↺</button>
-                <input type="text" id="ipFilterInput" class="ip-header-search"
-                    placeholder="🔍 Filtrar por IP, país, cidade, URL...">
             </div>
+            <input type="text" id="ipFilterInput" class="ip-header-search"
+                placeholder="🔍 Filtrar por IP, país, cidade, URL...">
         </div>
         <div class="panel" style="padding:0;overflow:hidden;">
             <div class="ip-table-toolbar">

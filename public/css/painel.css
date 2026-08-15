@@ -989,10 +989,29 @@ tbody td:last-child{
 }
 
 /* ===== POR IP ===== */
+.porip-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:8px;
+}
+
+.porip-header-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-shrink:0;
+}
+
+.porip-header-left h1{
+    font-size:22px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
 .ip-header-search{
-    flex:1;
-    min-width:300px;
-    max-width:500px;
+    width:420px;
     background:#1e293b;
     color:var(--text);
     border:1px solid var(--border);
@@ -1001,7 +1020,6 @@ tbody td:last-child{
     font-size:13px;
     font-family:inherit;
     outline:none;
-    margin-left:auto;
 }
 
 .ip-header-search:focus{ border-color:var(--primary); }
