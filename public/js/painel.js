@@ -33,10 +33,11 @@ function initNav() {
         if (targetNav) targetNav.classList.add("active");
         if (targetSec) targetSec.classList.remove("hidden");
 
-        // Oculta controles na aba Tempo Real
+        // Oculta controles na aba Tempo Real e Visitantes
         const controls = document.getElementById("topbarControls");
         const isRT     = sectionId === "realtime";
-        if (controls) controls.style.display = isRT ? "none" : "";
+        const isVis    = sectionId === "visitantes";
+        if (controls) controls.style.display = (isRT || isVis) ? "none" : "";
 
         // Inicializa mapa quando a seção ficar visível
         if (sectionId === "mapa" && !mapFull) initMapFull();

@@ -227,6 +227,24 @@ body{
     min-width:0;
 }
 
+.visitantes-controls #searchVisits,
+.search-input-visitantes{
+    flex:1;
+    min-width:120px;
+    background:#1e293b;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:6px 12px;
+    font-size:13px;
+    font-family:inherit;
+    outline:none;
+}
+
+.search-input-visitantes:focus{
+    border-color:var(--primary);
+}
+
 .site-select-inline{
     max-width:130px;
     padding:6px 8px;
