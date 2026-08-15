@@ -626,6 +626,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         carregarOverview();
         carregarVisitantes(1, null);
     });
+
+    // Seletor de sites da aba Visitantes (independente)
+    initSiteFilter(() => {
+        currentSearch = null;
+        const searchInput = document.getElementById("searchVisits");
+        if (searchInput) searchInput.value = "";
+        carregarVisitantes(1, null);
+    }, "siteSelectVisitantes");
+
+    // Refresh da aba Visitantes
+    document.getElementById("refreshVisitantes")?.addEventListener("click", () => {
+        carregarVisitantes(1, currentSearch);
+    });
     initTableSearch();
     initIpSearch();
 

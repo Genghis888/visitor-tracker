@@ -203,8 +203,8 @@ body{
 .visitantes-header{
     display:flex;
     align-items:center;
-    gap:16px;
-    flex-wrap:wrap;
+    gap:12px;
+    flex-wrap:nowrap;
     margin-bottom:8px;
 }
 
@@ -217,9 +217,30 @@ body{
 .visitantes-controls{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:8px;
     flex:1;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
+}
+
+.visitantes-controls #searchVisits{
+    flex:1;
+    min-width:0;
+}
+
+.site-select-inline{
+    max-width:130px;
+    padding:6px 8px;
+    font-size:12px;
+}
+
+.period-filters-inline{
+    display:flex;
+    gap:3px;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:3px;
+    flex-shrink:0;
 }
 
 .visitantes-stats{

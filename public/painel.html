@@ -219,8 +219,15 @@
         <div class="visitantes-header">
             <h1>👥 Visitantes</h1>
             <div class="visitantes-controls">
+                <select id="siteSelectVisitantes" class="site-select site-select-inline"></select>
+                <div class="period-filters period-filters-inline">
+                    <button class="filter active" data-range="today">Hoje</button>
+                    <button class="filter" data-range="7">7d</button>
+                    <button class="filter" data-range="30">30d</button>
+                </div>
+                <button id="refreshVisitantes" class="btn-icon" title="Atualizar">↺</button>
                 <input type="text" id="searchVisits"
-                    placeholder="🔍 Pesquisar por IP, país, cidade...">
+                    placeholder="🔍 Filtrar por IP, país, cidade...">
                 <div class="groupby-selector">
                     <label>Agrupar por</label>
                     <select id="groupBySelect">
@@ -230,9 +237,6 @@
                         <option value="city">Cidade</option>
                     </select>
                 </div>
-                <button id="exportCsvBtn" class="btn-export" title="Exportar CSV">
-                    ⬇️ Exportar CSV
-                </button>
             </div>
             <div class="visitantes-stats">
                 <div class="realtime-stat-inline">
