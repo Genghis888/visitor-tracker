@@ -989,9 +989,10 @@ tbody td:last-child{
 }
 
 /* ===== POR IP ===== */
-.ip-table-search{
+.ip-header-search{
     flex:1;
-    max-width:400px;
+    min-width:200px;
+    max-width:380px;
     background:#1e293b;
     color:var(--text);
     border:1px solid var(--border);
@@ -1000,9 +1001,10 @@ tbody td:last-child{
     font-size:13px;
     font-family:inherit;
     outline:none;
+    margin-left:auto;
 }
 
-.ip-table-search:focus{ border-color:var(--primary); }
+.ip-header-search:focus{ border-color:var(--primary); }
     padding:10px 16px;
     border-bottom:1px solid var(--border);
     display:flex;
