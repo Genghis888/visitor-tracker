@@ -991,8 +991,8 @@ tbody td:last-child{
 /* ===== POR IP ===== */
 .ip-header-search{
     flex:1;
-    min-width:200px;
-    max-width:380px;
+    min-width:300px;
+    max-width:500px;
     background:#1e293b;
     color:var(--text);
     border:1px solid var(--border);
@@ -1018,6 +1018,7 @@ tbody td:last-child{
     color:var(--text-soft);
     font-weight:500;
     white-space:nowrap;
+    padding-left:6px;
 }
 
 .ip-table-wrapper{
