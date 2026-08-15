@@ -51,6 +51,7 @@ function initNav() {
         if (sectionId === "paginas") carregarPaginas();
         if (sectionId === "paises")  carregarPaises();
         if (sectionId === "relatorios") carregarRelatorios();
+        if (sectionId === "porip") carregarTabelaIP();
     }
 
     navItems.forEach(item => {
@@ -546,44 +547,83 @@ function timeSince(date) {
 }
 
 // ===== Busca por IP =====
-function initIpSearch() {
-    document.getElementById("searchIpBtn").addEventListener("click", buscarIP);
-    document.getElementById("ipInput").addEventListener("keydown", e => {
-        if (e.key === "Enter") buscarIP();
+let ipTableData = [];
+
+async function carregarTabelaIP() {
+    const range  = getCurrentRange();
+    const visits = await getVisits(range, 1, 500);
+    if (!visits) return;
+
+    // Agrupa por IP
+    const byIp = {};
+    visits.rows.forEach(v => {
+        if (!v.ip) return;
+        if (!byIp[v.ip]) {
+            byIp[v.ip] = {
+                ip:          v.ip,
+                country:     v.country || "",
+                country_code:v.country_code || "",
+                city:        v.city || "",
+                region:      v.region || "",
+                browser:     v.browser || "",
+                os:          v.os || "",
+                visits:      0,
+                last_seen:   v.created_at,
+                last_url:    v.full_url || v.page || "/"
+            };
+        }
+        byIp[v.ip].visits++;
+        if (v.created_at > byIp[v.ip].last_seen) {
+            byIp[v.ip].last_seen = v.created_at;
+            byIp[v.ip].last_url  = v.full_url || v.page || "/";
+        }
     });
+
+    ipTableData = Object.values(byIp).sort((a,b) => b.visits - a.visits);
+    renderTabelaIP(ipTableData);
 }
 
-async function buscarIP() {
-    const ip  = document.getElementById("ipInput").value.trim();
-    const box = document.getElementById("ipResult");
+function renderTabelaIP(data) {
+    const tbody = document.getElementById("ipTableBody");
+    if (!tbody) return;
 
-    if (!ip) return;
-
-    box.classList.remove("hidden");
-    box.innerHTML = "<p style='color:var(--text-soft)'>Buscando...</p>";
-
-    const visits = await getVisits("30", 1, 100);
-    const found  = visits.rows.filter(v => v.ip === ip);
-
-    if (!found.length) {
-        box.innerHTML = `<p style='color:var(--text-soft)'>Nenhum registro encontrado para <b>${ip}</b> nos últimos 30 dias.</p>`;
+    if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="9" class="ip-table-empty">Nenhum registro encontrado.</td></tr>`;
         return;
     }
 
-    box.innerHTML = `
-        <p style="font-size:13px;color:var(--text-soft);margin-bottom:12px">
-            ${found.length} visita${found.length !== 1 ? "s" : ""} de <b>${ip}</b>
-        </p>
-        ${found.map(v => `
-            <div class="ip-visit-item">
-                <span class="ip-visit-time">${new Date(v.created_at).toLocaleString("pt-BR")}</span>
-                <span class="ip-visit-location">
-                    ${countryFlag(v.country_code)} ${v.city || ""} ${v.country || ""}
-                </span>
-                <span class="ip-visit-url">${v.full_url || v.page || "/"}</span>
-            </div>
-        `).join("")}
-    `;
+    tbody.innerHTML = data.map(r => `
+        <tr class="ip-table-row">
+            <td class="ip-cell">${r.ip}</td>
+            <td>${countryFlag(r.country_code)} ${r.country}</td>
+            <td>${r.city}</td>
+            <td>${r.region}</td>
+            <td>${r.browser}</td>
+            <td>${r.os}</td>
+            <td class="ip-visits">${r.visits}</td>
+            <td class="ip-time">${new Date(r.last_seen).toLocaleString("pt-BR", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+            <td class="ip-url"><a href="${r.last_url}" target="_blank" rel="noopener">${r.last_url}</a></td>
+        </tr>
+    `).join("");
+}
+
+function initIpSearch() {
+    // Filtro por texto
+    document.getElementById("ipFilterInput")?.addEventListener("input", e => {
+        const termo = e.target.value.toLowerCase().trim();
+        if (!termo) return renderTabelaIP(ipTableData);
+        const filtered = ipTableData.filter(r =>
+            r.ip.includes(termo) ||
+            r.country.toLowerCase().includes(termo) ||
+            r.city.toLowerCase().includes(termo) ||
+            r.region.toLowerCase().includes(termo) ||
+            r.browser.toLowerCase().includes(termo)
+        );
+        renderTabelaIP(filtered);
+    });
+
+    // Refresh
+    document.getElementById("refreshPorIP")?.addEventListener("click", carregarTabelaIP);
 }
 
 // ===== Busca na sessão (server-side com debounce) =====

@@ -393,8 +393,9 @@
     <!-- POR IP -->
     <section id="section-porip" class="section hidden">
         <div class="section-header-new">
-            <h1>🔍 Busca por IP</h1>
+            <h1>🔍 Por IP</h1>
             <div class="section-controls">
+                <input type="text" id="ipFilterInput" class="search-input-visitantes" placeholder="🔍 Filtrar por IP, país, cidade...">
                 <div class="period-filters period-filters-inline">
                     <button class="filter active" data-range="today">Hoje</button>
                     <button class="filter" data-range="7">7d</button>
@@ -411,11 +412,26 @@
             </div>
         </div>
         <div class="panel">
-            <div class="ip-search-bar">
-                <input type="text" id="ipInput" placeholder="Digite um endereço IP (ex: 189.34.12.45)">
-                <button id="searchIpBtn">Buscar</button>
+            <div class="ip-table-wrapper">
+                <table class="ip-table" id="ipTable">
+                    <thead>
+                        <tr>
+                            <th>IP</th>
+                            <th>País</th>
+                            <th>Cidade</th>
+                            <th>Região</th>
+                            <th>Browser</th>
+                            <th>OS</th>
+                            <th>Visitas</th>
+                            <th>Último acesso</th>
+                            <th>Última página</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ipTableBody">
+                        <tr><td colspan="9" class="ip-table-empty">Carregando...</td></tr>
+                    </tbody>
+                </table>
             </div>
-            <div id="ipResult" class="ip-result hidden"></div>
         </div>
     </section>
 
