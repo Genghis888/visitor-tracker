@@ -16,6 +16,6 @@ export function getSiteFilter(site = null) {
 
     }
 
-    return `host = '${site}'`;
+    return `LOWER(host) = LOWER('${site}')`;
 
 }

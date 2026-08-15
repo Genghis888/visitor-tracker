@@ -34,13 +34,9 @@ function initNav() {
         if (targetSec) targetSec.classList.remove("hidden");
 
         // Oculta controles na aba Tempo Real
-        const controls = document.querySelector(".site-filter-wrapper");
-        const filters  = document.querySelector(".period-filters");
-        const refresh  = document.getElementById("refresh");
+        const controls = document.getElementById("topbarControls");
         const isRT     = sectionId === "realtime";
         if (controls) controls.style.display = isRT ? "none" : "";
-        if (filters)  filters.style.display  = isRT ? "none" : "";
-        if (refresh)  refresh.style.display  = isRT ? "none" : "";
 
         // Inicializa mapa quando a seção ficar visível
         if (sectionId === "mapa" && !mapFull) initMapFull();
@@ -186,6 +182,17 @@ async function carregarVisitantes(page = 1, search = currentSearch, groupBy = cu
     allSessionsData = sessions.rows || [];
     renderSessions(allSessionsData);
     renderSessionsPagination(sessions);
+
+    // Atualiza cards de stats
+    const stats = await getStats(range);
+    if (stats) {
+        const el = id => document.getElementById(id);
+        if (el("visitantesToday"))   el("visitantesToday").textContent   = stats.today ?? 0;
+        if (el("visitantesCountries")) el("visitantesCountries").textContent = stats.countries ?? 0;
+        // Cidades: conta distintas a partir dos dados carregados
+        const cities = new Set((sessions.rows || []).map(r => r.city).filter(Boolean));
+        if (el("visitantesCities")) el("visitantesCities").textContent = cities.size;
+    }
 }
 
 function countryFlag(code) {

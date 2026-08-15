@@ -34,27 +34,26 @@
     </div>
 
     <div class="topbar-right">
-        <div class="site-filter-wrapper">
-            <select id="siteSelect" class="site-select">
-                <option value="all">Todos os sites</option>
-            </select>
+        <div class="topbar-controls" id="topbarControls">
+            <div class="site-filter-wrapper">
+                <select id="siteSelect" class="site-select">
+                    <option value="all">Todos os sites</option>
+                </select>
+            </div>
+            <div class="period-filters">
+                <button class="filter active" data-range="today">Hoje</button>
+                <button class="filter" data-range="7">7d</button>
+                <button class="filter" data-range="30">30d</button>
+                <button class="filter" data-range="custom">⚙</button>
+            </div>
+            <div id="customRange" class="custom-range hidden">
+                <input type="date" id="dateStart">
+                <span>até</span>
+                <input type="date" id="dateEnd">
+                <button id="applyRange">OK</button>
+            </div>
+            <button id="refresh" class="btn-icon" title="Atualizar">↺</button>
         </div>
-
-        <div class="period-filters">
-            <button class="filter active" data-range="today">Hoje</button>
-            <button class="filter" data-range="7">7d</button>
-            <button class="filter" data-range="30">30d</button>
-            <button class="filter" data-range="custom">⚙</button>
-        </div>
-
-        <div id="customRange" class="custom-range hidden">
-            <input type="date" id="dateStart">
-            <span>até</span>
-            <input type="date" id="dateEnd">
-            <button id="applyRange">OK</button>
-        </div>
-
-        <button id="refresh" class="btn-icon" title="Atualizar">↺</button>
         <div class="user-menu">
             <span id="userName" class="user-name"></span>
             <button id="logoutBtn" class="btn-logout">Sair</button>
@@ -217,11 +216,9 @@
 
     <!-- VISITANTES -->
     <section id="section-visitantes" class="section hidden">
-        <div class="section-header">
+        <div class="visitantes-header">
             <h1>👥 Visitantes</h1>
-        </div>
-        <div class="panel">
-            <div class="table-toolbar">
+            <div class="visitantes-controls">
                 <input type="text" id="searchVisits"
                     placeholder="🔍 Pesquisar por IP, país, cidade...">
                 <div class="groupby-selector">
@@ -237,6 +234,22 @@
                     ⬇️ Exportar CSV
                 </button>
             </div>
+            <div class="visitantes-stats">
+                <div class="realtime-stat-inline">
+                    <div class="realtime-stat-value" id="visitantesToday">0</div>
+                    <div class="realtime-stat-label">visitas</div>
+                </div>
+                <div class="realtime-stat-inline">
+                    <div class="realtime-stat-value" id="visitantesCountries">0</div>
+                    <div class="realtime-stat-label">países</div>
+                </div>
+                <div class="realtime-stat-inline">
+                    <div class="realtime-stat-value" id="visitantesCities">0</div>
+                    <div class="realtime-stat-label">cidades</div>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
             <div id="sessionsList" class="sessions-list"></div>
             <div id="sessionsPagination"></div>
         </div>

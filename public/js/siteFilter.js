@@ -24,7 +24,7 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
 
             option.value = site.domain || site.host || '';
 
-            option.textContent = `${site.name || site.domain || site.host} (${site.total_visits ?? site.total ?? 0})`;
+            option.textContent = site.name || site.domain || site.host || "";
 
             select.appendChild(option);
 

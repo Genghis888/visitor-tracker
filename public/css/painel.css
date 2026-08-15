@@ -194,7 +194,39 @@ body{
     color:#ff8a80;
 }
 
-.hidden{ display:none !important; }
+.topbar-controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.visitantes-header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+}
+
+.visitantes-header h1{
+    font-size:22px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.visitantes-controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex:1;
+    flex-wrap:wrap;
+}
+
+.visitantes-stats{
+    display:flex;
+    gap:10px;
+    flex-shrink:0;
+}
 
 /* ===== MAIN ===== */
 .painel-main{
@@ -1085,3 +1117,5 @@ tbody td:last-child{
     .section-header h1{ font-size:18px; }
 
 }
+
+.hidden{ display:none !important; }
