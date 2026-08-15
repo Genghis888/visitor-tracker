@@ -1036,7 +1036,7 @@ tbody td:last-child{
     color:var(--text-soft);
     font-weight:500;
     white-space:nowrap;
-    padding-left:6px;
+    padding:6px 4px;
 }
 
 .ip-table-wrapper{
