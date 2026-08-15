@@ -35,7 +35,7 @@ function initNav() {
 
         // Oculta controles da topbar nas abas com controles próprios
         const controls = document.getElementById("topbarControls");
-        const hiddenSections = ["realtime", "visitantes", "overview"];
+        const hiddenSections = ["realtime", "visitantes", "overview", "mapa", "paginas", "paises", "relatorios", "porip"];
         if (controls) controls.style.display = hiddenSections.includes(sectionId) ? "none" : "";
 
         // Inicializa mapa quando a seção ficar visível

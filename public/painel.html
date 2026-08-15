@@ -199,8 +199,23 @@
 
     <!-- MAPA -->
     <section id="section-mapa" class="section hidden">
-        <div class="section-header">
+        <div class="section-header-new">
             <h1>🗺️ Mapa de Visitantes</h1>
+            <div class="section-controls">
+                <div class="period-filters period-filters-inline">
+                    <button class="filter active" data-range="today">Hoje</button>
+                    <button class="filter" data-range="7">7d</button>
+                    <button class="filter" data-range="30">30d</button>
+                    <button class="filter" data-range="custom">⚙</button>
+                </div>
+                <div id="customRangeMapa" class="custom-range hidden">
+                    <input type="date" id="dateStartMapa">
+                    <span>até</span>
+                    <input type="date" id="dateEndMapa">
+                    <button id="applyRangeMapa">OK</button>
+                </div>
+                <button id="refreshMapa" class="btn-icon" title="Atualizar">↺</button>
+            </div>
         </div>
         <div class="panel map-full-panel">
             <div id="worldMapFull" class="map-full"></div>
@@ -209,8 +224,23 @@
 
     <!-- PÁGINAS -->
     <section id="section-paginas" class="section hidden">
-        <div class="section-header">
+        <div class="section-header-new">
             <h1>📄 Páginas e Rankings</h1>
+            <div class="section-controls">
+                <div class="period-filters period-filters-inline">
+                    <button class="filter active" data-range="today">Hoje</button>
+                    <button class="filter" data-range="7">7d</button>
+                    <button class="filter" data-range="30">30d</button>
+                    <button class="filter" data-range="custom">⚙</button>
+                </div>
+                <div id="customRangePaginas" class="custom-range hidden">
+                    <input type="date" id="dateStartPaginas">
+                    <span>até</span>
+                    <input type="date" id="dateEndPaginas">
+                    <button id="applyRangePaginas">OK</button>
+                </div>
+                <button id="refreshPaginas" class="btn-icon" title="Atualizar">↺</button>
+            </div>
         </div>
         <div class="rankings-grid">
             <div class="panel">
@@ -286,8 +316,23 @@
 
     <!-- PAÍSES -->
     <section id="section-paises" class="section hidden">
-        <div class="section-header">
+        <div class="section-header-new">
             <h1>🌍 Países e Cidades</h1>
+            <div class="section-controls">
+                <div class="period-filters period-filters-inline">
+                    <button class="filter active" data-range="today">Hoje</button>
+                    <button class="filter" data-range="7">7d</button>
+                    <button class="filter" data-range="30">30d</button>
+                    <button class="filter" data-range="custom">⚙</button>
+                </div>
+                <div id="customRangePaises" class="custom-range hidden">
+                    <input type="date" id="dateStartPaises">
+                    <span>até</span>
+                    <input type="date" id="dateEndPaises">
+                    <button id="applyRangePaises">OK</button>
+                </div>
+                <button id="refreshPaises" class="btn-icon" title="Atualizar">↺</button>
+            </div>
         </div>
         <div class="paises-grid">
             <div class="panel">
@@ -303,8 +348,23 @@
 
     <!-- RELATÓRIOS -->
     <section id="section-relatorios" class="section hidden">
-        <div class="section-header">
+        <div class="section-header-new">
             <h1>📈 Relatórios</h1>
+            <div class="section-controls">
+                <div class="period-filters period-filters-inline">
+                    <button class="filter active" data-range="today">Hoje</button>
+                    <button class="filter" data-range="7">7d</button>
+                    <button class="filter" data-range="30">30d</button>
+                    <button class="filter" data-range="custom">⚙</button>
+                </div>
+                <div id="customRangeRelatorios" class="custom-range hidden">
+                    <input type="date" id="dateStartRelatorios">
+                    <span>até</span>
+                    <input type="date" id="dateEndRelatorios">
+                    <button id="applyRangeRelatorios">OK</button>
+                </div>
+                <button id="refreshRelatorios" class="btn-icon" title="Atualizar">↺</button>
+            </div>
         </div>
         <div class="panel">
             <div class="panel-header">
@@ -332,8 +392,23 @@
 
     <!-- POR IP -->
     <section id="section-porip" class="section hidden">
-        <div class="section-header">
+        <div class="section-header-new">
             <h1>🔍 Busca por IP</h1>
+            <div class="section-controls">
+                <div class="period-filters period-filters-inline">
+                    <button class="filter active" data-range="today">Hoje</button>
+                    <button class="filter" data-range="7">7d</button>
+                    <button class="filter" data-range="30">30d</button>
+                    <button class="filter" data-range="custom">⚙</button>
+                </div>
+                <div id="customRangePorIP" class="custom-range hidden">
+                    <input type="date" id="dateStartPorIP">
+                    <span>até</span>
+                    <input type="date" id="dateEndPorIP">
+                    <button id="applyRangePorIP">OK</button>
+                </div>
+                <button id="refreshPorIP" class="btn-icon" title="Atualizar">↺</button>
+            </div>
         </div>
         <div class="panel">
             <div class="ip-search-bar">

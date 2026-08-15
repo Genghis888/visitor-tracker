@@ -278,6 +278,26 @@ body{
 .section.hidden{ display:none; }
 
 .section-header{ margin-bottom:4px; }
+
+.section-header-new{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:8px;
+    flex-wrap:nowrap;
+}
+
+.section-header-new h1{
+    font-size:22px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.section-controls{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
 .section-header h1{ font-size:22px; font-weight:700; }
 .section-header p{ font-size:13px; color:var(--text-soft); margin-top:4px; }
 
