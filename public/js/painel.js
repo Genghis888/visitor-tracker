@@ -585,6 +585,8 @@ async function carregarTabelaIP() {
 
 function renderTabelaIP(data) {
     const tbody = document.getElementById("ipTableBody");
+    const total = document.getElementById("ipTotal");
+    if (total) total.textContent = `${data.length} IP${data.length !== 1 ? "s" : ""} únicos`;
     if (!tbody) return;
 
     if (!data.length) {
@@ -608,7 +610,6 @@ function renderTabelaIP(data) {
 }
 
 function initIpSearch() {
-    // Filtro por texto
     document.getElementById("ipFilterInput")?.addEventListener("input", e => {
         const termo = e.target.value.toLowerCase().trim();
         if (!termo) return renderTabelaIP(ipTableData);
@@ -617,12 +618,12 @@ function initIpSearch() {
             r.country.toLowerCase().includes(termo) ||
             r.city.toLowerCase().includes(termo) ||
             r.region.toLowerCase().includes(termo) ||
-            r.browser.toLowerCase().includes(termo)
+            r.browser.toLowerCase().includes(termo) ||
+            r.last_url.toLowerCase().includes(termo)
         );
         renderTabelaIP(filtered);
     });
 
-    // Refresh
     document.getElementById("refreshPorIP")?.addEventListener("click", carregarTabelaIP);
 }
 
