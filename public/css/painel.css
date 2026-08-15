@@ -989,23 +989,40 @@ tbody td:last-child{
 }
 
 /* ===== POR IP ===== */
-.ip-table-toolbar{
+.ip-table-search{
+    flex:1;
+    max-width:400px;
+    background:#1e293b;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:6px 12px;
+    font-size:13px;
+    font-family:inherit;
+    outline:none;
+}
+
+.ip-table-search:focus{ border-color:var(--primary); }
     padding:10px 16px;
     border-bottom:1px solid var(--border);
     display:flex;
     align-items:center;
+    justify-content:space-between;
+    gap:12px;
 }
 
 .ip-total-count{
     font-size:12px;
     color:var(--text-soft);
     font-weight:500;
+    white-space:nowrap;
 }
 
 .ip-table-wrapper{
     overflow-x:auto;
     overflow-y:auto;
     max-height:calc(100vh - 260px);
+    position:relative;
 }
 
 .ip-table{
@@ -1013,6 +1030,12 @@ tbody td:last-child{
     border-collapse:collapse;
     font-size:13px;
     min-width:900px;
+}
+
+.ip-table thead{
+    position:sticky;
+    top:0;
+    z-index:2;
 }
 
 .ip-table thead th{
@@ -1025,9 +1048,6 @@ tbody td:last-child{
     padding:10px 14px;
     text-align:left;
     white-space:nowrap;
-    position:sticky;
-    top:0;
-    z-index:2;
     border-bottom:1px solid var(--border);
     box-shadow:0 1px 0 var(--border);
 }

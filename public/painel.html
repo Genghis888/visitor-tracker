@@ -395,7 +395,6 @@
         <div class="section-header-new">
             <h1>🔍 Por IP</h1>
             <div class="section-controls">
-                <input type="text" id="ipFilterInput" class="search-input-visitantes" placeholder="🔍 Filtrar por IP, país, cidade...">
                 <div class="period-filters period-filters-inline">
                     <button class="filter active" data-range="today">Hoje</button>
                     <button class="filter" data-range="7">7d</button>
@@ -414,6 +413,8 @@
         <div class="panel" style="padding:0;overflow:hidden;">
             <div class="ip-table-toolbar">
                 <span id="ipTotal" class="ip-total-count">0 IPs únicos</span>
+                <input type="text" id="ipFilterInput" class="ip-table-search"
+                    placeholder="🔍 Filtrar por IP, país, cidade, URL...">
             </div>
             <div class="ip-table-wrapper">
                 <table class="ip-table" id="ipTable">
