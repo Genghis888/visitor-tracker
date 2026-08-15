@@ -1042,18 +1042,18 @@ tbody td:last-child{
 .ip-table-wrapper{
     overflow-x:auto;
     overflow-y:auto;
-    max-height:calc(100vh - 260px);
-    position:relative;
+    max-height:calc(100vh - 240px);
 }
 
 .ip-table{
     width:100%;
-    border-collapse:collapse;
+    border-collapse:separate;
+    border-spacing:0;
     font-size:13px;
     min-width:900px;
 }
 
-.ip-table thead{
+.ip-table thead tr{
     position:sticky;
     top:0;
     z-index:2;
@@ -1069,8 +1069,7 @@ tbody td:last-child{
     padding:10px 14px;
     text-align:left;
     white-space:nowrap;
-    border-bottom:1px solid var(--border);
-    box-shadow:0 1px 0 var(--border);
+    border-bottom:2px solid var(--border);
 }
 
 .ip-table-row{
