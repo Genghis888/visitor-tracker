@@ -1036,14 +1036,13 @@ tbody td:last-child{
     color:var(--text-soft);
     font-weight:500;
     white-space:nowrap;
-    padding-left:6px;
+    padding:6px 4px;
 }
 
 .ip-table-wrapper{
     overflow-x:auto;
-    overflow-y:auto;
-    max-height:calc(100vh - 260px);
-    position:relative;
+    overflow-y:scroll;
+    max-height:calc(100vh - 240px);
 }
 
 .ip-table{
@@ -1053,14 +1052,11 @@ tbody td:last-child{
     min-width:900px;
 }
 
-.ip-table thead{
+.ip-table thead th{
     position:sticky;
     top:0;
-    z-index:2;
-}
-
-.ip-table thead th{
-    background:var(--panel);
+    z-index:10;
+    background:#1e293b;
     color:var(--text-soft);
     font-size:11px;
     font-weight:600;
@@ -1069,8 +1065,7 @@ tbody td:last-child{
     padding:10px 14px;
     text-align:left;
     white-space:nowrap;
-    border-bottom:1px solid var(--border);
-    box-shadow:0 1px 0 var(--border);
+    border-bottom:2px solid rgba(255,255,255,.1);
 }
 
 .ip-table-row{
