@@ -658,10 +658,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     attachLogoutHandler();
 
     initNav();
+
+    // Filtros por seção — cada um com seu próprio container
+    const sections = {
+        "section-overview":    () => { carregarOverview(); },
+        "section-mapa":        () => { carregarMapa?.(); },
+        "section-paginas":     () => { carregarPaginas(); },
+        "section-visitantes":  () => { carregarVisitantes(1, null); },
+        "section-paises":      () => { carregarPaises(); },
+        "section-relatorios":  () => { carregarRelatorios(); },
+        "section-porip":       () => { carregarTabelaIP(); },
+    };
+
+    Object.entries(sections).forEach(([id, fn]) => {
+        const el = document.getElementById(id);
+        if (el) initFilters(fn, el);
+    });
+
+    // Topbar filters (fallback para abas sem seção própria)
     initFilters(() => {
-        currentSearch = null;
-        const searchInput = document.getElementById("searchVisits");
-        if (searchInput) searchInput.value = "";
         carregarOverview();
         carregarVisitantes(1, null);
     });
