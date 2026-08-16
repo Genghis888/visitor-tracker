@@ -10,46 +10,48 @@ export function getCurrentRange() {
 export function getStartDate() { return startDate; }
 export function getEndDate()   { return endDate; }
 
-export function initFilters(onChange, container = document) {
-    const filtros   = container.querySelectorAll(".filter");
-    const customEl  = container.querySelector(".custom-range");
-    const dates     = customEl ? customEl.querySelectorAll("input[type='date']") : [];
-    const dateStart = dates[0] || null;
-    const dateEnd   = dates[1] || null;
-    const applyBtn  = customEl ? customEl.querySelector("button") : null;
+export function initFilters(onChange) {
+    // Pega TODOS os botões .filter da página
+    const allFilters = document.querySelectorAll(".filter");
 
-    filtros.forEach(btn => {
-        // Remove listener antigo clonando o botão
-        const clone = btn.cloneNode(true);
-        btn.parentNode.replaceChild(clone, btn);
-        clone.addEventListener("click", () => {
-            filtros.forEach(b => {
-                const fresh = container.querySelector(`[data-range="${b.dataset.range}"]`);
-                if (fresh) fresh.classList.remove("active");
-            });
-            clone.classList.add("active");
-            currentRange = clone.dataset.range;
+    allFilters.forEach(btn => {
+        btn.addEventListener("click", () => {
+            // Remove active de todos os botões com o mesmo data-range em todas as seções
+            allFilters.forEach(b => b.classList.remove("active"));
+            // Ativa todos os botões com o mesmo range (sincroniza visual entre abas)
+            document.querySelectorAll(`.filter[data-range="${btn.dataset.range}"]`)
+                .forEach(b => b.classList.add("active"));
+
+            currentRange = btn.dataset.range;
 
             if (currentRange === "custom") {
-                if (customEl) customEl.classList.remove("hidden");
+                // Mostra o customRange da seção ativa
+                document.querySelectorAll(".custom-range")
+                    .forEach(el => el.classList.remove("hidden"));
                 return;
             }
-            if (customEl) customEl.classList.add("hidden");
+
+            document.querySelectorAll(".custom-range")
+                .forEach(el => el.classList.add("hidden"));
+
             onChange();
         });
     });
 
-    if (applyBtn) {
-        const freshApply = applyBtn.cloneNode(true);
-        applyBtn.parentNode.replaceChild(freshApply, applyBtn);
-        freshApply.addEventListener("click", () => {
-            if (!dateStart?.value || !dateEnd?.value) {
-                alert("Selecione as duas datas.");
-                return;
-            }
-            startDate = dateStart.value;
-            endDate   = dateEnd.value;
+    // Apply de qualquer botão applyRange
+    document.querySelectorAll("[id^='applyRange']").forEach(btn => {
+        btn.addEventListener("click", () => {
+            // Pega as datas da seção onde o botão está
+            const container = btn.closest(".custom-range");
+            const dates = container?.querySelectorAll("input[type='date']");
+            const s = dates?.[0]?.value;
+            const e = dates?.[1]?.value;
+            if (!s || !e) { alert("Selecione as duas datas."); return; }
+            startDate = s;
+            endDate   = e;
+            document.querySelectorAll(".custom-range")
+                .forEach(el => el.classList.add("hidden"));
             onChange();
         });
-    }
+    });
 }

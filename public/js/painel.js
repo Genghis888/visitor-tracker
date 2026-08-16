@@ -659,26 +659,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initNav();
 
-    // Filtros por seção — cada um com seu próprio container
-    const sections = {
-        "section-overview":    () => { carregarOverview(); },
-        "section-mapa":        () => { if (mapFull) mapFull.invalidateSize(); },
-        "section-paginas":     () => { carregarPaginas(); },
-        "section-visitantes":  () => { carregarVisitantes(1, null); },
-        "section-paises":      () => { carregarPaises(); },
-        "section-relatorios":  () => { carregarRelatorios(); },
-        "section-porip":       () => { carregarTabelaIP(); },
-    };
-
-    Object.entries(sections).forEach(([id, fn]) => {
-        const el = document.getElementById(id);
-        if (el) initFilters(fn, el);
-    });
-
-    // Topbar filters (fallback para abas sem seção própria)
+    // Filtro global — atualiza todas as abas ao mudar período
     initFilters(() => {
         carregarOverview();
         carregarVisitantes(1, null);
+        carregarPaginas();
+        carregarPaises();
+        carregarRelatorios();
+        carregarTabelaIP();
     });
 
     // Seletor de sites da aba Overview
