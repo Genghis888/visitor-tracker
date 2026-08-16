@@ -418,25 +418,19 @@
         </div>
 
         <div class="panel" style="padding:0;overflow:hidden;">
-            <div class="ip-table-wrapper">
-                <table class="ip-table" id="ipTable">
-                    <thead>
-                        <tr>
-                            <th>IP</th>
-                            <th>País</th>
-                            <th>Cidade</th>
-                            <th>Região</th>
-                            <th>Browser</th>
-                            <th>OS</th>
-                            <th>Visitas</th>
-                            <th>Último acesso</th>
-                            <th>Última página</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ipTableBody">
-                        <tr><td colspan="9" class="ip-table-empty">Carregando...</td></tr>
-                    </tbody>
-                </table>
+            <div class="ip-grid">
+                <div class="ip-grid-head">
+                    <div class="ip-col ip-col-ip">IP</div>
+                    <div class="ip-col">País</div>
+                    <div class="ip-col">Cidade</div>
+                    <div class="ip-col">Região</div>
+                    <div class="ip-col">Browser</div>
+                    <div class="ip-col">OS</div>
+                    <div class="ip-col ip-col-num">Visitas</div>
+                    <div class="ip-col">Último acesso</div>
+                    <div class="ip-col ip-col-url">Última página</div>
+                </div>
+                <div class="ip-grid-body" id="ipTableBody"></div>
             </div>
         </div>
     </section>

@@ -584,28 +584,28 @@ async function carregarTabelaIP() {
 }
 
 function renderTabelaIP(data) {
-    const tbody = document.getElementById("ipTableBody");
+    const body  = document.getElementById("ipTableBody");
     const total = document.getElementById("ipTotal");
     if (total) total.textContent = `${data.length} IP${data.length !== 1 ? "s" : ""} únicos`;
-    if (!tbody) return;
+    if (!body) return;
 
     if (!data.length) {
-        tbody.innerHTML = `<tr><td colspan="9" class="ip-table-empty">Nenhum registro encontrado.</td></tr>`;
+        body.innerHTML = `<div class="ip-grid-empty">Nenhum registro encontrado.</div>`;
         return;
     }
 
-    tbody.innerHTML = data.map(r => `
-        <tr class="ip-table-row">
-            <td class="ip-cell">${r.ip}</td>
-            <td>${countryFlag(r.country_code)} ${r.country}</td>
-            <td>${r.city}</td>
-            <td>${r.region}</td>
-            <td>${r.browser}</td>
-            <td>${r.os}</td>
-            <td class="ip-visits">${r.visits}</td>
-            <td class="ip-time">${new Date(r.last_seen).toLocaleString("pt-BR", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
-            <td class="ip-url"><a href="${r.last_url}" target="_blank" rel="noopener">${r.last_url}</a></td>
-        </tr>
+    body.innerHTML = data.map(r => `
+        <div class="ip-grid-row">
+            <div class="ip-col ip-col-ip">${r.ip}</div>
+            <div class="ip-col">${countryFlag(r.country_code)} ${r.country}</div>
+            <div class="ip-col">${r.city}</div>
+            <div class="ip-col">${r.region}</div>
+            <div class="ip-col">${r.browser}</div>
+            <div class="ip-col">${r.os}</div>
+            <div class="ip-col ip-col-num ip-visits">${r.visits}</div>
+            <div class="ip-col ip-time">${new Date(r.last_seen).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
+            <div class="ip-col ip-col-url"><a href="${r.last_url}" target="_blank" rel="noopener">${r.last_url}</a></div>
+        </div>
     `).join("");
 }
 

@@ -1039,64 +1039,77 @@ tbody td:last-child{
     padding:6px 4px;
 }
 
-.ip-table-wrapper{
-    overflow-x:auto;
-    overflow-y:scroll;
-    max-height:calc(100vh - 240px);
-}
-
-.ip-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13px;
+.ip-grid{
+    display:flex;
+    flex-direction:column;
     min-width:900px;
+    overflow-x:auto;
 }
 
-.ip-table thead th{
+.ip-grid-head{
+    display:grid;
+    grid-template-columns: 130px 130px 180px 160px 100px 90px 70px 120px 1fr;
+    background:#1e293b;
+    border-bottom:2px solid rgba(255,255,255,.1);
+    padding:0;
     position:sticky;
     top:0;
     z-index:10;
-    background:#1e293b;
-    color:var(--text-soft);
-    font-size:11px;
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:.04em;
-    padding:10px 14px;
-    text-align:left;
-    white-space:nowrap;
-    border-bottom:2px solid rgba(255,255,255,.1);
 }
 
-.ip-table-row{
+.ip-grid-body{
+    overflow-y:auto;
+    max-height:calc(100vh - 280px);
+}
+
+.ip-grid-row{
+    display:grid;
+    grid-template-columns: 130px 130px 180px 160px 100px 90px 70px 120px 1fr;
     border-bottom:1px solid rgba(255,255,255,.04);
     transition:.15s;
 }
 
-.ip-table-row:hover{ background:rgba(255,255,255,.04); }
+.ip-grid-row:hover{ background:rgba(255,255,255,.04); }
 
-.ip-table td{ padding:10px 14px; color:var(--text); white-space:nowrap; }
+.ip-col{
+    padding:10px 14px;
+    font-size:13px;
+    color:var(--text);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 
-.ip-cell{ font-weight:700; font-family:monospace; }
+.ip-grid-head .ip-col{
+    font-size:11px;
+    font-weight:600;
+    color:var(--text-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    padding:10px 14px;
+}
 
-.ip-visits{ font-weight:700; color:var(--primary) !important; text-align:center; }
+.ip-col-ip{ font-weight:700; font-family:monospace; }
+
+.ip-col-num{ text-align:center; }
+
+.ip-visits{ color:var(--primary) !important; font-weight:700; }
 
 .ip-time{ color:var(--text-soft) !important; font-size:12px; }
 
-.ip-url a{
+.ip-col-url a{
     color:#60a5fa;
     text-decoration:none;
-    max-width:280px;
-    display:inline-block;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    vertical-align:middle;
 }
 
-.ip-url a:hover{ color:#93c5fd; text-decoration:underline; }
+.ip-col-url a:hover{ color:#93c5fd; text-decoration:underline; }
 
-.ip-table-empty{ text-align:center; color:var(--text-soft); padding:40px !important; }
+.ip-grid-empty{
+    text-align:center;
+    color:var(--text-soft);
+    padding:40px;
+    font-size:13px;
+}
 
 .ip-search-bar{
     display:flex;
