@@ -662,7 +662,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Filtros por seção — cada um com seu próprio container
     const sections = {
         "section-overview":    () => { carregarOverview(); },
-        "section-mapa":        () => { carregarMapa?.(); },
+        "section-mapa":        () => { if (mapFull) mapFull.invalidateSize(); },
         "section-paginas":     () => { carregarPaginas(); },
         "section-visitantes":  () => { carregarVisitantes(1, null); },
         "section-paises":      () => { carregarPaises(); },
