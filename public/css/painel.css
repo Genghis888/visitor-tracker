@@ -202,9 +202,9 @@ body{
 
 .visitantes-header{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     gap:12px;
-    flex-wrap:nowrap;
+    flex-wrap:wrap;
     margin-bottom:8px;
 }
 
@@ -219,7 +219,13 @@ body{
     align-items:center;
     gap:8px;
     flex:1;
-    flex-wrap:nowrap;
+    flex-wrap:wrap;
+}
+
+.visitantes-controls #customRangeVisitantes{
+    width:100%;
+    order:99;
+    flex-basis:100%;
 }
 
 .visitantes-controls #searchVisits{
