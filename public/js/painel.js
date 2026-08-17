@@ -9,9 +9,8 @@ import { renderPagination } from "./pagination.js";
 
 // ===== Mapas (instâncias separadas por seção) =====
 let mapOverview = null;
-let mapFull     = null;
 let mapPaises   = null;
-let clusterOverview, clusterFull, clusterPaises;
+let clusterOverview, clusterPaises;
 let reportChart = null;
 
 let currentPage = 1;
@@ -39,13 +38,11 @@ function initNav() {
         if (controls) controls.style.display = hiddenSections.includes(sectionId) ? "none" : "";
 
         // Inicializa mapa quando a seção ficar visível
-        if (sectionId === "mapa" && !mapFull) initMapFull();
         if (sectionId === "paises" && !mapPaises) initMapPaises();
         if (sectionId === "realtime") startRealtime();
         else stopRealtime();
 
         // Invalidate map size se já existir (Leaflet precisa disso)
-        if (sectionId === "mapa" && mapFull) setTimeout(() => mapFull.invalidateSize(), 50);
         if (sectionId === "paises" && mapPaises) setTimeout(() => mapPaises.invalidateSize(), 50);
 
         if (sectionId === "paises")  carregarPaises();
@@ -93,13 +90,6 @@ function initMapOverview() {
     mapOverview = createMap("worldMapOverview", 1);
     clusterOverview = L.markerClusterGroup();
     mapOverview.addLayer(clusterOverview);
-}
-
-function initMapFull() {
-    if (mapFull) return;
-    mapFull = createMap("worldMapFull", 2);
-    clusterFull = L.markerClusterGroup();
-    mapFull.addLayer(clusterFull);
 }
 
 function initMapPaises() {
@@ -165,9 +155,6 @@ async function carregarOverview() {
     renderRanking("rankSystems",  rankings.systems,  "os");
     renderRanking("rankDevices",  rankings.devices,  "device_type");
     renderRanking("rankPages",    rankings.pages,    "page");
-
-    // Mapa completo se já visível
-    if (mapFull) updateMapLayer(clusterFull, mapData);
 }
 
 // ===== Visitantes (agrupado por sessão) =====
