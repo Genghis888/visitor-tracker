@@ -17,9 +17,18 @@ export async function getRankings(range = "today", start = null, end = null, sit
         pool.query(`SELECT device_type, COUNT(*)::INT AS total FROM visits
             WHERE device_type IS NOT NULL AND ${where} AND ${siteWhere} AND ${userWhere}
             GROUP BY device_type ORDER BY total DESC LIMIT 5`),
-        pool.query(`SELECT page, COUNT(*)::INT AS total FROM visits
+        pool.query(`
+            SELECT
+                CASE
+                    WHEN page_title IS NOT NULL AND page_title <> '' THEN page_title
+                    WHEN host IS NOT NULL AND host <> '' THEN CONCAT(host, COALESCE(page, '/'))
+                    ELSE COALESCE(page, '/')
+                END AS page,
+                COUNT(*)::INT AS total
+            FROM visits
             WHERE page IS NOT NULL AND ${where} AND ${siteWhere} AND ${userWhere}
-            GROUP BY page ORDER BY total DESC LIMIT 10`),
+            GROUP BY 1
+            ORDER BY total DESC LIMIT 10`),
         pool.query(`SELECT country, COUNT(*)::INT AS total FROM visits
             WHERE country IS NOT NULL AND ${where} AND ${siteWhere} AND ${userWhere}
             GROUP BY country ORDER BY total DESC LIMIT 10`)
