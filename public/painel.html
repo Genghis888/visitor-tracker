@@ -22,7 +22,7 @@
         <nav class="topbar-nav">
             <a href="#overview"   class="nav-item active" data-section="overview">   📊 Overview</a>
             <a href="#realtime"   class="nav-item"         data-section="realtime">  🟢 Tempo Real</a>
-            <a href="#mapa"       class="nav-item"         data-section="mapa">      🗺️ Mapa</a>
+
 
             <a href="#visitantes" class="nav-item"         data-section="visitantes">👥 Visitantes</a>
             <a href="#paises"     class="nav-item"         data-section="paises">    🌍 Países</a>
@@ -131,7 +131,6 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2>🗺️ Visitantes no mundo</h2>
-                    <a href="#mapa" class="panel-link" data-goto="mapa">Ver mapa completo →</a>
                 </div>
                 <div id="worldMapOverview" class="map-mini"></div>
             </div>
@@ -194,31 +193,6 @@
                 </div>
                 <div id="realtimeFeed" class="realtime-feed"></div>
             </div>
-        </div>
-    </section>
-
-    <!-- MAPA -->
-    <section id="section-mapa" class="section hidden">
-        <div class="section-header-new">
-            <h1>🗺️ Mapa de Visitantes</h1>
-            <div class="section-controls">
-                <div class="period-filters period-filters-inline">
-                    <button class="filter active" data-range="today">Hoje</button>
-                    <button class="filter" data-range="7">7d</button>
-                    <button class="filter" data-range="30">30d</button>
-                    <button class="filter" data-range="custom">⚙</button>
-                </div>
-                <div id="customRangeMapa" class="custom-range hidden">
-                    <input type="date" id="dateStartMapa">
-                    <span>até</span>
-                    <input type="date" id="dateEndMapa">
-                    <button id="applyRangeMapa">OK</button>
-                </div>
-                <button id="refreshMapa" class="btn-icon" title="Atualizar">↺</button>
-            </div>
-        </div>
-        <div class="panel map-full-panel">
-            <div id="worldMapFull" class="map-full"></div>
         </div>
     </section>
 
