@@ -1,5 +1,5 @@
 import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
-import { getStats, getHourly, getRankings, getVisits, getCountries, getMap, getSites, getSessions } from "./api.js";
+import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
 import { renderRanking } from "./rankings.js";
@@ -411,23 +411,80 @@ async function carregarRelatorios() {
 
 // ===== Países =====
 async function carregarPaises() {
-    const range    = getCurrentRange();
-    const [countries, mapData] = await Promise.all([
-        getCountries(range),
+    const range = getCurrentRange();
+    const [hierarchy, mapData] = await Promise.all([
+        getCountriesHierarchy(range),
         getMap(range)
     ]);
 
-    const list = document.getElementById("countriesList");
-    list.innerHTML = countries.map(c => `
-        <div class="country-item">
-            <span class="country-flag">${countryFlag(c.country_code)}</span>
-            <span class="country-name">${c.country || "Desconhecido"}</span>
-            <span class="country-total">${c.total}</span>
-        </div>
-    `).join("");
+    const container = document.getElementById("countriesHierarchy");
+    if (!hierarchy.length) {
+        container.innerHTML = "<div class='hier-empty'>Nenhum dado para o período.</div>";
+    } else {
+        container.innerHTML = hierarchy.map(c => buildCountryBlock(c)).join("");
+        container.querySelectorAll("[data-toggle]").forEach(el => {
+            el.addEventListener("click", () => {
+                const target = document.getElementById(el.dataset.toggle);
+                if (!target) return;
+                const open = target.style.display !== "none";
+                target.style.display = open ? "none" : "block";
+                el.querySelector(".hier-arrow").textContent = open ? "›" : "‹";
+            });
+        });
+    }
 
     initMapPaises();
     updateMapLayer(clusterPaises, mapData);
+}
+
+function buildCountryBlock(c) {
+    const cid = "c_" + (c.country_code || c.country).replace(/\W/g, "_");
+    return `
+    <div class="hier-country">
+        <div class="hier-row hier-row-country" data-toggle="${cid}">
+            <span class="hier-arrow">›</span>
+            <span class="hier-flag">${countryFlag(c.country_code)}</span>
+            <span class="hier-label">${c.country || "Desconhecido"}</span>
+            <span class="hier-count">${c.total}</span>
+        </div>
+        <div id="${cid}" class="hier-children" style="display:none">
+            ${c.regions.map(r => buildRegionBlock(cid, r)).join("")}
+        </div>
+    </div>`;
+}
+
+function buildRegionBlock(cid, r) {
+    const rid = cid + "_r_" + r.region.replace(/\W/g, "_");
+    return `
+    <div class="hier-region">
+        <div class="hier-row hier-row-region" data-toggle="${rid}">
+            <span class="hier-arrow">›</span>
+            <span class="hier-label">${r.region}</span>
+            <span class="hier-count">${r.total}</span>
+        </div>
+        <div id="${rid}" class="hier-children" style="display:none">
+            ${r.cities.map(ci => buildCityBlock(rid, ci)).join("")}
+        </div>
+    </div>`;
+}
+
+function buildCityBlock(rid, ci) {
+    const citid = rid + "_ci_" + ci.city.replace(/\W/g, "_");
+    return `
+    <div class="hier-city">
+        <div class="hier-row hier-row-city" data-toggle="${citid}">
+            <span class="hier-arrow">›</span>
+            <span class="hier-label">${ci.city}</span>
+            <span class="hier-count">${ci.total}</span>
+        </div>
+        <div id="${citid}" class="hier-children" style="display:none">
+            ${ci.ips.map(i => `
+            <div class="hier-row hier-row-ip">
+                <span class="hier-ip">${i.ip}</span>
+                <span class="hier-count">${i.visits}</span>
+            </div>`).join("")}
+        </div>
+    </div>`;
 }
 
 // ===== Relatórios =====

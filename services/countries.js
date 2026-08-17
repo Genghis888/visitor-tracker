@@ -22,7 +22,6 @@ export async function getCountriesHierarchy(range = "today", start = null, end =
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
 
-    // Retorna linhas country→region→city→ip com contagem por cidade
     const result = await pool.query(`
         SELECT
             country,
@@ -37,7 +36,6 @@ export async function getCountriesHierarchy(range = "today", start = null, end =
         ORDER BY country, region, city, visits DESC
     `);
 
-    // Agrupa em memória: { country → { region → { city → [ips] } } }
     const map = new Map();
     for (const row of result.rows) {
         const ck = row.country;
@@ -57,7 +55,6 @@ export async function getCountriesHierarchy(range = "today", start = null, end =
         citObj.ips.push({ ip: row.ip, visits: row.visits });
     }
 
-    // Serializa para JSON ordenado
     return [...map.values()].map(c => ({
         country:      c.country,
         country_code: c.country_code,
