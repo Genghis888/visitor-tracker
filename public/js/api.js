@@ -69,6 +69,10 @@ export async function getCountries(range) {
     return apiFetch(`/api/countries?${buildQuery(range)}`);
 }
 
+export async function getCountriesHierarchy(range) {
+    return apiFetch(`/api/countries/hierarchy?${buildQuery(range)}`);
+}
+
 export async function getMap(range) {
     return apiFetch(`/api/map?${buildQuery(range)}`);
 }
