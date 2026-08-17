@@ -1,5 +1,5 @@
 import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
-import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions } from "./api.js";
+import { getStats, getHourly, getRankings, getVisits, getCountries, getMap, getSites, getSessions } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
 import { renderRanking } from "./rankings.js";
@@ -9,8 +9,9 @@ import { renderPagination } from "./pagination.js";
 
 // ===== Mapas (instâncias separadas por seção) =====
 let mapOverview = null;
+let mapFull     = null;
 let mapPaises   = null;
-let clusterOverview, clusterPaises;
+let clusterOverview, clusterFull, clusterPaises;
 let reportChart = null;
 
 let currentPage = 1;
@@ -34,18 +35,19 @@ function initNav() {
 
         // Oculta controles da topbar nas abas com controles próprios
         const controls = document.getElementById("topbarControls");
-        const hiddenSections = ["realtime", "visitantes", "overview", "paginas", "paises", "relatorios", "porip"];
+        const hiddenSections = ["realtime", "visitantes", "overview", "paises", "relatorios", "porip"];
         if (controls) controls.style.display = hiddenSections.includes(sectionId) ? "none" : "";
 
         // Inicializa mapa quando a seção ficar visível
+        if (sectionId === "mapa" && !mapFull) initMapFull();
         if (sectionId === "paises" && !mapPaises) initMapPaises();
         if (sectionId === "realtime") startRealtime();
         else stopRealtime();
 
         // Invalidate map size se já existir (Leaflet precisa disso)
+        if (sectionId === "mapa" && mapFull) setTimeout(() => mapFull.invalidateSize(), 50);
         if (sectionId === "paises" && mapPaises) setTimeout(() => mapPaises.invalidateSize(), 50);
 
-        if (sectionId === "paginas") carregarPaginas();
         if (sectionId === "paises")  carregarPaises();
         if (sectionId === "relatorios") carregarRelatorios();
         if (sectionId === "porip") carregarTabelaIP();
@@ -91,6 +93,13 @@ function initMapOverview() {
     mapOverview = createMap("worldMapOverview", 1);
     clusterOverview = L.markerClusterGroup();
     mapOverview.addLayer(clusterOverview);
+}
+
+function initMapFull() {
+    if (mapFull) return;
+    mapFull = createMap("worldMapFull", 2);
+    clusterFull = L.markerClusterGroup();
+    mapFull.addLayer(clusterFull);
 }
 
 function initMapPaises() {
@@ -156,6 +165,9 @@ async function carregarOverview() {
     renderRanking("rankSystems",  rankings.systems,  "os");
     renderRanking("rankDevices",  rankings.devices,  "device_type");
     renderRanking("rankPages",    rankings.pages,    "page");
+
+    // Mapa completo se já visível
+    if (mapFull) updateMapLayer(clusterFull, mapData);
 }
 
 // ===== Visitantes (agrupado por sessão) =====
@@ -353,93 +365,82 @@ function renderSessionsPagination(data) {
 window.carregarVisitantes = carregarVisitantes;
 
 // ===== Páginas & Rankings =====
-async function carregarPaginas() {
+async function carregarRelatorios() {
     const range    = getCurrentRange();
-    const rankings = await getRankings(range);
+    const [hourly, rankings] = await Promise.all([
+        getHourly(range),
+        getRankings(range)
+    ]);
 
-    renderRanking("rankPagesDetail",   rankings.pages,    "page");
-    renderRanking("rankBrowsersDetail",rankings.browsers, "browser");
-    renderRanking("rankSystemsDetail", rankings.systems,  "os");
-    renderRanking("rankDevicesDetail", rankings.devices,  "device_type");
+    // Rankings (ex-aba Páginas)
+    renderRanking("rankPagesDetail",    rankings.pages,    "page");
+    renderRanking("rankBrowsersDetail", rankings.browsers, "browser");
+    renderRanking("rankSystemsDetail",  rankings.systems,  "os");
+    renderRanking("rankDevicesDetail",  rankings.devices,  "device_type");
+
+    // Gráfico
+    const labels = hourly.map(v =>
+        typeof v.label === "number"
+            ? `${String(v.label).padStart(2,"0")}:00`
+            : v.label
+    );
+    const values  = hourly.map(v => v.total);
+    const total   = values.reduce((a, b) => a + b, 0);
+    const avg     = values.length ? Math.round(total / values.length) : 0;
+    const maxVal  = Math.max(...values);
+    const peakIdx = values.indexOf(maxVal);
+
+    document.getElementById("reportTotal").textContent = total;
+    document.getElementById("reportAvg").textContent   = avg + "/h";
+    document.getElementById("reportPeak").textContent  =
+        labels[peakIdx] ? `${labels[peakIdx]} (${maxVal})` : "—";
+
+    const canvas = document.getElementById("reportChart");
+    if (reportChart) reportChart.destroy();
+    reportChart = new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                label: "Visitas",
+                data: values,
+                backgroundColor: "rgba(37,99,235,.6)",
+                borderColor: "#2563eb",
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" } },
+                y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" } }
+            }
+        }
+    });
 }
 
 // ===== Países =====
 async function carregarPaises() {
-    const range = getCurrentRange();
-    const [hierarchy, mapData] = await Promise.all([
-        getCountriesHierarchy(range),
+    const range    = getCurrentRange();
+    const [countries, mapData] = await Promise.all([
+        getCountries(range),
         getMap(range)
     ]);
 
-    const container = document.getElementById("countriesHierarchy");
-
-    if (!hierarchy.length) {
-        container.innerHTML = "<div class='hier-empty'>Nenhum dado para o período.</div>";
-    } else {
-        container.innerHTML = hierarchy.map(c => buildCountryBlock(c)).join("");
-        container.querySelectorAll("[data-toggle]").forEach(el => {
-            el.addEventListener("click", () => {
-                const target = document.getElementById(el.dataset.toggle);
-                if (!target) return;
-                const open = target.style.display !== "none";
-                target.style.display = open ? "none" : "block";
-                el.querySelector(".hier-arrow").textContent = open ? "›" : "‹";
-            });
-        });
-    }
+    const list = document.getElementById("countriesList");
+    list.innerHTML = countries.map(c => `
+        <div class="country-item">
+            <span class="country-flag">${countryFlag(c.country_code)}</span>
+            <span class="country-name">${c.country || "Desconhecido"}</span>
+            <span class="country-total">${c.total}</span>
+        </div>
+    `).join("");
 
     initMapPaises();
     updateMapLayer(clusterPaises, mapData);
-}
-
-function buildCountryBlock(c) {
-    const cid = "c_" + (c.country_code || c.country).replace(/\s/g, "_");
-    return `
-    <div class="hier-country">
-        <div class="hier-row hier-row-country" data-toggle="${cid}">
-            <span class="hier-arrow">›</span>
-            <span class="hier-flag">${countryFlag(c.country_code)}</span>
-            <span class="hier-label">${c.country || "Desconhecido"}</span>
-            <span class="hier-count">${c.total}</span>
-        </div>
-        <div id="${cid}" class="hier-children" style="display:none">
-            ${c.regions.map(r => buildRegionBlock(cid, r)).join("")}
-        </div>
-    </div>`;
-}
-
-function buildRegionBlock(cid, r) {
-    const rid = cid + "_r_" + r.region.replace(/\s/g, "_");
-    return `
-    <div class="hier-region">
-        <div class="hier-row hier-row-region" data-toggle="${rid}">
-            <span class="hier-arrow">›</span>
-            <span class="hier-label">${r.region}</span>
-            <span class="hier-count">${r.total}</span>
-        </div>
-        <div id="${rid}" class="hier-children" style="display:none">
-            ${r.cities.map(ci => buildCityBlock(rid, ci)).join("")}
-        </div>
-    </div>`;
-}
-
-function buildCityBlock(rid, ci) {
-    const citid = rid + "_ci_" + ci.city.replace(/\s/g, "_");
-    return `
-    <div class="hier-city">
-        <div class="hier-row hier-row-city" data-toggle="${citid}">
-            <span class="hier-arrow">›</span>
-            <span class="hier-label">${ci.city}</span>
-            <span class="hier-count">${ci.total}</span>
-        </div>
-        <div id="${citid}" class="hier-children" style="display:none">
-            ${ci.ips.map(i => `
-            <div class="hier-row hier-row-ip">
-                <span class="hier-ip">${i.ip}</span>
-                <span class="hier-count">${i.visits}</span>
-            </div>`).join("")}
-        </div>
-    </div>`;
 }
 
 // ===== Relatórios =====
@@ -708,7 +709,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     initFilters(() => {
         carregarOverview();
         carregarVisitantes(1, null);
-        carregarPaginas();
         carregarPaises();
         carregarRelatorios();
         carregarTabelaIP();

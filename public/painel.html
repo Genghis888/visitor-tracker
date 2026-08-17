@@ -22,8 +22,8 @@
         <nav class="topbar-nav">
             <a href="#overview"   class="nav-item active" data-section="overview">   📊 Overview</a>
             <a href="#realtime"   class="nav-item"         data-section="realtime">  🟢 Tempo Real</a>
+            <a href="#mapa"       class="nav-item"         data-section="mapa">      🗺️ Mapa</a>
 
-            <a href="#paginas"    class="nav-item"         data-section="paginas">   📄 Páginas</a>
             <a href="#visitantes" class="nav-item"         data-section="visitantes">👥 Visitantes</a>
             <a href="#paises"     class="nav-item"         data-section="paises">    🌍 Países</a>
             <a href="#relatorios" class="nav-item"         data-section="relatorios">📈 Relatórios</a>
@@ -198,11 +198,9 @@
     </section>
 
     <!-- MAPA -->
-
-    <!-- PÁGINAS -->
-    <section id="section-paginas" class="section hidden">
+    <section id="section-mapa" class="section hidden">
         <div class="section-header-new">
-            <h1>📄 Páginas e Rankings</h1>
+            <h1>🗺️ Mapa de Visitantes</h1>
             <div class="section-controls">
                 <div class="period-filters period-filters-inline">
                     <button class="filter active" data-range="today">Hoje</button>
@@ -210,35 +208,21 @@
                     <button class="filter" data-range="30">30d</button>
                     <button class="filter" data-range="custom">⚙</button>
                 </div>
-                <div id="customRangePaginas" class="custom-range hidden">
-                    <input type="date" id="dateStartPaginas">
+                <div id="customRangeMapa" class="custom-range hidden">
+                    <input type="date" id="dateStartMapa">
                     <span>até</span>
-                    <input type="date" id="dateEndPaginas">
-                    <button id="applyRangePaginas">OK</button>
+                    <input type="date" id="dateEndMapa">
+                    <button id="applyRangeMapa">OK</button>
                 </div>
-                <button id="refreshPaginas" class="btn-icon" title="Atualizar">↺</button>
+                <button id="refreshMapa" class="btn-icon" title="Atualizar">↺</button>
             </div>
         </div>
-        <div class="rankings-grid">
-            <div class="panel">
-                <h2>📄 Páginas mais visitadas</h2>
-                <div id="rankPagesDetail"></div>
-            </div>
-            <div class="panel">
-                <h2>🌐 Navegadores</h2>
-                <div id="rankBrowsersDetail"></div>
-            </div>
-            <div class="panel">
-                <h2>🖥 Sistemas Operacionais</h2>
-                <div id="rankSystemsDetail"></div>
-            </div>
-            <div class="panel">
-                <h2>📱 Dispositivos</h2>
-                <div id="rankDevicesDetail"></div>
-            </div>
+        <div class="panel map-full-panel">
+            <div id="worldMapFull" class="map-full"></div>
         </div>
     </section>
 
+    <!-- PÁGINAS -->
     <!-- VISITANTES -->
     <section id="section-visitantes" class="section hidden">
         <div class="visitantes-header">
@@ -312,11 +296,13 @@
             </div>
         </div>
         <div class="paises-grid">
-            <div class="panel paises-lista-panel">
-                <div id="countriesHierarchy" class="countries-hierarchy"></div>
+            <div class="panel">
+                <h2>Países</h2>
+                <div id="countriesList"></div>
             </div>
-            <div class="panel paises-mapa-panel">
-                <div id="worldMapPaises" class="map-paises"></div>
+            <div class="panel">
+                <h2>Distribuição no mapa</h2>
+                <div id="worldMapPaises" class="map-medium"></div>
             </div>
         </div>
     </section>
@@ -341,26 +327,48 @@
                 <button id="refreshRelatorios" class="btn-icon" title="Atualizar">↺</button>
             </div>
         </div>
-        <div class="panel">
-            <div class="panel-header">
-                <h2>Visitas por período</h2>
+
+        <!-- Gráfico + stats lado a lado -->
+        <div class="relatorio-top">
+            <div class="panel relatorio-chart-panel">
+                <div class="panel-header"><h2>Visitas por período</h2></div>
+                <div class="chart-wrap-relatorio">
+                    <canvas id="reportChart"></canvas>
+                </div>
             </div>
-            <div class="chart-wrap chart-wrap-lg">
-                <canvas id="reportChart"></canvas>
+            <div class="relatorio-stats-side">
+                <div class="panel relatorio-stat-card">
+                    <div class="stat-label">Total no período</div>
+                    <div class="stat-value" id="reportTotal">—</div>
+                </div>
+                <div class="panel relatorio-stat-card">
+                    <div class="stat-label">Média diária</div>
+                    <div class="stat-value" id="reportAvg">—</div>
+                </div>
+                <div class="panel relatorio-stat-card">
+                    <div class="stat-label">Dia de pico</div>
+                    <div class="stat-value" id="reportPeak">—</div>
+                </div>
             </div>
         </div>
-        <div class="relatorio-stats">
+
+        <!-- Rankings (ex-aba Páginas) -->
+        <div class="rankings-grid relatorio-rankings">
             <div class="panel">
-                <div class="stat-label">Total no período</div>
-                <div class="stat-value" id="reportTotal">—</div>
+                <h2>📄 Páginas mais visitadas</h2>
+                <div id="rankPagesDetail"></div>
             </div>
             <div class="panel">
-                <div class="stat-label">Média diária</div>
-                <div class="stat-value" id="reportAvg">—</div>
+                <h2>🌐 Navegadores</h2>
+                <div id="rankBrowsersDetail"></div>
             </div>
             <div class="panel">
-                <div class="stat-label">Dia de pico</div>
-                <div class="stat-value" id="reportPeak">—</div>
+                <h2>🖥 Sistemas Operacionais</h2>
+                <div id="rankSystemsDetail"></div>
+            </div>
+            <div class="panel">
+                <h2>📱 Dispositivos</h2>
+                <div id="rankDevicesDetail"></div>
             </div>
         </div>
     </section>
