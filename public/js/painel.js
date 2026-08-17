@@ -431,53 +431,6 @@ async function carregarPaises() {
 }
 
 // ===== Relatórios =====
-async function carregarRelatorios() {
-    const range  = getCurrentRange();
-    const hourly = await getHourly(range);
-
-    const labels = hourly.map(v =>
-        typeof v.label === "number"
-            ? `${String(v.label).padStart(2,"0")}:00`
-            : v.label
-    );
-    const values = hourly.map(v => v.total);
-    const total  = values.reduce((a, b) => a + b, 0);
-    const avg    = values.length ? Math.round(total / values.length) : 0;
-    const maxVal = Math.max(...values);
-    const peakIdx = values.indexOf(maxVal);
-
-    document.getElementById("reportTotal").textContent = total;
-    document.getElementById("reportAvg").textContent   = avg + "/h";
-    document.getElementById("reportPeak").textContent  =
-        labels[peakIdx] ? `${labels[peakIdx]} (${maxVal})` : "—";
-
-    const canvas = document.getElementById("reportChart");
-    if (reportChart) reportChart.destroy();
-    reportChart = new Chart(canvas, {
-        type: "bar",
-        data: {
-            labels,
-            datasets: [{
-                label: "Visitas",
-                data: values,
-                backgroundColor: "rgba(37,99,235,.6)",
-                borderColor: "#2563eb",
-                borderWidth: 1,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" } },
-                y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" } }
-            }
-        }
-    });
-}
-
 // ===== Tempo Real =====
 function startRealtime() {
     carregarRealtime();
