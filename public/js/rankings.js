@@ -22,6 +22,9 @@ export function renderRanking(id, dados, campo) {
 
         const porcentagem = Math.round((item.total / maior) * 100);
 
+        let label = item[campo] || "";
+        try { label = decodeURIComponent(label); } catch(e) {}
+
         div.innerHTML += `
 
             <div class="rank-item">
@@ -30,7 +33,7 @@ export function renderRanking(id, dados, campo) {
 
                     <span class="rank-label">
 
-                        ${item[campo]}
+                        ${label}
 
                     </span>
 
