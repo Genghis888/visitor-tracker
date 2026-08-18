@@ -411,20 +411,35 @@ body{
 .card-variation.negative{ background:rgba(229,57,53,.15); color:#ff5252; }
 .card-variation.neutral{ background:rgba(148,163,184,.1); color:var(--text-soft); }
 
+.overview-layout{
+    display:grid;
+    grid-template-columns:1.6fr 1fr;
+    gap:18px;
+    align-items:start;
+}
+
+.overview-left{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.overview-right{
+    position:sticky;
+    top:0;
+    overflow-y:auto;
+    max-height:calc(100vh - 160px);
+}
+
+.overview-right::-webkit-scrollbar{ width:5px; }
+.overview-right::-webkit-scrollbar-track{ background:transparent; }
+.overview-right::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
+
 .overview-grid{
     display:grid;
     grid-template-columns:1.6fr 1fr;
     gap:18px;
 }
-
-.overview-grid .panel:last-child{
-    overflow-y:auto;
-    max-height:290px;
-}
-
-.overview-grid .panel:last-child::-webkit-scrollbar{ width:5px; }
-.overview-grid .panel:last-child::-webkit-scrollbar-track{ background:transparent; }
-.overview-grid .panel:last-child::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
 
 .chart-wrap{ position:relative; height:240px; }
 .chart-wrap-lg{ position:relative; height:360px; }
@@ -439,7 +454,6 @@ body{
     grid-template-columns:repeat(3,1fr);
     gap:14px;
 }
-
 /* ===== TEMPO REAL ===== */
 .realtime-header{
     display:flex;
@@ -1277,13 +1291,10 @@ tbody td:last-child{
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .overview-grid{
-        grid-template-columns: 1fr;
-    }
-
-    .overview-rankings{
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .overview-layout{ grid-template-columns:1fr; }
+    .overview-right{ max-height:400px; position:static; }
+    .overview-grid{ grid-template-columns: 1fr; }
+    .overview-rankings{ grid-template-columns: repeat(2, 1fr); }
 
     .rankings-grid{
         grid-template-columns: 1fr;
@@ -1383,6 +1394,8 @@ tbody td:last-child{
     .map-full{ height:calc(100vh - 220px); }
 
     /* Rankings 1 coluna */
+    .overview-layout{ grid-template-columns:1fr; }
+    .overview-right{ max-height:300px; position:static; }
     .overview-rankings{ grid-template-columns:1fr 1fr; gap:10px; }
     .rankings-grid{ grid-template-columns:1fr; }
 

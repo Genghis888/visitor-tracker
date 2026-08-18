@@ -118,33 +118,34 @@
             </div>
         </div>
 
-        <div class="overview-grid">
-            <div class="panel chart-panel">
-                <div class="panel-header">
-                    <h2>Visitas por período</h2>
+        <div class="overview-layout">
+            <div class="overview-left">
+                <div class="panel chart-panel">
+                    <div class="panel-header">
+                        <h2>Visitas por período</h2>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
                 </div>
-                <div class="chart-wrap">
-                    <canvas id="hourlyChart"></canvas>
+                <div class="overview-rankings">
+                    <div class="panel">
+                        <h2>🌐 Navegadores</h2>
+                        <div id="rankBrowsers"></div>
+                    </div>
+                    <div class="panel">
+                        <h2>🖥 Sistemas</h2>
+                        <div id="rankSystems"></div>
+                    </div>
+                    <div class="panel">
+                        <h2>📱 Dispositivos</h2>
+                        <div id="rankDevices"></div>
+                    </div>
                 </div>
             </div>
-            <div class="panel">
+            <div class="panel overview-right">
                 <h2>📄 Top Páginas</h2>
                 <div id="rankPages"></div>
-            </div>
-        </div>
-
-        <div class="overview-rankings">
-            <div class="panel">
-                <h2>🌐 Navegadores</h2>
-                <div id="rankBrowsers"></div>
-            </div>
-            <div class="panel">
-                <h2>🖥 Sistemas</h2>
-                <div id="rankSystems"></div>
-            </div>
-            <div class="panel">
-                <h2>📱 Dispositivos</h2>
-                <div id="rankDevices"></div>
             </div>
         </div>
 
