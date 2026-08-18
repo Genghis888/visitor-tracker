@@ -413,11 +413,18 @@ body{
 
 .overview-grid{
     display:grid;
-    grid-template-columns:1fr;
+    grid-template-columns:1.6fr 1fr;
     gap:18px;
 }
 
-.overview-grid-full .chart-wrap{ height:200px; }
+.overview-grid .panel:last-child{
+    overflow-y:auto;
+    max-height:290px;
+}
+
+.overview-grid .panel:last-child::-webkit-scrollbar{ width:5px; }
+.overview-grid .panel:last-child::-webkit-scrollbar-track{ background:transparent; }
+.overview-grid .panel:last-child::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
 
 .chart-wrap{ position:relative; height:240px; }
 .chart-wrap-lg{ position:relative; height:360px; }
@@ -429,7 +436,7 @@ body{
 
 .overview-rankings{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(3,1fr);
     gap:14px;
 }
 
