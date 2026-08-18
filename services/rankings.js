@@ -20,7 +20,7 @@ export async function getRankings(range = "today", start = null, end = null, sit
         pool.query(`
             SELECT
                 CASE
-                    WHEN page_title IS NOT NULL AND page_title <> '' THEN page_title
+                    WHEN full_url IS NOT NULL AND full_url <> '' THEN full_url
                     WHEN host IS NOT NULL AND host <> '' THEN CONCAT(host, COALESCE(page, '/'))
                     ELSE COALESCE(page, '/')
                 END AS page,
