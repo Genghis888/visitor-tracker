@@ -413,9 +413,11 @@ body{
 
 .overview-grid{
     display:grid;
-    grid-template-columns:1.6fr 1fr;
+    grid-template-columns:1fr;
     gap:18px;
 }
+
+.overview-grid-full .chart-wrap{ height:200px; }
 
 .chart-wrap{ position:relative; height:240px; }
 .chart-wrap-lg{ position:relative; height:360px; }

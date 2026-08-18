@@ -8,9 +8,8 @@ import { renderTable } from "./table.js";
 import { renderPagination } from "./pagination.js";
 
 // ===== Mapas (instâncias separadas por seção) =====
-let mapOverview = null;
 let mapPaises   = null;
-let clusterOverview, clusterPaises;
+let clusterPaises;
 let reportChart = null;
 
 let currentPage = 1;
@@ -85,13 +84,6 @@ function createMap(containerId, zoom = 2) {
     return m;
 }
 
-function initMapOverview() {
-    if (mapOverview) return;
-    mapOverview = createMap("worldMapOverview", 1);
-    clusterOverview = L.markerClusterGroup();
-    mapOverview.addLayer(clusterOverview);
-}
-
 function initMapPaises() {
     if (mapPaises) return;
     mapPaises = createMap("worldMapPaises", 2);
@@ -122,10 +114,9 @@ function updateMapLayer(cluster, markers) {
 // ===== Overview =====
 async function carregarOverview() {
     const range = getCurrentRange();
-    const [stats, hourly, mapData, rankings] = await Promise.all([
+    const [stats, hourly, rankings] = await Promise.all([
         getStats(range),
         getHourly(range),
-        getMap(range),
         getRankings(range)
     ]);
 
@@ -145,10 +136,6 @@ async function carregarOverview() {
 
     // Gráfico
     renderHourlyChart(hourly);
-
-    // Mapa overview
-    initMapOverview();
-    updateMapLayer(clusterOverview, mapData);
 
     // Rankings
     renderRanking("rankBrowsers", rankings.browsers, "browser");
