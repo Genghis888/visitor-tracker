@@ -415,7 +415,7 @@ body{
     display:grid;
     grid-template-columns:1.6fr 1fr;
     gap:18px;
-    align-items:start;
+    align-items:stretch;
 }
 
 .overview-left{
@@ -425,10 +425,8 @@ body{
 }
 
 .overview-right{
-    position:sticky;
-    top:0;
     overflow-y:auto;
-    max-height:calc(100vh - 160px);
+    min-height:0;
 }
 
 .overview-right::-webkit-scrollbar{ width:5px; }
