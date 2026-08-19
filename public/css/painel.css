@@ -641,8 +641,8 @@ body{
     gap:18px;
 }
 
-.rank-item{ margin-bottom:8px; }
-.rank-top{ display:flex; justify-content:space-between; margin-bottom:3px; font-size:11px; }
+.rank-item{ margin-bottom:13px; }
+.rank-top{ display:flex; justify-content:space-between; margin-bottom:3px; font-size:13px; }
 .rank-label{ color:var(--text); }
 .rank-value{ color:var(--text-soft); font-weight:600; flex-shrink:0; margin-left:6px; }
 .rank-bar{ background:rgba(255,255,255,.06); border-radius:4px; height:4px; }
