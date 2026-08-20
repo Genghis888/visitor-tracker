@@ -290,6 +290,11 @@
                     <input type="date" id="dateEndRelatorios">
                     <button id="applyRangeRelatorios">OK</button>
                 </div>
+                <div class="relatorio-stats-header">
+                    <span class="relatorio-stat-mini"><span class="relatorio-stat-mini-label">Total</span> <span id="reportTotal">—</span></span>
+                    <span class="relatorio-stat-mini"><span class="relatorio-stat-mini-label">Média</span> <span id="reportAvg">—</span></span>
+                    <span class="relatorio-stat-mini"><span class="relatorio-stat-mini-label">Pico</span> <span id="reportPeak">—</span></span>
+                </div>
                 <div class="chart-type-selector">
                     <button class="chart-type-btn active" data-type="line" title="Linha">╱</button>
                     <button class="chart-type-btn" data-type="area" title="Linha + Área">◭</button>
@@ -304,20 +309,6 @@
                 <div class="panel relatorio-chart-panel">
                     <div class="chart-wrap-relatorio">
                         <canvas id="reportChart"></canvas>
-                    </div>
-                    <div class="relatorio-stats-row">
-                        <div class="relatorio-stat-inline">
-                            <div class="stat-label">Total no período</div>
-                            <div class="stat-value" id="reportTotal">—</div>
-                        </div>
-                        <div class="relatorio-stat-inline">
-                            <div class="stat-label">Média diária</div>
-                            <div class="stat-value" id="reportAvg">—</div>
-                        </div>
-                        <div class="relatorio-stat-inline">
-                            <div class="stat-label">Dia de pico</div>
-                            <div class="stat-value" id="reportPeak">—</div>
-                        </div>
                     </div>
                 </div>
                 <div class="relatorio-rankings-bottom">

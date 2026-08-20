@@ -1060,11 +1060,12 @@ tbody td:last-child{
     display:flex;
     flex-direction:column;
     gap:14px;
+    min-height:0;
 }
 
 .relatorio-right{
     overflow-y:auto;
-    max-height:100%;
+    min-height:0;
 }
 
 .relatorio-right::-webkit-scrollbar{ width:5px; }
@@ -1075,33 +1076,31 @@ tbody td:last-child{
 
 .chart-wrap-relatorio{
     position:relative;
-    height:180px;
-    margin-bottom:12px;
+    height:240px;
 }
 
-.relatorio-stats-row{
+.relatorio-stats-header{
     display:flex;
-    gap:12px;
+    gap:14px;
+    align-items:center;
 }
 
-.relatorio-stat-inline{
-    flex:1;
-    background:rgba(255,255,255,.04);
-    border-radius:8px;
-    padding:10px 14px;
+.relatorio-stat-mini{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:13px;
+    font-weight:700;
+    color:var(--text);
+    white-space:nowrap;
 }
 
-.relatorio-stat-inline .stat-label{
+.relatorio-stat-mini-label{
     font-size:10px;
+    font-weight:400;
     color:var(--text-soft);
     text-transform:uppercase;
     letter-spacing:.04em;
-    margin-bottom:4px;
-}
-
-.relatorio-stat-inline .stat-value{
-    font-size:18px;
-    font-weight:700;
 }
 
 .relatorio-rankings-bottom{
