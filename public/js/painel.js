@@ -339,20 +339,22 @@ function renderSessionsPagination(data) {
 window.carregarVisitantes = carregarVisitantes;
 
 // ===== Páginas & Rankings =====
+let reportChartType = "line";
+
 async function carregarRelatorios() {
-    const range    = getCurrentRange();
+    const range = getCurrentRange();
     const [hourly, rankings] = await Promise.all([
         getHourly(range),
         getRankings(range)
     ]);
 
-    // Rankings (ex-aba Páginas)
+    // Rankings
     renderRanking("rankPagesDetail",    rankings.pages,    "page");
     renderRanking("rankBrowsersDetail", rankings.browsers, "browser");
     renderRanking("rankSystemsDetail",  rankings.systems,  "os");
     renderRanking("rankDevicesDetail",  rankings.devices,  "device_type");
 
-    // Gráfico
+    // Labels e valores
     const labels = hourly.map(v =>
         typeof v.label === "number"
             ? `${String(v.label).padStart(2,"0")}:00`
@@ -369,19 +371,36 @@ async function carregarRelatorios() {
     document.getElementById("reportPeak").textContent  =
         labels[peakIdx] ? `${labels[peakIdx]} (${maxVal})` : "—";
 
+    renderReportChart(labels, values);
+}
+
+function renderReportChart(labels, values) {
     const canvas = document.getElementById("reportChart");
     if (reportChart) reportChart.destroy();
+
+    const isArea = reportChartType === "area";
+    const isBar  = reportChartType === "bar";
+    const type   = isBar ? "bar" : "line";
+
     reportChart = new Chart(canvas, {
-        type: "bar",
+        type,
         data: {
             labels,
             datasets: [{
                 label: "Visitas",
                 data: values,
-                backgroundColor: "rgba(37,99,235,.6)",
+                backgroundColor: isBar
+                    ? "rgba(37,99,235,.6)"
+                    : isArea
+                        ? "rgba(37,99,235,.2)"
+                        : "transparent",
                 borderColor: "#2563eb",
-                borderWidth: 1,
-                borderRadius: 4
+                borderWidth: isBar ? 1 : 2,
+                borderRadius: isBar ? 4 : 0,
+                fill: isArea,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: "#2563eb"
             }]
         },
         options: {
@@ -390,7 +409,7 @@ async function carregarRelatorios() {
             plugins: { legend: { display: false } },
             scales: {
                 x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" } },
-                y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" } }
+                y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" }, beginAtZero: true }
             }
         }
     });
@@ -655,6 +674,20 @@ function initIpSearch() {
     });
 
     document.getElementById("refreshPorIP")?.addEventListener("click", carregarTabelaIP);
+
+    // Seletor de tipo de gráfico nos Relatórios
+    document.querySelectorAll(".chart-type-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".chart-type-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            reportChartType = btn.dataset.type;
+            if (reportChart) {
+                const labels = reportChart.data.labels;
+                const values = reportChart.data.datasets[0].data;
+                renderReportChart(labels, values);
+            }
+        });
+    });
 }
 
 // ===== Busca na sessão (server-side com debounce) =====

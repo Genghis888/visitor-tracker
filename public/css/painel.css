@@ -1049,49 +1049,89 @@ tbody td:last-child{
 
 /* ===== RELATÓRIOS ===== */
 /* === RELATÓRIOS === */
-.relatorio-top{
+.relatorio-layout{
     display:grid;
-    grid-template-columns:1fr auto;
-    gap:14px;
-    align-items:start;
-    margin-bottom:14px;
+    grid-template-columns:1.6fr 1fr;
+    gap:18px;
+    align-items:stretch;
 }
 
-.relatorio-chart-panel{ padding:12px 16px; }
-.relatorio-chart-panel .panel-header{ margin-bottom:8px; }
-.relatorio-chart-panel .panel-header h2{ font-size:13px; }
+.relatorio-left{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.relatorio-right{
+    overflow-y:auto;
+    min-height:0;
+}
+
+.relatorio-right::-webkit-scrollbar{ width:5px; }
+.relatorio-right::-webkit-scrollbar-track{ background:transparent; }
+.relatorio-right::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
+
+.relatorio-chart-panel{ padding:16px; }
 
 .chart-wrap-relatorio{
     position:relative;
     height:180px;
+    margin-bottom:12px;
 }
 
-.relatorio-stats-side{
+.relatorio-stats-row{
     display:flex;
-    flex-direction:column;
-    gap:8px;
-    min-width:150px;
+    gap:12px;
 }
 
-.relatorio-stat-card{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+.relatorio-stat-inline{
+    flex:1;
+    background:rgba(255,255,255,.04);
+    border-radius:8px;
     padding:10px 14px;
 }
 
-.relatorio-stat-card .stat-label{
+.relatorio-stat-inline .stat-label{
     font-size:10px;
+    color:var(--text-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
     margin-bottom:4px;
 }
 
-.relatorio-stat-card .stat-value{
-    font-size:20px;
+.relatorio-stat-inline .stat-value{
+    font-size:18px;
+    font-weight:700;
 }
 
-.relatorio-rankings{
-    margin-top:0;
+.relatorio-rankings-bottom{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
 }
+
+/* Seletor tipo gráfico */
+.chart-type-selector{
+    display:flex;
+    gap:4px;
+    background:rgba(255,255,255,.06);
+    border-radius:8px;
+    padding:3px;
+}
+
+.chart-type-btn{
+    background:transparent;
+    border:none;
+    color:var(--text-soft);
+    padding:4px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+    transition:background .15s, color .15s;
+}
+
+.chart-type-btn:hover{ background:rgba(255,255,255,.08); color:var(--text); }
+.chart-type-btn.active{ background:var(--primary); color:#fff; }
 
 .stat-label{
     font-size:12px;

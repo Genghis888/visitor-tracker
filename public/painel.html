@@ -290,51 +290,54 @@
                     <input type="date" id="dateEndRelatorios">
                     <button id="applyRangeRelatorios">OK</button>
                 </div>
+                <div class="chart-type-selector">
+                    <button class="chart-type-btn active" data-type="line" title="Linha">╱</button>
+                    <button class="chart-type-btn" data-type="area" title="Linha + Área">◭</button>
+                    <button class="chart-type-btn" data-type="bar" title="Barras">▦</button>
+                </div>
                 <button id="refreshRelatorios" class="btn-icon" title="Atualizar">↺</button>
             </div>
         </div>
 
-        <!-- Gráfico + stats lado a lado -->
-        <div class="relatorio-top">
-            <div class="panel relatorio-chart-panel">
-                <div class="panel-header"><h2>Visitas por período</h2></div>
-                <div class="chart-wrap-relatorio">
-                    <canvas id="reportChart"></canvas>
+        <div class="relatorio-layout">
+            <div class="relatorio-left">
+                <div class="panel relatorio-chart-panel">
+                    <div class="chart-wrap-relatorio">
+                        <canvas id="reportChart"></canvas>
+                    </div>
+                    <div class="relatorio-stats-row">
+                        <div class="relatorio-stat-inline">
+                            <div class="stat-label">Total no período</div>
+                            <div class="stat-value" id="reportTotal">—</div>
+                        </div>
+                        <div class="relatorio-stat-inline">
+                            <div class="stat-label">Média diária</div>
+                            <div class="stat-value" id="reportAvg">—</div>
+                        </div>
+                        <div class="relatorio-stat-inline">
+                            <div class="stat-label">Dia de pico</div>
+                            <div class="stat-value" id="reportPeak">—</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relatorio-rankings-bottom">
+                    <div class="panel">
+                        <h2>🌐 Navegadores</h2>
+                        <div id="rankBrowsersDetail"></div>
+                    </div>
+                    <div class="panel">
+                        <h2>🖥 Sistemas Operacionais</h2>
+                        <div id="rankSystemsDetail"></div>
+                    </div>
+                    <div class="panel">
+                        <h2>📱 Dispositivos</h2>
+                        <div id="rankDevicesDetail"></div>
+                    </div>
                 </div>
             </div>
-            <div class="relatorio-stats-side">
-                <div class="panel relatorio-stat-card">
-                    <div class="stat-label">Total no período</div>
-                    <div class="stat-value" id="reportTotal">—</div>
-                </div>
-                <div class="panel relatorio-stat-card">
-                    <div class="stat-label">Média diária</div>
-                    <div class="stat-value" id="reportAvg">—</div>
-                </div>
-                <div class="panel relatorio-stat-card">
-                    <div class="stat-label">Dia de pico</div>
-                    <div class="stat-value" id="reportPeak">—</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Rankings (ex-aba Páginas) -->
-        <div class="rankings-grid relatorio-rankings">
-            <div class="panel">
+            <div class="panel relatorio-right">
                 <h2>📄 Páginas mais visitadas</h2>
                 <div id="rankPagesDetail"></div>
-            </div>
-            <div class="panel">
-                <h2>🌐 Navegadores</h2>
-                <div id="rankBrowsersDetail"></div>
-            </div>
-            <div class="panel">
-                <h2>🖥 Sistemas Operacionais</h2>
-                <div id="rankSystemsDetail"></div>
-            </div>
-            <div class="panel">
-                <h2>📱 Dispositivos</h2>
-                <div id="rankDevicesDetail"></div>
             </div>
         </div>
     </section>
