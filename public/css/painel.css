@@ -1065,6 +1065,7 @@ tbody td:last-child{
 .relatorio-right{
     overflow-y:auto;
     min-height:0;
+    height:100%;
 }
 
 .relatorio-right::-webkit-scrollbar{ width:5px; }
