@@ -223,9 +223,9 @@ body{
 }
 
 .visitantes-controls #customRangeVisitantes{
-    width:100%;
-    order:99;
-    flex-basis:100%;
+    display:flex;
+    align-items:center;
+    gap:6px;
 }
 
 .visitantes-controls #searchVisits{
@@ -235,8 +235,9 @@ body{
 
 .visitantes-controls #searchVisits,
 .search-input-visitantes{
-    flex:1;
-    min-width:120px;
+    width:100%;
+    flex-basis:100%;
+    order:99;
     background:#1e293b;
     color:var(--text);
     border:1px solid var(--border);

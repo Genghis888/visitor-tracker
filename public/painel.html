@@ -210,8 +210,7 @@
                     <button id="applyRangeVisitantes">OK</button>
                 </div>
                 <button id="refreshVisitantes" class="btn-icon" title="Atualizar">↺</button>
-                <input type="text" id="searchVisits" class="search-input-visitantes"
-                    placeholder="🔍 Filtrar por IP, país, cidade...">
+                <button id="exportCsvBtn" class="btn-icon" title="Exportar CSV">⬇</button>
                 <div class="groupby-selector">
                     <label>Agrupar por</label>
                     <select id="groupBySelect">
@@ -221,6 +220,8 @@
                         <option value="city">Cidade</option>
                     </select>
                 </div>
+                <input type="text" id="searchVisits" class="search-input-visitantes"
+                    placeholder="🔍 Filtrar por IP, país, cidade...">
             </div>
             <div class="visitantes-stats">
                 <div class="realtime-stat-inline">
@@ -241,9 +242,7 @@
             <div id="sessionsList" class="sessions-list"></div>
             <div id="sessionsPagination"></div>
         </div>
-    </section>
-
-    <!-- PAÍSES -->
+    </section>    <!-- PAÍSES -->
     <section id="section-paises" class="section hidden">
         <div class="section-header-new">
             <h1>🌍 Países e Cidades</h1>
