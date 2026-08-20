@@ -1053,7 +1053,7 @@ tbody td:last-child{
     display:grid;
     grid-template-columns:1.6fr 1fr;
     gap:18px;
-    align-items:start;
+    align-items:stretch;
 }
 
 .relatorio-left{
@@ -1071,7 +1071,7 @@ tbody td:last-child{
 .relatorio-right::-webkit-scrollbar-track{ background:transparent; }
 .relatorio-right::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
 
-.relatorio-chart-panel{ padding:16px; }
+.relatorio-chart-panel{ padding:0; }
 
 .chart-wrap-relatorio{
     position:relative;
