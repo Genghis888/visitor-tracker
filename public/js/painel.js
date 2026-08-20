@@ -372,6 +372,16 @@ async function carregarRelatorios() {
         labels[peakIdx] ? `${labels[peakIdx]} (${maxVal})` : "—";
 
     renderReportChart(labels, values);
+
+    // Igualar altura da coluna direita à esquerda após render completo
+    setTimeout(() => {
+        const left  = document.querySelector(".relatorio-left");
+        const right = document.querySelector(".relatorio-right");
+        if (left && right) {
+            right.style.maxHeight = left.getBoundingClientRect().height + "px";
+            right.style.overflowY = "auto";
+        }
+    }, 100);
 }
 
 function renderReportChart(labels, values) {
