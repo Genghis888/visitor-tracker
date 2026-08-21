@@ -161,6 +161,45 @@ app.get("/fix-titles", async (req, res) => {
     }
 });
 
+// Rota utilitária — preenche isp de registros com isp IS NULL via ipinfo.io
+app.get("/fix-isp", async (req, res) => {
+    const secret = process.env.FIX_SECRET;
+    if (!secret || req.query.secret !== secret) {
+        return res.status(401).json({ error: "Não autorizado" });
+    }
+    try {
+        const { getISP } = await import("./services/geo.js");
+
+        // Busca IPs distintos sem ISP — 200 por vez para não sobrecarregar a API
+        const { rows } = await pool.query(`
+            SELECT DISTINCT ip FROM visits
+            WHERE isp IS NULL AND ip IS NOT NULL
+            LIMIT 200
+        `);
+
+        let atualizados = 0;
+        const erros = [];
+
+        for (const row of rows) {
+            try {
+                const isp = await getISP(row.ip);
+                if (!isp) continue;
+                await pool.query(
+                    "UPDATE visits SET isp = $1 WHERE ip = $2 AND isp IS NULL",
+                    [isp, row.ip]
+                );
+                atualizados++;
+            } catch(e) {
+                erros.push({ ip: row.ip, erro: e.message });
+            }
+        }
+
+        res.json({ ips_encontrados: rows.length, ips_atualizados: atualizados, erros });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor iniciado em http://localhost:${PORT}`);
 });
