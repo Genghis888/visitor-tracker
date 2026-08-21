@@ -272,6 +272,7 @@ function renderSessions(sessions) {
                             <span>📄 ${s.page_count} pág.</span>
                             <span>⏱ ${duration}</span>
                             <span>🌍 ${s.host || ""}</span>
+                            ${s.isp ? `<span class="session-isp" title="Operadora/ISP">📡 ${s.isp}</span>` : ""}
                         </div>
                     </div>
                     <span class="session-time">${lastTime}</span>
@@ -568,6 +569,7 @@ async function carregarRealtime() {
         const ago      = timeSince(new Date(v.created_at));
         const location = [v.city, v.region, v.country].filter(Boolean).join(", ") || "Desconhecido";
         const url      = decodeUrl(v.full_url || v.page || "/");
+        const ispLabel = v.isp ? ` · <span class="feed-isp">${v.isp}</span>` : "";
         const badge    = v.page_title
             ? `<span class="feed-badge">${v.page_title}</span>`
             : "";
@@ -577,7 +579,7 @@ async function carregarRealtime() {
                 <div class="feed-info">
                     <div class="feed-top">
                         <span class="feed-ip">${v.ip || "?"}</span>
-                        <span class="feed-location">— ${location} · ${v.browser || "?"}</span>
+                        <span class="feed-location">— ${location} · ${v.browser || "?"}${ispLabel}</span>
                     </div>
                     <div class="feed-bottom">
                         <a href="${url}" target="_blank" rel="noopener" class="feed-url" title="${url}">${url}</a>

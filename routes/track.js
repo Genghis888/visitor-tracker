@@ -1,6 +1,6 @@
 import express from "express";
 import { UAParser } from "ua-parser-js";
-import { getLocation, getLocationFallback } from "../services/geo.js";
+import { getLocation, getLocationFallback, getISP } from "../services/geo.js";
 import { insert } from "../services/database.js";
 import { normalizeIP } from "../services/ip.js";
 import { canRegister } from "../services/flood.js";
@@ -16,7 +16,11 @@ router.post("/", async (req, res) => {
             req.socket.remoteAddress
         );
 
-        const location = getLocation(ip) || await getLocationFallback(ip);
+        const [locationResult, isp] = await Promise.all([
+            Promise.resolve(getLocation(ip)).then(l => l || getLocationFallback(ip)),
+            getISP(ip)
+        ]);
+        const location = locationResult;
         const ua = new UAParser(req.headers["user-agent"]).getResult();
         const visitor_type = detectVisitorType(req.headers["user-agent"]);
 
@@ -102,7 +106,8 @@ router.post("/", async (req, res) => {
             geo_timezone: location?.timezone,
 
             full_url,
-            page_title
+            page_title,
+            isp
         };
 
         await insert("visits", visit);

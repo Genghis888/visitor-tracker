@@ -13,7 +13,7 @@ export async function getLastVisits(range = "today", start = null, end = null, p
             WHERE ${where} AND ${siteWhere} AND ${userWhere}`),
         pool.query(`
             SELECT created_at, ip, host, country, country_code, region, city,
-                   browser, os, device_type, full_url, page_title
+                   browser, os, device_type, full_url, page_title, isp
             FROM visits
             WHERE ${where} AND ${siteWhere} AND ${userWhere}
             ORDER BY created_at DESC

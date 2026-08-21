@@ -562,6 +562,18 @@ body{
     color:var(--text-soft);
 }
 
+.feed-isp{
+    font-size:11px;
+    color:var(--text-soft);
+    opacity:.7;
+}
+
+.session-isp{
+    font-size:11px;
+    color:var(--text-soft);
+    opacity:.8;
+}
+
 .feed-bottom{
     display:flex;
     align-items:center;
@@ -888,7 +900,7 @@ tbody td:last-child{
     font-weight:500;
     white-space:nowrap;
     flex-shrink:0;
-    width:50px;
+    width:100px;
 }
 
 .session-page-url{

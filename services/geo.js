@@ -2,13 +2,12 @@ import maxmind from "maxmind";
 import path from "path";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
+import pool from "../db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 const dbPath     = path.join(__dirname, "..", "geo", "GeoLite2-City.mmdb");
 
-// Abre o banco apenas uma vez quando o servidor inicia.
-// Se o arquivo não existir, desabilita silenciosamente.
 let lookup = null;
 
 if (existsSync(dbPath)) {
@@ -28,7 +27,6 @@ export function getLocation(ip) {
             ip = ip.replace("::ffff:", "");
         }
 
-        // Em desenvolvimento substitui localhost por IP público para teste
         if (
             process.env.NODE_ENV === "development" &&
             (ip === "127.0.0.1" || ip === "::1")
@@ -74,6 +72,48 @@ export async function getLocationFallback(ip) {
         };
     } catch (err) {
         console.error("Erro ip-api fallback:", err);
+        return null;
+    }
+}
+
+// Cache de ISP em memória para evitar consultas repetidas na mesma sessão do servidor
+const ispCache = new Map();
+
+// Busca ISP via ipinfo.io — consulta banco primeiro, depois API, e salva para reutilizar
+export async function getISP(ip) {
+    if (!ip) return null;
+
+    // 1. Cache em memória
+    if (ispCache.has(ip)) return ispCache.get(ip);
+
+    // 2. Cache no banco
+    try {
+        const row = await pool.query(
+            "SELECT isp FROM visits WHERE ip = $1 AND isp IS NOT NULL LIMIT 1",
+            [ip]
+        );
+        if (row.rows.length > 0) {
+            const isp = row.rows[0].isp;
+            ispCache.set(ip, isp);
+            return isp;
+        }
+    } catch (err) {
+        console.error("Erro ao buscar ISP no banco:", err);
+    }
+
+    // 3. Consulta ipinfo.io
+    try {
+        const token = process.env.IPINFO_TOKEN || "";
+        const url   = token
+            ? `https://ipinfo.io/${ip}/json?token=${token}`
+            : `https://ipinfo.io/${ip}/json`;
+        const res  = await fetch(url);
+        const data = await res.json();
+        const isp  = data.org || null; // ex: "AS26615 TIM SA"
+        ispCache.set(ip, isp);
+        return isp;
+    } catch (err) {
+        console.error("Erro ipinfo.io:", err);
         return null;
     }
 }
