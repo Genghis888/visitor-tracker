@@ -798,8 +798,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (planRes && !planRes.can_export) {
             exportBtn.classList.add("locked");
-            exportBtn.title = "Disponível apenas no plano Pro";
-            exportBtn.textContent = "🔒 Exportar CSV (Pro)";
+            exportBtn.title = "Exportar CSV (plano Pro)";
+            exportBtn.textContent = "🔒";
         }
 
         exportBtn.addEventListener("click", async () => {
