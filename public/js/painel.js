@@ -217,9 +217,9 @@ function renderSessions(sessions) {
         const firstUrlDec  = decodeUrl(firstUrl);
         const flag         = countryFlag(s.country_code);
         const location     = [s.city, s.region, s.country].filter(Boolean).join(", ") || "Desconhecido";
-        const entryDate    = new Date(s.last_time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
         const entryTime    = formatTime(s.entry_time);
         const lastTime     = formatTime(s.last_time);
+        const entryDate    = new Date(s.last_time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
         const duration     = formatDuration(s.duration_seconds);
 
         // Linha de destaque (negrito) conforme modo de agrupamento
@@ -245,9 +245,11 @@ function renderSessions(sessions) {
         const restHtml = rest.map(p => {
             const urlDec = decodeUrl(p.url);
             const titleBadge = p.title ? `<span class="session-page-title">${p.title}</span>` : "";
+            const pageDate = new Date(p.time).toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" });
+            const pageTime = formatTime(p.time);
             return `
                 <div class="session-page-item session-collapsed" data-session="${idx}">
-                    <span class="session-page-time">${formatTime(p.time)}</span>
+                    <span class="session-page-time">${pageDate} ${pageTime}</span>
                     ${showIp && p.ip ? `<span class="session-page-ip">${p.ip}</span>` : ""}
                     <a href="${p.url || '/'}" target="_blank" rel="noopener"
                        class="session-page-url" title="${urlDec}">${urlDec}</a>
@@ -272,11 +274,11 @@ function renderSessions(sessions) {
                             <span>🌍 ${s.host || ""}</span>
                         </div>
                     </div>
-                    <span class="session-time">${entryDate} ${lastTime}</span>
+                    <span class="session-time">${lastTime}</span>
                 </div>
                 <div class="session-pages">
                     <div class="session-page-item">
-                        <span class="session-page-time">${formatTime(first?.time || s.entry_time)}</span>
+                        <span class="session-page-time">${new Date(first?.time || s.entry_time).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})} ${formatTime(first?.time || s.entry_time)}</span>
                         ${showIp && first?.ip ? `<span class="session-page-ip">${first.ip}</span>` : ""}
                         <a href="${firstUrl}" target="_blank" rel="noopener"
                            class="session-page-url" title="${firstUrlDec}">${firstUrlDec}</a>
@@ -565,7 +567,7 @@ async function carregarRealtime() {
     feed.innerHTML = visits.rows.map(v => {
         const ago      = timeSince(new Date(v.created_at));
         const location = [v.city, v.region, v.country].filter(Boolean).join(", ") || "Desconhecido";
-        const url      = v.full_url || v.page || "/";
+        const url      = decodeUrl(v.full_url || v.page || "/");
         const badge    = v.page_title
             ? `<span class="feed-badge">${v.page_title}</span>`
             : "";
