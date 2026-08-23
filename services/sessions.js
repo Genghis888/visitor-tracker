@@ -1,6 +1,7 @@
 import pool from "../db.js";
 import { getDateFilter } from "./dateFilter.js";
 import { getSiteFilter } from "./siteFilter.js";
+import { getBotFilter } from "./botFilter.js";
 
 // Agrupa visitas de acordo com o modo escolhido:
 // - "visitor" → por visitor_id (padrão)
@@ -20,6 +21,7 @@ export async function getSessions(
     const where     = getDateFilter(range, start, end);
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
+    const botWhere  = getBotFilter();
 
     const searchWhere = search
         ? `AND (ip ILIKE '%${search.replace(/'/g, "''")}%'
@@ -81,6 +83,7 @@ export async function getSessions(
         WHERE ${where}
           AND ${siteWhere}
           AND ${userWhere}
+          AND ${botWhere}
           ${searchWhere}
         GROUP BY ${groupExpr}
         ORDER BY ${orderExpr}
@@ -93,6 +96,7 @@ export async function getSessions(
         WHERE ${where}
           AND ${siteWhere}
           AND ${userWhere}
+          AND ${botWhere}
           ${searchWhere}
     `);
 

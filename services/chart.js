@@ -1,5 +1,6 @@
 import pool from "../db.js";
 import { getSiteFilter } from "./siteFilter.js";
+import { getBotFilter } from "./botFilter.js";
 
 export async function getChartData(range = "today", start = null, end = null, site = null, userId = null) {
     switch (range) {
@@ -13,6 +14,7 @@ export async function getChartData(range = "today", start = null, end = null, si
 async function getHourlyChart(site, userId) {
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
+    const botWhere  = getBotFilter();
 
     const result = await pool.query(`
         SELECT EXTRACT(HOUR FROM created_at AT TIME ZONE 'America/Sao_Paulo')::INT AS label,
@@ -20,7 +22,7 @@ async function getHourlyChart(site, userId) {
         FROM visits
         WHERE DATE(created_at AT TIME ZONE 'America/Sao_Paulo')
             = DATE(NOW() AT TIME ZONE 'America/Sao_Paulo')
-          AND ${siteWhere} AND ${userWhere}
+          AND ${siteWhere} AND ${userWhere} AND ${botWhere}
         GROUP BY label ORDER BY label
     `);
 
@@ -32,6 +34,7 @@ async function getHourlyChart(site, userId) {
 async function getDailyChart(days, site, userId) {
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
+    const botWhere  = getBotFilter();
 
     const result = await pool.query(`
         SELECT DATE(created_at AT TIME ZONE 'America/Sao_Paulo') AS day,
@@ -39,7 +42,7 @@ async function getDailyChart(days, site, userId) {
         FROM visits
         WHERE DATE(created_at AT TIME ZONE 'America/Sao_Paulo')
             >= DATE(NOW() AT TIME ZONE 'America/Sao_Paulo') - ($1::INT - 1)
-          AND ${siteWhere} AND ${userWhere}
+          AND ${siteWhere} AND ${userWhere} AND ${botWhere}
         GROUP BY day ORDER BY day
     `, [days]);
 
@@ -58,13 +61,14 @@ async function getCustomChart(start, end, site, userId) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end)) return [];
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
+    const botWhere  = getBotFilter();
 
     const result = await pool.query(`
         SELECT DATE(created_at AT TIME ZONE 'America/Sao_Paulo') AS day,
                COUNT(*)::INT AS total
         FROM visits
         WHERE DATE(created_at AT TIME ZONE 'America/Sao_Paulo') BETWEEN $1 AND $2
-          AND ${siteWhere} AND ${userWhere}
+          AND ${siteWhere} AND ${userWhere} AND ${botWhere}
         GROUP BY day ORDER BY day
     `, [start, end]);
 

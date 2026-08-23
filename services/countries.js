@@ -1,16 +1,18 @@
 import pool from "../db.js";
 import { getDateFilter } from "./dateFilter.js";
 import { getSiteFilter } from "./siteFilter.js";
+import { getBotFilter } from "./botFilter.js";
 
 export async function getCountries(range = "today", start = null, end = null, site = null, userId = null) {
     const where     = getDateFilter(range, start, end);
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
+    const botWhere  = getBotFilter();
 
     const result = await pool.query(`
         SELECT country, country_code, COUNT(*)::INT AS total
         FROM visits
-        WHERE country IS NOT NULL AND ${where} AND ${siteWhere} AND ${userWhere}
+        WHERE country IS NOT NULL AND ${where} AND ${siteWhere} AND ${userWhere} AND ${botWhere}
         GROUP BY country, country_code
         ORDER BY total DESC
     `);
@@ -21,6 +23,7 @@ export async function getCountriesHierarchy(range = "today", start = null, end =
     const where     = getDateFilter(range, start, end);
     const siteWhere = getSiteFilter(site);
     const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
+    const botWhere  = getBotFilter();
 
     const result = await pool.query(`
         SELECT
@@ -31,7 +34,7 @@ export async function getCountriesHierarchy(range = "today", start = null, end =
             ip,
             COUNT(*)::INT AS visits
         FROM visits
-        WHERE country IS NOT NULL AND ${where} AND ${siteWhere} AND ${userWhere}
+        WHERE country IS NOT NULL AND ${where} AND ${siteWhere} AND ${userWhere} AND ${botWhere}
         GROUP BY country, country_code, region, city, ip
         ORDER BY country, region, city, visits DESC
     `);
