@@ -163,12 +163,15 @@ router.post("/forgot-password", async (req, res) => {
             return res.status(400).json({ error: "E-mail é obrigatório" });
         }
 
-        const { error } = await supabaseAdmin.auth.admin.generateLink({
-            type: "recovery",
-            email,
-            options: {
-                redirectTo: `${process.env.APP_URL || "http://localhost:3000"}/reset-password.html`
-            }
+        const { createClient } = await import("@supabase/supabase-js");
+        const client = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_ANON_KEY,
+            { auth: { autoRefreshToken: false, persistSession: false } }
+        );
+
+        const { error } = await client.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.APP_URL || "http://localhost:3000"}/reset-password.html`
         });
 
         // Não revelamos se o e-mail existe ou não (segurança)
