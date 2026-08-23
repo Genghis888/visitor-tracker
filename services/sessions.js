@@ -48,17 +48,22 @@ export async function getSessions(
         groupExpr  = "city";
         orderExpr  = "MAX(created_at) DESC";
         extraWhere = "AND city IS NOT NULL";
-    } else {
+    } else if (groupBy === "session") {
         groupExpr  = "visitor_id";
         orderExpr  = "MAX(created_at) DESC";
         extraWhere = "AND visitor_id IS NOT NULL";
+    } else {
+        groupExpr  = "id";
+        orderExpr  = "MAX(created_at) DESC";
+        extraWhere = "AND id IS NOT NULL";
     }
 
     const offset = (page - 1) * limit;
 
     const result = await pool.query(`
         SELECT
-            ${groupBy === "visitor" ? "visitor_id," : ""}
+            ${groupBy === "visitor" ? "id," : ""}
+            ${groupBy === "visitor" || groupBy === "session" ? "visitor_id," : ""}
             ${groupBy === "day" ? "DATE(created_at AT TIME ZONE 'America/Sao_Paulo') AS group_day," : ""}
             ${groupBy === "city" ? "city AS group_city," : ""}
             MIN(ip) AS ip,
