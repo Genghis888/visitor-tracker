@@ -70,7 +70,15 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         saveSession(data.access_token, data.user);
 
         const params = new URLSearchParams(location.search);
-        window.location.href = params.get("redirect") || "/admin.html";
+        const redirect = params.get("redirect");
+
+        if (redirect && redirect !== "/login.html") {
+            window.location.href = redirect;
+        } else if (data.user.role === "admin") {
+            window.location.href = "/admin.html";
+        } else {
+            window.location.href = "/painel.html";
+        }
 
     } catch {
         showError("loginError", "Erro de conexão. Tente novamente.");
