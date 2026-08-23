@@ -20,14 +20,21 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        const { data, error } = await supabaseAdmin.auth.admin.createUser({
+        // Usa signUp em vez de admin.createUser para que o Supabase
+        // envie o email de confirmação e exija que o usuário confirme antes de logar
+        const { createClient } = await import("@supabase/supabase-js");
+        const client = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_ANON_KEY,
+            { auth: { autoRefreshToken: false, persistSession: false } }
+        );
+
+        const { data, error } = await client.auth.signUp({
             email,
             password,
-            email_confirm: true,
-            user_metadata: {
-                name,
-                role: "user",
-                plan: "free"
+            options: {
+                data: { name, role: "user", plan: "free" },
+                emailRedirectTo: `${process.env.APP_URL || "http://localhost:3000"}/login.html`
             }
         });
 
