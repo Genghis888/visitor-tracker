@@ -34,20 +34,24 @@ export async function getSessions(
         : "";
 
     // Define o GROUP BY conforme o modo
-    let groupExpr, orderExpr;
+    let groupExpr, orderExpr, extraWhere;
 
     if (groupBy === "ip") {
-        groupExpr = "ip";
-        orderExpr = "MAX(created_at) DESC";
+        groupExpr  = "ip";
+        orderExpr  = "MAX(created_at) DESC";
+        extraWhere = "AND ip IS NOT NULL";
     } else if (groupBy === "day") {
-        groupExpr = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo')";
-        orderExpr = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo') DESC";
+        groupExpr  = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo')";
+        orderExpr  = "DATE(created_at AT TIME ZONE 'America/Sao_Paulo') DESC";
+        extraWhere = "";
     } else if (groupBy === "city") {
-        groupExpr = "city";
-        orderExpr = "MAX(created_at) DESC";
+        groupExpr  = "city";
+        orderExpr  = "MAX(created_at) DESC";
+        extraWhere = "AND city IS NOT NULL";
     } else {
-        groupExpr = "visitor_id";
-        orderExpr = "MAX(created_at) DESC";
+        groupExpr  = "visitor_id";
+        orderExpr  = "MAX(created_at) DESC";
+        extraWhere = "AND visitor_id IS NOT NULL";
     }
 
     const offset = (page - 1) * limit;
@@ -84,6 +88,7 @@ export async function getSessions(
           AND ${siteWhere}
           AND ${userWhere}
           AND ${botWhere}
+          ${extraWhere}
           ${searchWhere}
         GROUP BY ${groupExpr}
         ORDER BY ${orderExpr}
@@ -97,6 +102,7 @@ export async function getSessions(
           AND ${siteWhere}
           AND ${userWhere}
           AND ${botWhere}
+          ${extraWhere}
           ${searchWhere}
     `);
 

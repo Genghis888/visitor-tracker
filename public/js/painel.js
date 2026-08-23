@@ -320,15 +320,19 @@ function renderSessions(sessions) {
 }
 
 function renderSessionsPagination(data) {
+    const summary   = document.getElementById("sessionsSummary");
     const container = document.getElementById("sessionsPagination");
-    if (!container) return;
+    if (!container || !summary) return;
 
+    // Summary sempre visível no topo quando há dados
+    summary.innerHTML = data.total > 0
+        ? `<span class="pagination-summary">${data.total} sessões · página ${data.page} de ${data.pages}</span>`
+        : "";
+
+    // Controls só quando há mais de 1 página
     if (data.pages <= 1) { container.innerHTML = ""; return; }
 
     container.innerHTML = `
-        <div class="pagination-summary">
-            ${data.total} sessões · página ${data.page} de ${data.pages}
-        </div>
         <div class="pagination-controls">
             <button ${data.page <= 1 ? "disabled" : ""}
                 onclick="carregarVisitantes(${data.page - 1})">← Anterior</button>
