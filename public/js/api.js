@@ -31,11 +31,17 @@ function buildQuery(range) {
 
     const params = new URLSearchParams();
 
-    params.set("range", range);
+    if (range && typeof range === "object" && range.start && range.end) {
+        params.set("range", "custom");
+        params.set("start", range.start);
+        params.set("end", range.end);
+    } else {
+        params.set("range", range);
 
-    if (range === "custom") {
-        params.set("start", getStartDate());
-        params.set("end", getEndDate());
+        if (range === "custom") {
+            params.set("start", getStartDate());
+            params.set("end", getEndDate());
+        }
     }
 
     const site = getCurrentSite();
