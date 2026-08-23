@@ -76,6 +76,7 @@ export async function getSessions(
             MIN(device_type) AS device_type,
             MIN(host) AS host,
             MIN(isp) AS isp,
+            MIN(referrer) AS referrer,
             MIN(created_at) AS entry_time,
             MAX(created_at) AS last_time,
             COUNT(*)::INT AS page_count,

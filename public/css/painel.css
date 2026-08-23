@@ -574,6 +574,12 @@ body{
     opacity:.8;
 }
 
+.session-referrer{
+    font-size:11px;
+    color:var(--text-soft);
+    opacity:.8;
+}
+
 .feed-bottom{
     display:flex;
     align-items:center;
@@ -1126,7 +1132,7 @@ tbody td:last-child{
 
 .relatorio-rankings-bottom{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(4,1fr);
     gap:14px;
 }
 

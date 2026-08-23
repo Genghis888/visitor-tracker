@@ -199,6 +199,22 @@ function decodeUrl(url) {
     try { return decodeURIComponent(url); } catch { return url; }
 }
 
+function formatReferrer(ref) {
+    if (!ref) return "Direto";
+    try {
+        const url = new URL(ref);
+        const host = url.hostname.replace("www.", "");
+        if (host.includes("google")) return "Google";
+        if (host.includes("bing")) return "Bing";
+        if (host.includes("facebook")) return "Facebook";
+        if (host.includes("instagram")) return "Instagram";
+        if (host.includes("twitter") || host.includes("t.co")) return "Twitter/X";
+        if (host.includes("youtube")) return "YouTube";
+        if (host.includes("whatsapp")) return "WhatsApp";
+        return host;
+    } catch { return ref; }
+}
+
 function renderSessions(sessions) {
     const list = document.getElementById("sessionsList");
 
@@ -273,6 +289,7 @@ function renderSessions(sessions) {
                             <span>⏱ ${duration}</span>
                             <span>🌍 ${s.host || ""}</span>
                             ${s.isp ? `<span class="session-isp" title="Operadora/ISP">📡 ${s.isp}</span>` : ""}
+                            ${s.referrer ? `<span class="session-referrer" title="Origem: ${decodeUrl(s.referrer)}">🔗 ${formatReferrer(s.referrer)}</span>` : ""}
                         </div>
                     </div>
                     <span class="session-time">${lastTime}</span>
@@ -360,6 +377,7 @@ async function carregarRelatorios() {
     renderRanking("rankBrowsersDetail", rankings.browsers, "browser");
     renderRanking("rankSystemsDetail",  rankings.systems,  "os");
     renderRanking("rankDevicesDetail",  rankings.devices,  "device_type");
+    renderRanking("rankReferrersDetail", rankings.referrers, "referrer");
 
     // Labels e valores
     const labels = hourly.map(v =>
