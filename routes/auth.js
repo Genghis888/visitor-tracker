@@ -1,5 +1,6 @@
 import express from "express";
 import { supabaseAdmin } from "../services/supabase.js";
+import { requireApiAuth } from "../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -185,6 +186,39 @@ router.post("/forgot-password", async (req, res) => {
     } catch (err) {
         console.error("Erro em forgot-password:", err);
         res.status(500).json({ error: "Erro interno do servidor" });
+    }
+});
+
+// Alterar senha
+router.post("/change-password", requireApiAuth, async (req, res) => {
+    try {
+        const { password } = req.body;
+        if (!password || password.length < 8) {
+            return res.status(400).json({ error: "Senha deve ter pelo menos 8 caracteres." });
+        }
+        const { error } = await supabaseAdmin.auth.admin.updateUserById(req.userId, { password });
+        if (error) return res.status(400).json({ error: error.message });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Alterar email
+router.post("/change-email", requireApiAuth, async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email || !email.includes("@")) {
+            return res.status(400).json({ error: "Email inválido." });
+        }
+        const { error } = await supabaseAdmin.auth.admin.updateUserById(req.userId, {
+            email,
+            email_confirm: false // exige confirmação no novo email
+        });
+        if (error) return res.status(400).json({ error: error.message });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

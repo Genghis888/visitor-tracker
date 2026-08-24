@@ -542,6 +542,37 @@ function buildCityBlock(rid, ci) {
     </div>`;
 }
 
+// ===== IPs Bloqueados =====
+async function loadBlockedIps() {
+    const list = document.getElementById("blockedIpsList");
+    list.innerHTML = '<div class="modal-loading">Carregando...</div>';
+    const blocked = await getBlockedIps();
+    if (!blocked.length) {
+        list.innerHTML = '<div class="blocked-ips-empty">Nenhum IP bloqueado.</div>';
+        return;
+    }
+    list.innerHTML = blocked.map(b => `
+        <div class="blocked-ip-item" data-ip="${b.ip}">
+            <span class="blocked-ip-addr">${b.ip}</span>
+            <span class="blocked-ip-date">${new Date(b.created_at).toLocaleDateString("pt-BR")}</span>
+            <button class="btn-unblock" data-ip="${b.ip}">🔓 Desbloquear</button>
+        </div>
+    `).join("");
+
+    list.querySelectorAll(".btn-unblock").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const ip = btn.dataset.ip;
+            btn.disabled = true;
+            btn.textContent = "⏳";
+            await unblockIp(ip);
+            btn.closest(".blocked-ip-item").remove();
+            if (!list.querySelector(".blocked-ip-item")) {
+                list.innerHTML = '<div class="blocked-ips-empty">Nenhum IP bloqueado.</div>';
+            }
+        });
+    });
+}
+
 // ===== Relatórios =====
 // ===== Tempo Real =====
 function startRealtime() {
@@ -759,16 +790,134 @@ document.addEventListener("DOMContentLoaded", async () => {
     const user = await requireAuth();
     if (!user) return;
 
-    // Exibe nome do usuário
+    // Preenche dados do dropdown
     const nameEl = document.getElementById("userName");
-    if (nameEl) nameEl.textContent = user.name || user.email;
+    if (nameEl) nameEl.textContent = user.name || user.email?.split("@")[0];
+    const dropName  = document.getElementById("userDropdownName");
+    const dropEmail = document.getElementById("userDropdownEmail");
+    const dropPlan  = document.getElementById("userDropdownPlan");
+    if (dropName)  dropName.textContent  = user.name || "—";
+    if (dropEmail) dropEmail.textContent = user.email || "—";
+    if (dropPlan)  dropPlan.textContent  = user.plan === "pro" ? "⭐ Pro" : "Gratuito";
+
+    // Toggle dropdown
+    const menuBtn      = document.getElementById("userMenuBtn");
+    const dropdown     = document.getElementById("userDropdown");
+    menuBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("hidden");
+    });
+    document.addEventListener("click", () => dropdown?.classList.add("hidden"));
+
+    // Logout
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        import("./auth.js").then(({ clearSession }) => {
+            clearSession();
+            window.location.href = "/login.html";
+        });
+    });
 
     // Mostra link admin só pra superadmin
     if (user.role === "superadmin") {
         document.getElementById("adminLink")?.style.removeProperty("display");
     }
 
-    attachLogoutHandler();
+    // === MODAL IPs BLOQUEADOS ===
+    const modalBlockedIps = document.getElementById("modalBlockedIps");
+    document.getElementById("menuBlockedIps")?.addEventListener("click", async () => {
+        dropdown.classList.add("hidden");
+        modalBlockedIps.classList.remove("hidden");
+        await loadBlockedIps();
+    });
+    document.getElementById("closeModalBlockedIps")?.addEventListener("click", () => {
+        modalBlockedIps.classList.add("hidden");
+    });
+    modalBlockedIps?.addEventListener("click", (e) => {
+        if (e.target === modalBlockedIps) modalBlockedIps.classList.add("hidden");
+    });
+
+    // === MODAL ALTERAR SENHA ===
+    const modalPwd = document.getElementById("modalChangePassword");
+    document.getElementById("menuChangePassword")?.addEventListener("click", () => {
+        dropdown.classList.add("hidden");
+        modalPwd.classList.remove("hidden");
+        document.getElementById("changePasswordError").classList.add("hidden");
+        document.getElementById("changePasswordSuccess").classList.add("hidden");
+        document.getElementById("newPasswordInput").value = "";
+        document.getElementById("confirmPasswordInput").value = "";
+    });
+    document.getElementById("closeModalChangePassword")?.addEventListener("click", () => {
+        modalPwd.classList.add("hidden");
+    });
+    modalPwd?.addEventListener("click", (e) => {
+        if (e.target === modalPwd) modalPwd.classList.add("hidden");
+    });
+    document.getElementById("submitChangePassword")?.addEventListener("click", async () => {
+        const newPwd  = document.getElementById("newPasswordInput").value;
+        const confPwd = document.getElementById("confirmPasswordInput").value;
+        const errEl   = document.getElementById("changePasswordError");
+        const sucEl   = document.getElementById("changePasswordSuccess");
+        errEl.classList.add("hidden");
+        sucEl.classList.add("hidden");
+
+        if (newPwd.length < 8) { errEl.textContent = "Mínimo 8 caracteres."; errEl.classList.remove("hidden"); return; }
+        if (newPwd !== confPwd) { errEl.textContent = "Senhas não coincidem."; errEl.classList.remove("hidden"); return; }
+
+        const res = await fetch("/auth/change-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+            body: JSON.stringify({ password: newPwd })
+        });
+        const data = await res.json();
+        if (data.success) {
+            sucEl.textContent = "Senha alterada com sucesso!";
+            sucEl.classList.remove("hidden");
+            setTimeout(() => modalPwd.classList.add("hidden"), 2000);
+        } else {
+            errEl.textContent = data.error || "Erro ao alterar senha.";
+            errEl.classList.remove("hidden");
+        }
+    });
+
+    // === MODAL ALTERAR EMAIL ===
+    const modalEmail = document.getElementById("modalChangeEmail");
+    document.getElementById("menuChangeEmail")?.addEventListener("click", () => {
+        dropdown.classList.add("hidden");
+        modalEmail.classList.remove("hidden");
+        document.getElementById("changeEmailError").classList.add("hidden");
+        document.getElementById("changeEmailSuccess").classList.add("hidden");
+        document.getElementById("newEmailInput").value = "";
+    });
+    document.getElementById("closeModalChangeEmail")?.addEventListener("click", () => {
+        modalEmail.classList.add("hidden");
+    });
+    modalEmail?.addEventListener("click", (e) => {
+        if (e.target === modalEmail) modalEmail.classList.add("hidden");
+    });
+    document.getElementById("submitChangeEmail")?.addEventListener("click", async () => {
+        const newEmail = document.getElementById("newEmailInput").value;
+        const errEl    = document.getElementById("changeEmailError");
+        const sucEl    = document.getElementById("changeEmailSuccess");
+        errEl.classList.add("hidden");
+        sucEl.classList.add("hidden");
+
+        if (!newEmail || !newEmail.includes("@")) { errEl.textContent = "Email inválido."; errEl.classList.remove("hidden"); return; }
+
+        const res = await fetch("/auth/change-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+            body: JSON.stringify({ email: newEmail })
+        });
+        const data = await res.json();
+        if (data.success) {
+            sucEl.textContent = "Verifique seu novo email para confirmar a alteração.";
+            sucEl.classList.remove("hidden");
+            setTimeout(() => modalEmail.classList.add("hidden"), 3000);
+        } else {
+            errEl.textContent = data.error || "Erro ao alterar email.";
+            errEl.classList.remove("hidden");
+        }
+    });
 
     initNav();
 

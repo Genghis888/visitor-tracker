@@ -158,13 +158,29 @@ body{
 
 .btn-icon:hover{ background:rgba(255,255,255,.08); color:var(--text); }
 
+/* === USER MENU DROPDOWN === */
 .user-menu{
+    position:relative;
     display:flex;
     align-items:center;
-    gap:8px;
     border-left:1px solid var(--border);
     padding-left:10px;
 }
+
+.user-menu-btn{
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 10px;
+    border-radius:8px;
+    transition:background .15s;
+    font-family:inherit;
+}
+
+.user-menu-btn:hover{ background:rgba(255,255,255,.06); }
 
 .user-name{
     font-size:13px;
@@ -175,23 +191,238 @@ body{
     white-space:nowrap;
 }
 
-.btn-logout{
-    background:transparent;
+.user-menu-arrow{
+    font-size:10px;
     color:var(--text-soft);
+}
+
+.user-dropdown{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+    min-width:220px;
+    z-index:2000;
+    overflow:hidden;
+}
+
+.user-dropdown-header{
+    padding:14px 16px;
+    background:rgba(255,255,255,.03);
+}
+
+.user-dropdown-name{
+    font-size:14px;
+    font-weight:600;
+    color:var(--text);
+}
+
+.user-dropdown-email{
+    font-size:11px;
+    color:var(--text-soft);
+    margin-top:2px;
+}
+
+.user-dropdown-plan{
+    font-size:10px;
+    color:var(--primary);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-top:4px;
+    font-weight:600;
+}
+
+.user-dropdown-divider{
+    height:1px;
+    background:var(--border);
+    margin:4px 0;
+}
+
+.user-dropdown-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    font-size:13px;
+    font-family:inherit;
+    padding:10px 16px;
+    cursor:pointer;
+    text-align:left;
+    transition:background .12s;
+}
+
+.user-dropdown-item:hover{ background:rgba(255,255,255,.06); }
+
+.user-dropdown-logout{ color:#ff8a80; }
+.user-dropdown-logout:hover{ background:rgba(229,57,53,.12); }
+
+/* === MODAIS === */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    z-index:3000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.modal.hidden{ display:none; }
+
+.modal-box{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:0 16px 48px rgba(0,0,0,.5);
+    width:100%;
+    max-width:480px;
+    max-height:80vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+.modal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
+}
+
+.modal-header h2{ font-size:16px; font-weight:600; }
+
+.modal-close{
+    background:transparent;
+    border:none;
+    color:var(--text-soft);
+    font-size:16px;
+    cursor:pointer;
+    padding:4px 8px;
+    border-radius:6px;
+    transition:.15s;
+}
+.modal-close:hover{ background:rgba(255,255,255,.08); color:var(--text); }
+
+.modal-body{
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.modal-body label{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:13px;
+    color:var(--text-soft);
+}
+
+.modal-body input{
+    background:#1e293b;
     border:1px solid var(--border);
     border-radius:8px;
-    padding:5px 12px;
+    padding:8px 12px;
+    color:var(--text);
+    font-size:13px;
+    font-family:inherit;
+    outline:none;
+}
+
+.modal-body input:focus{ border-color:var(--primary); }
+
+.modal-error{
     font-size:12px;
+    color:#ff8a80;
+    background:rgba(229,57,53,.1);
+    border-radius:6px;
+    padding:8px 12px;
+}
+
+.modal-success{
+    font-size:12px;
+    color:var(--success);
+    background:rgba(22,199,132,.1);
+    border-radius:6px;
+    padding:8px 12px;
+}
+
+.modal-loading{
+    padding:20px;
+    text-align:center;
+    color:var(--text-soft);
+    font-size:13px;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:10px 20px;
+    font-size:13px;
     font-family:inherit;
     cursor:pointer;
     transition:.15s;
-    white-space:nowrap;
+    align-self:flex-start;
+}
+.btn-primary:hover{ background:var(--primary-hover); }
+
+/* === LISTA IPs BLOQUEADOS === */
+.blocked-ips-list{
+    overflow-y:auto;
+    max-height:calc(80vh - 80px);
+    padding:12px 20px;
 }
 
-.btn-logout:hover{
-    background:rgba(229,57,53,.12);
-    border-color:rgba(229,57,53,.4);
-    color:#ff8a80;
+.blocked-ip-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.blocked-ip-item:last-child{ border-bottom:none; }
+
+.blocked-ip-addr{
+    font-family:monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--primary);
+    flex:1;
+}
+
+.blocked-ip-date{
+    font-size:11px;
+    color:var(--text-soft);
+}
+
+.btn-unblock{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-soft);
+    border-radius:6px;
+    padding:4px 10px;
+    font-size:11px;
+    cursor:pointer;
+    font-family:inherit;
+    transition:.15s;
+}
+.btn-unblock:hover{ border-color:var(--success); color:var(--success); }
+
+.blocked-ips-empty{
+    text-align:center;
+    color:var(--text-soft);
+    font-size:13px;
+    padding:24px 0;
 }
 
 .topbar-controls{

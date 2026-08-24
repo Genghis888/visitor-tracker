@@ -55,12 +55,78 @@
             <button id="refresh" class="btn-icon" title="Atualizar">↺</button>
         </div>
         <div class="user-menu">
-            <span id="userName" class="user-name"></span>
-            <button id="logoutBtn" class="btn-logout">Sair</button>
+            <button id="userMenuBtn" class="user-menu-btn">
+                <span id="userName" class="user-name"></span>
+                <span class="user-menu-arrow">▾</span>
+            </button>
+            <div id="userDropdown" class="user-dropdown hidden">
+                <div class="user-dropdown-header">
+                    <div class="user-dropdown-name" id="userDropdownName"></div>
+                    <div class="user-dropdown-email" id="userDropdownEmail"></div>
+                    <div class="user-dropdown-plan" id="userDropdownPlan"></div>
+                </div>
+                <div class="user-dropdown-divider"></div>
+                <button class="user-dropdown-item" id="menuBlockedIps">🚫 IPs Bloqueados</button>
+                <button class="user-dropdown-item" id="menuChangePassword">🔑 Alterar Senha</button>
+                <button class="user-dropdown-item" id="menuChangeEmail">✉ Alterar Email</button>
+                <div class="user-dropdown-divider"></div>
+                <button class="user-dropdown-item user-dropdown-logout" id="logoutBtn">🚪 Sair</button>
+            </div>
         </div>
     </div>
-
 </header>
+
+<!-- ===== MODAL IPs BLOQUEADOS ===== -->
+<div id="modalBlockedIps" class="modal hidden">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>🚫 IPs Bloqueados</h2>
+            <button class="modal-close" id="closeModalBlockedIps">✕</button>
+        </div>
+        <div id="blockedIpsList" class="blocked-ips-list">
+            <div class="modal-loading">Carregando...</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL ALTERAR SENHA ===== -->
+<div id="modalChangePassword" class="modal hidden">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>🔑 Alterar Senha</h2>
+            <button class="modal-close" id="closeModalChangePassword">✕</button>
+        </div>
+        <div class="modal-body">
+            <label>Nova senha
+                <input type="password" id="newPasswordInput" placeholder="Mínimo 8 caracteres">
+            </label>
+            <label>Confirmar senha
+                <input type="password" id="confirmPasswordInput" placeholder="Repita a senha">
+            </label>
+            <div id="changePasswordError" class="modal-error hidden"></div>
+            <div id="changePasswordSuccess" class="modal-success hidden"></div>
+            <button class="btn-primary" id="submitChangePassword">Salvar senha</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL ALTERAR EMAIL ===== -->
+<div id="modalChangeEmail" class="modal hidden">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>✉ Alterar Email</h2>
+            <button class="modal-close" id="closeModalChangeEmail">✕</button>
+        </div>
+        <div class="modal-body">
+            <label>Novo email
+                <input type="email" id="newEmailInput" placeholder="novo@email.com">
+            </label>
+            <div id="changeEmailError" class="modal-error hidden"></div>
+            <div id="changeEmailSuccess" class="modal-success hidden"></div>
+            <button class="btn-primary" id="submitChangeEmail">Salvar email</button>
+        </div>
+    </div>
+</div>
 
 <!-- ===== CONTEÚDO PRINCIPAL ===== -->
 <main class="painel-main">
