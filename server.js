@@ -26,6 +26,7 @@ import sitesRoutes from "./routes/sites.js";
 import adminRoutes from "./routes/admin.js";
 
 import { requireApiAuth, requireSuperAdmin } from "./middlewares/auth.js";
+import blockedIpsRoutes from "./routes/blockedIps.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -74,8 +75,9 @@ app.use("/api/stats",     requireApiAuth, statsRoutes);
 app.use("/api/rankings",  requireApiAuth, rankingsRoutes);
 app.use("/api/countries", requireApiAuth, countriesRoutes);
 app.use("/api/map",       requireApiAuth, mapRoutes);
-app.use("/api/sites",     requireApiAuth,    sitesRoutes);
-app.use("/api/admin",     requireSuperAdmin, adminRoutes);
+app.use("/api/sites",       requireApiAuth, sitesRoutes);
+app.use("/api/blocked-ips", requireApiAuth, blockedIpsRoutes);
+app.use("/api/admin",       requireSuperAdmin, adminRoutes);
 
 // Rota utilitária — preenche geo de registros que ficaram nulos
 app.get("/fix-geo", async (req, res) => {

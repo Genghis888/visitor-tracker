@@ -95,3 +95,26 @@ export async function getSessions(range, page = 1, limit = 20, search = null, gr
     if (groupBy !== "visitor") params.set("groupBy", groupBy);
     return apiFetch(`/api/stats/sessions?${params.toString()}`);
 }
+
+export async function getBlockedIps() {
+    return apiFetch("/api/blocked-ips");
+}
+
+export async function blockIp(ip, reason = "") {
+    const token = (await import("./auth.js")).getToken();
+    const res = await fetch("/api/blocked-ips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ip, reason })
+    });
+    return res.json();
+}
+
+export async function unblockIp(ip) {
+    const token = (await import("./auth.js")).getToken();
+    const res = await fetch(`/api/blocked-ips/${encodeURIComponent(ip)}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.json();
+}

@@ -1,5 +1,5 @@
 import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
-import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions } from "./api.js";
+import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions, blockIp, unblockIp, getBlockedIps } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
 import { renderRanking } from "./rankings.js";
@@ -162,6 +162,29 @@ async function carregarVisitantes(page = 1, search = currentSearch, groupBy = cu
     renderSessions(allSessionsData);
     renderSessionsPagination(sessions);
 
+    // Handler botões bloquear IP
+    document.querySelectorAll(".btn-block-ip").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const ip = btn.dataset.ip;
+            if (!ip) return;
+            const confirma = confirm(`Bloquear IP ${ip}?\n\nNovas visitas deste IP serão ignoradas.`);
+            if (!confirma) return;
+            btn.disabled = true;
+            btn.textContent = "⏳";
+            const res = await blockIp(ip);
+            if (res.success) {
+                btn.textContent = "✅";
+                btn.title = "IP bloqueado";
+                setTimeout(() => { btn.textContent = "🚫"; btn.disabled = false; }, 2000);
+            } else {
+                btn.textContent = "🚫";
+                btn.disabled = false;
+                alert("Erro ao bloquear IP.");
+            }
+        });
+    });
+
     // Atualiza cards de stats
     const stats = await getStats(range);
     if (stats) {
@@ -253,7 +276,8 @@ function renderSessions(sessions) {
         } else {
             // visitor ou ip: negrito = IP, depois localização
             headerTop = `<span class="session-ip">${s.ip || "?"}</span>
-                         <span class="session-location">— ${location}</span>`;
+                         <span class="session-location">— ${location}</span>
+                         <button class="btn-block-ip" data-ip="${s.ip}" title="Bloquear IP">🚫</button>`;
         }
 
         const showIp = currentGroupBy === "day" || currentGroupBy === "city";

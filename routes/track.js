@@ -1,6 +1,7 @@
 import express from "express";
 import { UAParser } from "ua-parser-js";
 import { getLocation, getLocationFallback, getISP } from "../services/geo.js";
+import { isIpBlocked } from "./blockedIps.js";
 import { insert } from "../services/database.js";
 import { normalizeIP } from "../services/ip.js";
 import { canRegister } from "../services/flood.js";
@@ -64,8 +65,11 @@ router.post("/", async (req, res) => {
                 user_id = site.user_id;
                 site_id = site.id;
             }
-            // Se o token não existe ou o site está inativo, ainda registra
-            // a visita mas sem user_id (dados anônimos — útil para debug)
+        }
+
+        // Verifica se o IP está bloqueado pelo dono do site
+        if (user_id && await isIpBlocked(ip, user_id)) {
+            return res.json({ success: true, ignored: true });
         }
 
         const visit = {

@@ -580,6 +580,19 @@ body{
     opacity:.8;
 }
 
+.btn-block-ip{
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    font-size:13px;
+    opacity:.4;
+    padding:0 4px;
+    transition:opacity .15s;
+    vertical-align:middle;
+}
+
+.btn-block-ip:hover{ opacity:1; }
+
 .feed-bottom{
     display:flex;
     align-items:center;
