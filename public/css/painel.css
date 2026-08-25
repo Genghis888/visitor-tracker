@@ -824,6 +824,24 @@ body{
 
 .btn-block-ip:hover{ opacity:1; }
 
+.btn-favorite-ip{
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    font-size:13px;
+    opacity:.35;
+    padding:0 4px;
+    transition:opacity .15s;
+    vertical-align:middle;
+}
+.btn-favorite-ip:hover{ opacity:1; }
+.btn-favorite-ip.favorited{ opacity:.85; }
+
+.session-card--favorited{
+    border-left:3px solid #f59e0b;
+    padding-left:9px;
+}
+
 .feed-bottom{
     display:flex;
     align-items:center;

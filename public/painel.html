@@ -66,6 +66,7 @@
                     <div class="user-dropdown-plan" id="userDropdownPlan"></div>
                 </div>
                 <div class="user-dropdown-divider"></div>
+                <button class="user-dropdown-item" id="menuFavoriteIps">⭐ IPs Favoritos</button>
                 <button class="user-dropdown-item" id="menuBlockedIps">🚫 IPs Bloqueados</button>
                 <button class="user-dropdown-item" id="menuChangePassword">🔑 Alterar Senha</button>
                 <button class="user-dropdown-item" id="menuChangeEmail">✉ Alterar Email</button>
@@ -77,6 +78,21 @@
 </header>
 
 <!-- ===== MODAL IPs BLOQUEADOS ===== -->
+<div id="modalFavoriteIps" class="modal hidden">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>⭐ IPs Favoritos</h3>
+            <button class="modal-close" id="closeModalFavoriteIps">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--text-soft);font-size:13px;margin-bottom:12px">IPs marcados como favoritos ficam destacados na lista de visitantes.</p>
+            <div id="favoriteIpsList">
+                <div class="modal-loading">Carregando...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="modalBlockedIps" class="modal hidden">
     <div class="modal-box">
         <div class="modal-header">

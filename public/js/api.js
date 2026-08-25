@@ -118,3 +118,26 @@ export async function unblockIp(ip) {
     });
     return res.json();
 }
+
+export async function getFavoriteIps() {
+    return apiFetch("/api/favorite-ips");
+}
+
+export async function favoriteIp(ip, label = "") {
+    const token = (await import("./auth.js")).getToken();
+    const res = await fetch("/api/favorite-ips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ip, label })
+    });
+    return res.json();
+}
+
+export async function unfavoriteIp(ip) {
+    const token = (await import("./auth.js")).getToken();
+    const res = await fetch(`/api/favorite-ips/${encodeURIComponent(ip)}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.json();
+}

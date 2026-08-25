@@ -1,5 +1,5 @@
 import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
-import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions, blockIp, unblockIp, getBlockedIps } from "./api.js";
+import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions, blockIp, unblockIp, getBlockedIps, getFavoriteIps, favoriteIp, unfavoriteIp } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
 import { renderRanking } from "./rankings.js";
@@ -150,6 +150,7 @@ let allSessionsData    = [];
 let searchTimer        = null;
 let currentSearch      = null;
 let currentGroupBy     = "visitor";
+let favoriteIpSet      = new Set(); // IPs favoritados pelo usuário
 
 async function carregarVisitantes(page = 1, search = currentSearch, groupBy = currentGroupBy) {
     currentSessionPage = page;
@@ -159,8 +160,51 @@ async function carregarVisitantes(page = 1, search = currentSearch, groupBy = cu
     const sessions     = await getSessions(range, page, 20, search, groupBy);
     if (!sessions) return;
     allSessionsData = sessions.rows || [];
+
+    // Carrega favoritos para destacar visualmente antes de renderizar
+    try {
+        const favs = await getFavoriteIps();
+        favoriteIpSet = new Set((favs || []).map(f => f.ip));
+    } catch { favoriteIpSet = new Set(); }
+
     renderSessions(allSessionsData);
     renderSessionsPagination(sessions);
+
+    // Handler botões favoritar IP ⭐
+    document.querySelectorAll(".btn-favorite-ip").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const ip = btn.dataset.ip;
+            if (!ip) return;
+            btn.disabled = true;
+            if (favoriteIpSet.has(ip)) {
+                btn.textContent = "⏳";
+                const res = await unfavoriteIp(ip);
+                if (res.success) {
+                    favoriteIpSet.delete(ip);
+                    btn.textContent = "☆";
+                    btn.title = "Favoritar IP";
+                    btn.classList.remove("favorited");
+                    btn.closest(".session-card")?.classList.remove("session-card--favorited");
+                } else {
+                    btn.textContent = "⭐";
+                }
+            } else {
+                btn.textContent = "⏳";
+                const res = await favoriteIp(ip);
+                if (res.success) {
+                    favoriteIpSet.add(ip);
+                    btn.textContent = "⭐";
+                    btn.title = "Desfavoritar IP";
+                    btn.classList.add("favorited");
+                    btn.closest(".session-card")?.classList.add("session-card--favorited");
+                } else {
+                    btn.textContent = "☆";
+                }
+            }
+            btn.disabled = false;
+        });
+    });
 
     // Handler botões bloquear IP
     document.querySelectorAll(".btn-block-ip").forEach(btn => {
@@ -275,8 +319,10 @@ function renderSessions(sessions) {
             headerTop = `<span class="session-ip">${cityLabel}</span>`;
         } else {
             // visitor ou ip: negrito = IP, depois localização
+            const isFav = favoriteIpSet.has(s.ip);
             headerTop = `<span class="session-ip">${s.ip || "?"}</span>
                          <span class="session-location">— ${location}</span>
+                         <button class="btn-favorite-ip${isFav ? " favorited" : ""}" data-ip="${s.ip}" title="${isFav ? "Desfavoritar IP" : "Favoritar IP"}">${isFav ? "⭐" : "☆"}</button>
                          <button class="btn-block-ip" data-ip="${s.ip}" title="Bloquear IP">🚫</button>`;
         }
 
@@ -298,8 +344,9 @@ function renderSessions(sessions) {
             `;
         }).join("");
 
+        const cardFavClass = (s.ip && favoriteIpSet.has(s.ip)) ? " session-card--favorited" : "";
         return `
-            <div class="session-card">
+            <div class="session-card${cardFavClass}">
                 <div class="session-header">
                     <span class="session-flag">${flag}</span>
                     <div class="session-info">
@@ -573,6 +620,39 @@ async function loadBlockedIps() {
     });
 }
 
+// ===== IPs Favoritos =====
+async function loadFavoriteIps() {
+    const list = document.getElementById("favoriteIpsList");
+    list.innerHTML = '<div class="modal-loading">Carregando...</div>';
+    const favs = await getFavoriteIps();
+    if (!favs || !favs.length) {
+        list.innerHTML = '<div class="blocked-ips-empty">Nenhum IP favorito.</div>';
+        return;
+    }
+    list.innerHTML = favs.map(f => `
+        <div class="blocked-ip-item" data-ip="${f.ip}">
+            <span class="blocked-ip-addr">⭐ ${f.ip}</span>
+            ${f.label ? `<span class="blocked-ip-date">${f.label}</span>` : ""}
+            <span class="blocked-ip-date">${new Date(f.created_at).toLocaleDateString("pt-BR")}</span>
+            <button class="btn-unfavorite" data-ip="${f.ip}">✕ Remover</button>
+        </div>
+    `).join("");
+
+    list.querySelectorAll(".btn-unfavorite").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const ip = btn.dataset.ip;
+            btn.disabled = true;
+            btn.textContent = "⏳";
+            await unfavoriteIp(ip);
+            favoriteIpSet.delete(ip);
+            btn.closest(".blocked-ip-item").remove();
+            if (!list.querySelector(".blocked-ip-item")) {
+                list.innerHTML = '<div class="blocked-ips-empty">Nenhum IP favorito.</div>';
+            }
+        });
+    });
+}
+
 // ===== Relatórios =====
 // ===== Tempo Real =====
 function startRealtime() {
@@ -834,6 +914,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     modalBlockedIps?.addEventListener("click", (e) => {
         if (e.target === modalBlockedIps) modalBlockedIps.classList.add("hidden");
+    });
+
+    // === MODAL IPs FAVORITOS ===
+    const modalFavoriteIps = document.getElementById("modalFavoriteIps");
+    document.getElementById("menuFavoriteIps")?.addEventListener("click", async () => {
+        dropdown.classList.add("hidden");
+        modalFavoriteIps.classList.remove("hidden");
+        await loadFavoriteIps();
+    });
+    document.getElementById("closeModalFavoriteIps")?.addEventListener("click", () => {
+        modalFavoriteIps.classList.add("hidden");
+    });
+    modalFavoriteIps?.addEventListener("click", (e) => {
+        if (e.target === modalFavoriteIps) modalFavoriteIps.classList.add("hidden");
     });
 
     // === MODAL ALTERAR SENHA ===
