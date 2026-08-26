@@ -844,27 +844,30 @@ function renderTabelaIP(data) {
     body.innerHTML = data.map(r => {
         const shortUrl = r.last_url ? r.last_url.replace(/^https?:\/\/[^/]+/, "") || "/" : "/";
         return `
-        <div class="ip-grid-row" data-ip="${r.ip}">
-            <div class="ip-col ip-col-ip" title="${r.ip}">${r.ip}</div>
-            <div class="ip-col">${countryFlag(r.country_code)} ${r.country}</div>
-            <div class="ip-col">${r.city}</div>
-            <div class="ip-col">${r.isp || "—"}</div>
-            <div class="ip-col">${r.browser}</div>
-            <div class="ip-col">${r.os}</div>
-            <div class="ip-col ip-col-num ip-visits">${r.visits}</div>
-            <div class="ip-col ip-time">${new Date(r.last_seen).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
-            <div class="ip-col ip-col-url" title="${r.last_url}"><a href="${r.last_url}" target="_blank" rel="noopener">${shortUrl}</a></div>
-        </div>
-        <div class="ip-detail-panel hidden" data-detail="${r.ip}">
-            <div class="ip-detail-loading">⏳ Carregando detalhes...</div>
+        <div class="ip-row-wrapper">
+            <div class="ip-grid-row" data-ip="${r.ip}">
+                <div class="ip-col ip-col-ip" title="${r.ip}">${r.ip}</div>
+                <div class="ip-col">${countryFlag(r.country_code)} ${r.country}</div>
+                <div class="ip-col">${r.city}</div>
+                <div class="ip-col">${r.isp || "—"}</div>
+                <div class="ip-col">${r.browser}</div>
+                <div class="ip-col">${r.os}</div>
+                <div class="ip-col ip-col-num ip-visits">${r.visits}</div>
+                <div class="ip-col ip-time">${new Date(r.last_seen).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
+                <div class="ip-col ip-col-url" title="${r.last_url}"><a href="${r.last_url}" target="_blank" rel="noopener">${shortUrl}</a></div>
+            </div>
+            <div class="ip-detail-panel hidden" data-detail="${r.ip}">
+                <div class="ip-detail-loading">⏳ Carregando detalhes...</div>
+            </div>
         </div>`;
     }).join("");
 
     // Clique na linha — expande painel de detalhes
     body.querySelectorAll(".ip-grid-row").forEach(row => {
-        row.addEventListener("click", async () => {
+        row.addEventListener("click", async (e) => {
+            if (e.target.closest("a")) return; // não expande ao clicar em link
             const ip     = row.dataset.ip;
-            const panel  = body.querySelector(`.ip-detail-panel[data-detail="${ip}"]`);
+            const panel  = row.nextElementSibling; // .ip-detail-panel logo após a row
             if (!panel) return;
 
             const isOpen = !panel.classList.contains("hidden");

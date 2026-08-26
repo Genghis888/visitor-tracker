@@ -1508,12 +1508,6 @@ tbody td:last-child{
 .ip-grid-body{
     overflow-y:auto;
     max-height:calc(100vh - 280px);
-    display:flex;
-    flex-direction:column;
-}
-.ip-grid-body .ip-grid-row,
-.ip-grid-body .ip-detail-panel{
-    min-width:0;
 }
 
 .ip-grid-row{
@@ -1796,12 +1790,18 @@ tbody td:last-child{
 .ip-ref-direct{ background:rgba(255,255,255,.06); color:var(--text-soft); }
 
 /* Painel de detalhes expandível */
+.ip-row-wrapper{
+    display:block;
+    width:100%;
+}
+
 .ip-detail-panel{
-    grid-column: 1 / -1;
+    width:100%;
     background:rgba(15,23,42,.6);
     border-bottom:1px solid rgba(255,255,255,.07);
     overflow:hidden;
     animation: slideDown .15s ease;
+    box-sizing:border-box;
 }
 .ip-detail-panel.hidden{ display:none; }
 
