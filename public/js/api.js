@@ -145,3 +145,10 @@ export async function unfavoriteIp(ip) {
 export async function getIpDetail(ip, range = "30") {
     return apiFetch(`/api/stats/ip-detail?ip=${encodeURIComponent(ip)}&range=${range}`);
 }
+
+export async function getHourlyForRange(start, end) {
+    const params = new URLSearchParams({ range: "custom", start, end });
+    const site = getCurrentSite?.() || null;
+    if (site && site !== "all") params.set("site", site);
+    return apiFetch(`/api/stats/hourly?${params.toString()}`);
+}

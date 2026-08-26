@@ -383,7 +383,16 @@
                     <button class="chart-type-btn" data-type="area" title="Linha + Área">◭</button>
                     <button class="chart-type-btn" data-type="bar" title="Barras">▦</button>
                 </div>
+                <button id="compareToggle" class="btn-compare" title="Comparar períodos">⚖️ Comparar</button>
                 <button id="refreshRelatorios" class="btn-icon" title="Atualizar">↺</button>
+            </div>
+            <div id="comparePanel" class="compare-panel hidden">
+                <span class="compare-label">Comparar com:</span>
+                <input type="date" id="compareStart" class="compare-date">
+                <span>até</span>
+                <input type="date" id="compareEnd" class="compare-date">
+                <button id="applyCompare" class="btn-compare-apply">Aplicar</button>
+                <button id="compareAuto" class="btn-compare-auto">Período anterior</button>
             </div>
         </div>
 

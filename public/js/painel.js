@@ -1,5 +1,5 @@
 import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
-import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions, blockIp, unblockIp, getBlockedIps, getFavoriteIps, favoriteIp, unfavoriteIp, getIpDetail } from "./api.js";
+import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions, blockIp, unblockIp, getBlockedIps, getFavoriteIps, favoriteIp, unfavoriteIp, getIpDetail, getHourlyForRange } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
 import { renderRanking } from "./rankings.js";
@@ -442,14 +442,21 @@ function renderSessionsPagination(data) {
 window.carregarVisitantes = carregarVisitantes;
 
 // ===== Páginas & Rankings =====
-let reportChartType = "line";
+let reportChartType   = "line";
+let compareEnabled    = false;
+let compareStart      = "";
+let compareEnd        = "";
 
 async function carregarRelatorios() {
     const range = getCurrentRange();
-    const [hourly, rankings] = await Promise.all([
-        getHourly(range),
-        getRankings(range)
-    ]);
+
+    // Monta requisições — comparação opcional
+    const requests = [getHourly(range), getRankings(range)];
+    if (compareEnabled && compareStart && compareEnd) {
+        requests.push(getHourlyForRange(compareStart, compareEnd));
+    }
+
+    const [hourly, rankings, hourlyCompare] = await Promise.all(requests);
 
     // Rankings
     renderRanking("rankPagesDetail",    rankings.pages,    "page");
@@ -458,8 +465,8 @@ async function carregarRelatorios() {
     renderRanking("rankDevicesDetail",  rankings.devices,  "device_type");
     renderRanking("rankReferrersDetail", rankings.referrers, "referrer");
 
-    // Labels e valores
-    const labels = hourly.map(v =>
+    // Labels e valores do período atual
+    const labels  = hourly.map(v =>
         typeof v.label === "number"
             ? `${String(v.label).padStart(2,"0")}:00`
             : v.label
@@ -470,47 +477,80 @@ async function carregarRelatorios() {
     const maxVal  = Math.max(...values);
     const peakIdx = values.indexOf(maxVal);
 
-    document.getElementById("reportTotal").textContent = total;
-    document.getElementById("reportAvg").textContent   = avg + "/h";
-    document.getElementById("reportPeak").textContent  =
+    // Valores de comparação
+    const valuesCompare = hourlyCompare ? hourlyCompare.map(v => v.total) : null;
+    const totalCompare  = valuesCompare ? valuesCompare.reduce((a, b) => a + b, 0) : null;
+
+    // Atualiza cards com delta
+    document.getElementById("reportTotal").innerHTML = total + renderDelta(total, totalCompare);
+    document.getElementById("reportAvg").textContent = avg + "/h";
+    document.getElementById("reportPeak").textContent =
         labels[peakIdx] ? `${labels[peakIdx]} (${maxVal})` : "—";
 
-    renderReportChart(labels, values);
+    renderReportChart(labels, values, valuesCompare);
 }
 
-function renderReportChart(labels, values) {
+function renderDelta(current, previous) {
+    if (previous === null || previous === undefined) return "";
+    if (previous === 0) return previous === current ? "" : ` <span class="delta delta-up">novo</span>`;
+    const pct  = Math.round(((current - previous) / previous) * 100);
+    const cls  = pct >= 0 ? "delta-up" : "delta-down";
+    const sign = pct >= 0 ? "+" : "";
+    return ` <span class="delta ${cls}">${sign}${pct}%</span>`;
+}
+
+function renderReportChart(labels, values, valuesCompare = null) {
     const canvas = document.getElementById("reportChart");
     if (reportChart) reportChart.destroy();
 
     const isArea = reportChartType === "area";
     const isBar  = reportChartType === "bar";
     const type   = isBar ? "bar" : "line";
+    const hasCompare = valuesCompare && valuesCompare.length > 0;
+
+    // Alinha labels de comparação ao mesmo tamanho
+    const compareData = hasCompare
+        ? labels.map((_, i) => valuesCompare[i] ?? 0)
+        : [];
+
+    const datasets = [{
+        label: "Período atual",
+        data: values,
+        backgroundColor: isBar ? "rgba(37,99,235,.6)" : isArea ? "rgba(37,99,235,.2)" : "transparent",
+        borderColor: "#2563eb",
+        borderWidth: isBar ? 1 : 2,
+        borderRadius: isBar ? 4 : 0,
+        fill: isArea,
+        tension: 0.4,
+        pointRadius: 3,
+        pointBackgroundColor: "#2563eb"
+    }];
+
+    if (hasCompare) {
+        datasets.push({
+            label: "Período anterior",
+            data: compareData,
+            backgroundColor: isBar ? "rgba(245,158,11,.35)" : isArea ? "rgba(245,158,11,.15)" : "transparent",
+            borderColor: "#f59e0b",
+            borderWidth: isBar ? 1 : 2,
+            borderRadius: isBar ? 4 : 0,
+            borderDash: isBar ? [] : [5, 4],
+            fill: isArea,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: "#f59e0b"
+        });
+    }
 
     reportChart = new Chart(canvas, {
         type,
-        data: {
-            labels,
-            datasets: [{
-                label: "Visitas",
-                data: values,
-                backgroundColor: isBar
-                    ? "rgba(37,99,235,.6)"
-                    : isArea
-                        ? "rgba(37,99,235,.2)"
-                        : "transparent",
-                borderColor: "#2563eb",
-                borderWidth: isBar ? 1 : 2,
-                borderRadius: isBar ? 4 : 0,
-                fill: isArea,
-                tension: 0.4,
-                pointRadius: 3,
-                pointBackgroundColor: "#2563eb"
-            }]
-        },
+        data: { labels, datasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+                legend: { display: hasCompare, labels: { color: "#94a3b8", boxWidth: 12 } }
+            },
             scales: {
                 x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" } },
                 y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.05)" }, beginAtZero: true }
@@ -977,6 +1017,42 @@ function initIpSearch() {
 
     document.getElementById("refreshPorIP")?.addEventListener("click", carregarTabelaIP);
 
+    // Toggle comparação de períodos
+    document.getElementById("compareToggle")?.addEventListener("click", () => {
+        compareEnabled = !compareEnabled;
+        const panel = document.getElementById("comparePanel");
+        const btn   = document.getElementById("compareToggle");
+        panel?.classList.toggle("hidden", !compareEnabled);
+        btn?.classList.toggle("active", compareEnabled);
+        if (!compareEnabled) carregarRelatorios(); // recarrega sem comparação
+    });
+
+    document.getElementById("applyCompare")?.addEventListener("click", () => {
+        compareStart = document.getElementById("compareStart")?.value || "";
+        compareEnd   = document.getElementById("compareEnd")?.value   || "";
+        if (compareStart && compareEnd) carregarRelatorios();
+    });
+
+    // Atalho: preenche comparação automática (período anterior equivalente)
+    document.getElementById("compareAuto")?.addEventListener("click", () => {
+        const range = getCurrentRange();
+        let days = 30;
+        if (range === "today") days = 1;
+        else if (range === "7")  days = 7;
+        else if (typeof range === "object" && range.start && range.end) {
+            const ms = new Date(range.end) - new Date(range.start);
+            days = Math.max(1, Math.round(ms / 86400000));
+        }
+        const end   = new Date(); end.setDate(end.getDate() - 1);
+        const start = new Date(); start.setDate(start.getDate() - 1 - days);
+        const fmt   = d => d.toISOString().slice(0, 10);
+        document.getElementById("compareStart").value = fmt(start);
+        document.getElementById("compareEnd").value   = fmt(end);
+        compareStart = fmt(start);
+        compareEnd   = fmt(end);
+        carregarRelatorios();
+    });
+
     // Seletor de tipo de gráfico nos Relatórios
     document.querySelectorAll(".chart-type-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -984,9 +1060,10 @@ function initIpSearch() {
             btn.classList.add("active");
             reportChartType = btn.dataset.type;
             if (reportChart) {
-                const labels = reportChart.data.labels;
-                const values = reportChart.data.datasets[0].data;
-                renderReportChart(labels, values);
+                const labels  = reportChart.data.labels;
+                const values  = reportChart.data.datasets[0].data;
+                const compare = reportChart.data.datasets[1]?.data || null;
+                renderReportChart(labels, values, compare);
             }
         });
     });
