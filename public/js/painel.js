@@ -914,22 +914,6 @@ function renderTabelaIP(data) {
     });
 }
 
-function formatReferrer(ref) {
-    if (!ref) return "Direto";
-    try {
-        const u = new URL(ref);
-        const h = u.hostname.replace(/^www\./, "");
-        if (h.includes("google"))   return "Google";
-        if (h.includes("facebook")) return "Facebook";
-        if (h.includes("instagram"))return "Instagram";
-        if (h.includes("twitter") || h.includes("x.com")) return "X/Twitter";
-        if (h.includes("linkedin")) return "LinkedIn";
-        if (h.includes("youtube"))  return "YouTube";
-        if (h.includes("whatsapp")) return "WhatsApp";
-        return h;
-    } catch { return ref.slice(0, 30); }
-}
-
 function initIpSearch() {
     document.getElementById("ipFilterInput")?.addEventListener("input", e => {
         const termo = e.target.value.toLowerCase().trim();
