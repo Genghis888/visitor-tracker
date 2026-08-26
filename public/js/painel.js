@@ -842,7 +842,14 @@ function renderTabelaIP(data) {
     }
 
     body.innerHTML = data.map(r => {
-        const shortUrl = r.last_url ? r.last_url.replace(/^https?:\/\/[^/]+/, "") || "/" : "/";
+        let shortUrl = "/";
+        try {
+            if (r.last_url) {
+                const u = new URL(r.last_url);
+                shortUrl = decodeURIComponent(u.pathname) || "/";
+                if (shortUrl.length > 50) shortUrl = shortUrl.slice(0, 48) + "…";
+            }
+        } catch { shortUrl = r.last_url || "/"; }
         return `
         <div class="ip-row-wrapper">
             <div class="ip-grid-row" data-ip="${r.ip}">
