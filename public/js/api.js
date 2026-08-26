@@ -141,3 +141,7 @@ export async function unfavoriteIp(ip) {
     });
     return res.json();
 }
+
+export async function getIpDetail(ip, range = "30") {
+    return apiFetch(`/api/stats/ip-detail?ip=${encodeURIComponent(ip)}&range=${range}`);
+}

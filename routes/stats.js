@@ -114,4 +114,60 @@ router.get("/export/csv", async (req, res) => {
     }
 });
 
+
+// Detalhes de um IP específico — todas as visitas
+router.get("/ip-detail", async (req, res) => {
+    try {
+        const { ip, range = "30", start, end, site } = req.query;
+        if (!ip) return res.status(400).json({ error: "IP obrigatório" });
+
+        const { getDateFilter } = await import("../services/dateFilter.js");
+        const { getSiteFilter } = await import("../services/siteFilter.js");
+        const { getBotFilter }  = await import("../services/botFilter.js");
+        const userId = req.userId || null;
+
+        const where     = getDateFilter(range, start, end);
+        const siteWhere = getSiteFilter(site);
+        const userWhere = userId ? `user_id = '${userId}'` : "TRUE";
+        const botWhere  = getBotFilter();
+
+        // Valida IP básico pra evitar injeção
+        const ipSafe = ip.replace(/[^0-9a-fA-F.:]/g, "");
+
+        const { rows } = await pool.query(`
+            SELECT created_at, ip, host, country, country_code, region, city,
+                   browser, os, device_type, full_url, page, page_title,
+                   isp, referrer, language, resolution
+            FROM visits
+            WHERE ip = $1
+              AND ${where} AND ${siteWhere} AND ${userWhere} AND ${botWhere}
+            ORDER BY created_at DESC
+            LIMIT 200
+        `, [ipSafe]);
+
+        // Resumo agregado
+        const summary = {
+            ip: ipSafe,
+            total_visits: rows.length,
+            country:      rows[0]?.country || "",
+            country_code: rows[0]?.country_code || "",
+            city:         rows[0]?.city || "",
+            region:       rows[0]?.region || "",
+            browser:      rows[0]?.browser || "",
+            os:           rows[0]?.os || "",
+            isp:          rows[0]?.isp || "",
+            first_seen:   rows[rows.length - 1]?.created_at || null,
+            last_seen:    rows[0]?.created_at || null,
+            pages: [...new Set(rows.map(r => r.full_url || r.page).filter(Boolean))],
+            referrers: [...new Set(rows.map(r => r.referrer).filter(Boolean))],
+        };
+
+        res.json({ summary, visits: rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default router;
+

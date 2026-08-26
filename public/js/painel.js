@@ -1,5 +1,5 @@
 import { requireAuth, attachLogoutHandler, getToken, getUser } from "./auth.js";
-import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions, blockIp, unblockIp, getBlockedIps, getFavoriteIps, favoriteIp, unfavoriteIp } from "./api.js";
+import { getStats, getHourly, getRankings, getVisits, getCountries, getCountriesHierarchy, getMap, getSites, getSessions, blockIp, unblockIp, getBlockedIps, getFavoriteIps, favoriteIp, unfavoriteIp, getIpDetail } from "./api.js";
 import { initFilters, getCurrentRange } from "./filters.js";
 import { initSiteFilter, getCurrentSite } from "./siteFilter.js";
 import { renderRanking } from "./rankings.js";
@@ -765,29 +765,33 @@ function timeSince(date) {
 }
 
 // ===== Busca por IP =====
-let ipTableData = [];
+let ipTableData   = [];
+let ipSortCol     = "visits";
+let ipSortDir     = "desc";
+let activeIpRow   = null; // IP atualmente expandido
 
 async function carregarTabelaIP() {
     const range  = getCurrentRange();
-    const visits = await getVisits(range, 1, 500);
+    const visits = await getVisits(range, 1, 2000);
     if (!visits) return;
 
-    // Agrupa por IP
     const byIp = {};
     visits.rows.forEach(v => {
         if (!v.ip) return;
         if (!byIp[v.ip]) {
             byIp[v.ip] = {
-                ip:          v.ip,
-                country:     v.country || "",
-                country_code:v.country_code || "",
-                city:        v.city || "",
-                region:      v.region || "",
-                browser:     v.browser || "",
-                os:          v.os || "",
-                visits:      0,
-                last_seen:   v.created_at,
-                last_url:    v.full_url || v.page || "/"
+                ip:           v.ip,
+                country:      v.country      || "",
+                country_code: v.country_code || "",
+                city:         v.city         || "",
+                region:       v.region       || "",
+                browser:      v.browser      || "",
+                os:           v.os           || "",
+                isp:          v.isp          || "",
+                referrer:     v.referrer     || "",
+                visits:       0,
+                last_seen:    v.created_at,
+                last_url:     v.full_url || v.page || "/"
             };
         }
         byIp[v.ip].visits++;
@@ -795,10 +799,29 @@ async function carregarTabelaIP() {
             byIp[v.ip].last_seen = v.created_at;
             byIp[v.ip].last_url  = v.full_url || v.page || "/";
         }
+        // mantém ISP/referrer mais recentes
+        if (v.isp)      byIp[v.ip].isp      = v.isp;
+        if (v.referrer) byIp[v.ip].referrer = v.referrer;
     });
 
-    ipTableData = Object.values(byIp).sort((a,b) => b.visits - a.visits);
-    renderTabelaIP(ipTableData);
+    ipTableData = Object.values(byIp);
+    sortAndRenderIP();
+}
+
+function sortIpData(data) {
+    return [...data].sort((a, b) => {
+        let av = a[ipSortCol] ?? "";
+        let bv = b[ipSortCol] ?? "";
+        if (typeof av === "string") av = av.toLowerCase();
+        if (typeof bv === "string") bv = bv.toLowerCase();
+        if (av < bv) return ipSortDir === "asc" ? -1 :  1;
+        if (av > bv) return ipSortDir === "asc" ?  1 : -1;
+        return 0;
+    });
+}
+
+function sortAndRenderIP(data = ipTableData) {
+    renderTabelaIP(sortIpData(data));
 }
 
 function renderTabelaIP(data) {
@@ -807,39 +830,149 @@ function renderTabelaIP(data) {
     if (total) total.textContent = `${data.length} IP${data.length !== 1 ? "s" : ""} únicos`;
     if (!body) return;
 
+    // Atualiza setas no header
+    document.querySelectorAll(".ip-grid-head .ip-col[data-sort]").forEach(th => {
+        th.classList.remove("sort-asc","sort-desc");
+        if (th.dataset.sort === ipSortCol) th.classList.add("sort-" + ipSortDir);
+    });
+
     if (!data.length) {
         body.innerHTML = `<div class="ip-grid-empty">Nenhum registro encontrado.</div>`;
         return;
     }
 
-    body.innerHTML = data.map(r => `
-        <div class="ip-grid-row">
+    body.innerHTML = data.map(r => {
+        const ref = r.referrer
+            ? `<span class="ip-ref-badge">${formatReferrer(r.referrer)}</span>`
+            : `<span class="ip-ref-badge ip-ref-direct">Direto</span>`;
+        return `
+        <div class="ip-grid-row" data-ip="${r.ip}">
             <div class="ip-col ip-col-ip">${r.ip}</div>
             <div class="ip-col">${countryFlag(r.country_code)} ${r.country}</div>
             <div class="ip-col">${r.city}</div>
-            <div class="ip-col">${r.region}</div>
+            <div class="ip-col">${r.isp || "—"}</div>
             <div class="ip-col">${r.browser}</div>
             <div class="ip-col">${r.os}</div>
             <div class="ip-col ip-col-num ip-visits">${r.visits}</div>
             <div class="ip-col ip-time">${new Date(r.last_seen).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
-            <div class="ip-col ip-col-url"><a href="${r.last_url}" target="_blank" rel="noopener">${r.last_url}</a></div>
+            <div class="ip-col">${ref}</div>
         </div>
-    `).join("");
+        <div class="ip-detail-panel hidden" data-detail="${r.ip}">
+            <div class="ip-detail-loading">⏳ Carregando detalhes...</div>
+        </div>`;
+    }).join("");
+
+    // Clique na linha — expande painel de detalhes
+    body.querySelectorAll(".ip-grid-row").forEach(row => {
+        row.addEventListener("click", async () => {
+            const ip     = row.dataset.ip;
+            const panel  = body.querySelector(`.ip-detail-panel[data-detail="${ip}"]`);
+            if (!panel) return;
+
+            const isOpen = !panel.classList.contains("hidden");
+            // Fecha outros
+            body.querySelectorAll(".ip-detail-panel").forEach(p => p.classList.add("hidden"));
+            body.querySelectorAll(".ip-grid-row").forEach(r => r.classList.remove("ip-row-active"));
+
+            if (isOpen) return; // toggle: fecha se já estava aberto
+
+            panel.classList.remove("hidden");
+            row.classList.add("ip-row-active");
+
+            if (panel.dataset.loaded) return; // já carregado
+
+            const range = getCurrentRange();
+            const detail = await getIpDetail(ip, range.range || "30");
+            if (!detail) {
+                panel.innerHTML = `<div class="ip-detail-error">Erro ao carregar detalhes.</div>`;
+                return;
+            }
+
+            const s = detail.summary;
+            const pages = detail.visits.slice(0, 50).map(v => `
+                <div class="ip-detail-visit">
+                    <span class="ip-detail-time">${new Date(v.created_at).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
+                    <span class="ip-detail-page"><a href="${v.full_url || v.page}" target="_blank">${v.page_title || v.page || v.full_url || "/"}</a></span>
+                    ${v.referrer ? `<span class="ip-detail-ref">🔗 ${formatReferrer(v.referrer)}</span>` : ""}
+                </div>
+            `).join("");
+
+            panel.innerHTML = `
+                <div class="ip-detail-inner">
+                    <div class="ip-detail-meta">
+                        <span>🌍 ${countryFlag(s.country_code)} ${s.country} · ${s.city}${s.region ? ", " + s.region : ""}</span>
+                        <span>📡 ${s.isp || "ISP desconhecido"}</span>
+                        <span>🖥 ${s.browser} · ${s.os}</span>
+                        <span>👁 ${s.total_visits} visita${s.total_visits !== 1 ? "s" : ""}</span>
+                        <span>🕐 Primeira: ${s.first_seen ? new Date(s.first_seen).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—"}</span>
+                        <span>🕐 Última: ${s.last_seen ? new Date(s.last_seen).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—"}</span>
+                    </div>
+                    <div class="ip-detail-visits">${pages || "<em>Sem visitas no período.</em>"}</div>
+                </div>`;
+            panel.dataset.loaded = "1";
+        });
+    });
+}
+
+function formatReferrer(ref) {
+    if (!ref) return "Direto";
+    try {
+        const u = new URL(ref);
+        const h = u.hostname.replace(/^www\./, "");
+        if (h.includes("google"))   return "Google";
+        if (h.includes("facebook")) return "Facebook";
+        if (h.includes("instagram"))return "Instagram";
+        if (h.includes("twitter") || h.includes("x.com")) return "X/Twitter";
+        if (h.includes("linkedin")) return "LinkedIn";
+        if (h.includes("youtube"))  return "YouTube";
+        if (h.includes("whatsapp")) return "WhatsApp";
+        return h;
+    } catch { return ref.slice(0, 30); }
 }
 
 function initIpSearch() {
     document.getElementById("ipFilterInput")?.addEventListener("input", e => {
         const termo = e.target.value.toLowerCase().trim();
-        if (!termo) return renderTabelaIP(ipTableData);
+        if (!termo) return sortAndRenderIP(ipTableData);
         const filtered = ipTableData.filter(r =>
             r.ip.includes(termo) ||
             r.country.toLowerCase().includes(termo) ||
             r.city.toLowerCase().includes(termo) ||
             r.region.toLowerCase().includes(termo) ||
             r.browser.toLowerCase().includes(termo) ||
+            r.os.toLowerCase().includes(termo) ||
+            r.isp.toLowerCase().includes(termo) ||
+            r.referrer.toLowerCase().includes(termo) ||
             r.last_url.toLowerCase().includes(termo)
         );
-        renderTabelaIP(filtered);
+        sortAndRenderIP(filtered);
+    });
+
+    // Ordenação por coluna
+    document.querySelectorAll(".ip-grid-head .ip-col[data-sort]").forEach(th => {
+        th.style.cursor = "pointer";
+        th.addEventListener("click", () => {
+            const col = th.dataset.sort;
+            if (ipSortCol === col) {
+                ipSortDir = ipSortDir === "asc" ? "desc" : "asc";
+            } else {
+                ipSortCol = col;
+                ipSortDir = col === "visits" ? "desc" : "asc";
+            }
+            const termo = document.getElementById("ipFilterInput")?.value?.toLowerCase().trim() || "";
+            const base  = termo ? ipTableData.filter(r =>
+                r.ip.includes(termo) ||
+                r.country.toLowerCase().includes(termo) ||
+                r.city.toLowerCase().includes(termo) ||
+                r.region.toLowerCase().includes(termo) ||
+                r.browser.toLowerCase().includes(termo) ||
+                r.os.toLowerCase().includes(termo) ||
+                r.isp.toLowerCase().includes(termo) ||
+                r.referrer.toLowerCase().includes(termo) ||
+                r.last_url.toLowerCase().includes(termo)
+            ) : ipTableData;
+            sortAndRenderIP(base);
+        });
     });
 
     document.getElementById("refreshPorIP")?.addEventListener("click", carregarTabelaIP);
