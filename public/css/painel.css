@@ -1496,7 +1496,7 @@ tbody td:last-child{
 
 .ip-grid-head{
     display:grid;
-    grid-template-columns: 130px 120px 150px 160px 110px 90px 70px 130px 110px;
+    grid-template-columns: 150px 120px 150px 160px 110px 90px 70px 130px 1fr;
     background:#1e293b;
     border-bottom:2px solid rgba(255,255,255,.1);
     padding:0;
@@ -1518,7 +1518,7 @@ tbody td:last-child{
 
 .ip-grid-row{
     display:grid;
-    grid-template-columns: 130px 120px 150px 160px 110px 90px 70px 130px 110px;
+    grid-template-columns: 150px 120px 150px 160px 110px 90px 70px 130px 1fr;
     border-bottom:1px solid rgba(255,255,255,.04);
     transition:.15s;
 }

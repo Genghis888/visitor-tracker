@@ -842,12 +842,10 @@ function renderTabelaIP(data) {
     }
 
     body.innerHTML = data.map(r => {
-        const ref = r.referrer
-            ? `<span class="ip-ref-badge">${formatReferrer(r.referrer)}</span>`
-            : `<span class="ip-ref-badge ip-ref-direct">Direto</span>`;
+        const shortUrl = r.last_url ? r.last_url.replace(/^https?:\/\/[^/]+/, "") || "/" : "/";
         return `
         <div class="ip-grid-row" data-ip="${r.ip}">
-            <div class="ip-col ip-col-ip">${r.ip}</div>
+            <div class="ip-col ip-col-ip" title="${r.ip}">${r.ip}</div>
             <div class="ip-col">${countryFlag(r.country_code)} ${r.country}</div>
             <div class="ip-col">${r.city}</div>
             <div class="ip-col">${r.isp || "—"}</div>
@@ -855,7 +853,7 @@ function renderTabelaIP(data) {
             <div class="ip-col">${r.os}</div>
             <div class="ip-col ip-col-num ip-visits">${r.visits}</div>
             <div class="ip-col ip-time">${new Date(r.last_seen).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
-            <div class="ip-col">${ref}</div>
+            <div class="ip-col ip-col-url" title="${r.last_url}"><a href="${r.last_url}" target="_blank" rel="noopener">${shortUrl}</a></div>
         </div>
         <div class="ip-detail-panel hidden" data-detail="${r.ip}">
             <div class="ip-detail-loading">⏳ Carregando detalhes...</div>
