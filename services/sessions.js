@@ -49,13 +49,14 @@ export async function getSessions(
         orderExpr  = "MAX(created_at) DESC";
         extraWhere = "AND city IS NOT NULL";
     } else if (groupBy === "session") {
-        groupExpr  = "visitor_id";
+        groupExpr  = "COALESCE(visitor_id, CAST(id AS TEXT))";
         orderExpr  = "MAX(created_at) DESC";
-        extraWhere = "AND visitor_id IS NOT NULL";
+        extraWhere = "";
     } else {
+        // "visitor" = sem agrupamento, 1 registro por visita
         groupExpr  = "id";
-        orderExpr  = "MAX(created_at) DESC";
-        extraWhere = "AND id IS NOT NULL";
+        orderExpr  = "created_at DESC";
+        extraWhere = "";
     }
 
     const offset = (page - 1) * limit;
@@ -63,7 +64,8 @@ export async function getSessions(
     const result = await pool.query(`
         SELECT
             ${groupBy === "visitor" ? "id," : ""}
-            ${groupBy === "visitor" || groupBy === "session" ? "visitor_id," : ""}
+            ${groupBy === "session" ? "COALESCE(visitor_id, CAST(id AS TEXT)) AS visitor_id," : ""}
+            ${groupBy === "visitor" ? "visitor_id," : ""}
             ${groupBy === "day" ? "DATE(created_at AT TIME ZONE 'America/Sao_Paulo') AS group_day," : ""}
             ${groupBy === "city" ? "city AS group_city," : ""}
             MIN(ip) AS ip,
@@ -102,7 +104,7 @@ export async function getSessions(
     `, [limit, offset]);
 
     const countResult = await pool.query(`
-        SELECT COUNT(DISTINCT (${groupExpr}))::INT AS total
+        SELECT COUNT(DISTINCT (${groupBy === "session" ? "COALESCE(visitor_id, CAST(id AS TEXT))" : groupExpr}))::INT AS total
         FROM visits
         WHERE ${where}
           AND ${siteWhere}
