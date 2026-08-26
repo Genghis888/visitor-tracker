@@ -791,13 +791,15 @@ async function carregarTabelaIP() {
                 referrer:     v.referrer     || "",
                 visits:       0,
                 last_seen:    v.created_at,
-                last_url:     v.full_url || v.page || "/"
+                last_url:     v.full_url || v.page || "/",
+                last_title:   v.page_title   || ""
             };
         }
         byIp[v.ip].visits++;
         if (v.created_at > byIp[v.ip].last_seen) {
-            byIp[v.ip].last_seen = v.created_at;
-            byIp[v.ip].last_url  = v.full_url || v.page || "/";
+            byIp[v.ip].last_seen  = v.created_at;
+            byIp[v.ip].last_url   = v.full_url || v.page || "/";
+            byIp[v.ip].last_title = v.page_title || "";
         }
         // mantém ISP/referrer mais recentes
         if (v.isp)      byIp[v.ip].isp      = v.isp;
@@ -846,8 +848,14 @@ function renderTabelaIP(data) {
         try {
             if (r.last_url) {
                 const u = new URL(r.last_url);
-                shortUrl = decodeURIComponent(u.pathname) || "/";
-                if (shortUrl.length > 50) shortUrl = shortUrl.slice(0, 48) + "…";
+                const path = decodeURIComponent(u.pathname) || "/";
+                // Se pathname é só "/" mas tem query string, usa page_title ou a URL decodificada
+                if (path === "/" && u.search) {
+                    shortUrl = r.last_title || decodeURIComponent(u.search.slice(1, 50)) + "…";
+                } else {
+                    shortUrl = path;
+                }
+                if (shortUrl.length > 55) shortUrl = shortUrl.slice(0, 53) + "…";
             }
         } catch { shortUrl = r.last_url || "/"; }
         return `
