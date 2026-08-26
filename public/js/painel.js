@@ -151,6 +151,7 @@ let searchTimer        = null;
 let currentSearch      = null;
 let currentGroupBy     = "visitor";
 let favoriteIpSet      = new Set(); // IPs favoritados pelo usuário
+let isProUser         = false;  // Atualizado após login
 
 async function carregarVisitantes(page = 1, search = currentSearch, groupBy = currentGroupBy) {
     currentSessionPage = page;
@@ -161,11 +162,15 @@ async function carregarVisitantes(page = 1, search = currentSearch, groupBy = cu
     if (!sessions) return;
     allSessionsData = sessions.rows || [];
 
-    // Carrega favoritos para destacar visualmente antes de renderizar
-    try {
-        const favs = await getFavoriteIps();
-        favoriteIpSet = new Set((favs || []).map(f => f.ip));
-    } catch { favoriteIpSet = new Set(); }
+    // Carrega favoritos (só Pro) para destacar visualmente antes de renderizar
+    if (isProUser) {
+        try {
+            const favs = await getFavoriteIps();
+            favoriteIpSet = new Set((favs || []).map(f => f.ip));
+        } catch { favoriteIpSet = new Set(); }
+    } else {
+        favoriteIpSet = new Set();
+    }
 
     renderSessions(allSessionsData);
     renderSessionsPagination(sessions);
@@ -320,9 +325,12 @@ function renderSessions(sessions) {
         } else {
             // visitor ou ip: negrito = IP, depois localização
             const isFav = favoriteIpSet.has(s.ip);
+            const favBtn = isProUser
+                ? `<button class="btn-favorite-ip${isFav ? " favorited" : ""}" data-ip="${s.ip}" title="${isFav ? "Desfavoritar IP" : "Favoritar IP"}">${isFav ? "⭐" : "☆"}</button>`
+                : "";
             headerTop = `<span class="session-ip">${s.ip || "?"}</span>
                          <span class="session-location">— ${location}</span>
-                         <button class="btn-favorite-ip${isFav ? " favorited" : ""}" data-ip="${s.ip}" title="${isFav ? "Desfavoritar IP" : "Favoritar IP"}">${isFav ? "⭐" : "☆"}</button>
+                         ${favBtn}
                          <button class="btn-block-ip" data-ip="${s.ip}" title="Bloquear IP">🚫</button>`;
         }
 
@@ -879,6 +887,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (dropName)  dropName.textContent  = user.name || "—";
     if (dropEmail) dropEmail.textContent = user.email || "—";
     if (dropPlan)  dropPlan.textContent  = user.plan === "pro" ? "⭐ Pro" : "Gratuito";
+    isProUser = user.plan === "pro";
+
+    // Mostra item de favoritos só para Pro
+    const menuFavEl = document.getElementById("menuFavoriteIps");
+    if (menuFavEl && !isProUser) menuFavEl.style.display = "none";
 
     // Toggle dropdown
     const menuBtn      = document.getElementById("userMenuBtn");
