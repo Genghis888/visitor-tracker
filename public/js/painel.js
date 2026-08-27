@@ -707,6 +707,9 @@ async function loadFavoriteIps() {
 // ===== Relatórios =====
 // ===== Tempo Real =====
 function startRealtime() {
+    // Garante que toastShowing não está travado
+    toastShowing = false;
+    toastQueue   = [];
     carregarRealtime();
     realtimeTimer = setInterval(carregarRealtime, 10000);
 }
@@ -870,10 +873,19 @@ function dismissToast(toast) {
     clearTimeout(Number(toast.dataset.timer));
     toast.classList.remove("visit-toast--in");
     toast.classList.add("visit-toast--out");
-    toast.addEventListener("transitionend", () => {
+
+    const cleanup = () => {
+        if (!toast.isConnected) return; // já removido
         toast.remove();
         toastShowing = false;
         if (toastQueue.length) showVisitToast(toastQueue.shift());
+    };
+
+    // Fallback: se transitionend não disparar (aba background, animações off), limpa após 400ms
+    const fallback = setTimeout(cleanup, 400);
+    toast.addEventListener("transitionend", () => {
+        clearTimeout(fallback);
+        cleanup();
     }, { once: true });
 }
 
