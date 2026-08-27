@@ -49,8 +49,6 @@ export function initFilters(onChange) {
             if (!s || !e) { alert("Selecione as duas datas."); return; }
             startDate = s;
             endDate   = e;
-            document.querySelectorAll(".custom-range")
-                .forEach(el => el.classList.add("hidden"));
             onChange();
         });
     });
