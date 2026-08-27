@@ -14,7 +14,10 @@ let reportChart = null;
 
 let currentPage = 1;
 let allVisits   = [];
-let realtimeTimer = null;
+let realtimeTimer      = null;
+let lastVisitTimestamp = null;  // timestamp da visita mais recente conhecida
+let toastQueue         = [];    // fila de toasts pendentes
+let toastShowing       = false; // controle de exibição sequencial
 
 // ===== Navegação entre seções =====
 function initNav() {
@@ -710,6 +713,7 @@ function startRealtime() {
 
 function stopRealtime() {
     if (realtimeTimer) { clearInterval(realtimeTimer); realtimeTimer = null; }
+    lastVisitTimestamp = null; toastQueue = []; toastShowing = false;
 }
 
 async function carregarRealtime() {
@@ -769,6 +773,20 @@ async function carregarRealtime() {
         ` : ""}
     `;
 
+    // Detecta novas visitas e dispara toasts
+    if (visits.rows && visits.rows.length > 0) {
+        const newest = visits.rows[0].created_at;
+        if (lastVisitTimestamp === null) {
+            // Primeira carga — só registra, não notifica
+            lastVisitTimestamp = newest;
+        } else if (newest > lastVisitTimestamp) {
+            // Há visitas novas — notifica cada uma
+            const novas = visits.rows.filter(v => v.created_at > lastVisitTimestamp);
+            novas.reverse().forEach(v => queueToast(v));
+            lastVisitTimestamp = newest;
+        }
+    }
+
     const feed = document.getElementById("realtimeFeed");
     feed.innerHTML = visits.rows.map(v => {
         const ago      = timeSince(new Date(v.created_at));
@@ -795,6 +813,58 @@ async function carregarRealtime() {
             </div>
         `;
     }).join("");
+}
+
+// ===== Toast de nova visita =====
+function showVisitToast(v) {
+    const label    = v.page_title || v.page || v.host || "Nova visita";
+    const location = [v.city, v.country].filter(Boolean).join(" · ") || "Localização desconhecida";
+    const browser  = v.browser || "";
+
+    const toast = document.createElement("div");
+    toast.className = "visit-toast";
+    toast.innerHTML = `
+        <div class="visit-toast-icon">${countryFlag(v.country_code) || "🌐"}</div>
+        <div class="visit-toast-body">
+            <div class="visit-toast-title">${escHtml(label)}</div>
+            <div class="visit-toast-sub">${escHtml(location)}${browser ? " · " + escHtml(browser) : ""}</div>
+        </div>
+        <button class="visit-toast-close" title="Fechar">✕</button>
+    `;
+    toast.querySelector(".visit-toast-close").addEventListener("click", () => dismissToast(toast));
+    document.body.appendChild(toast);
+
+    // Anima entrada
+    requestAnimationFrame(() => toast.classList.add("visit-toast--in"));
+
+    // Auto-dismiss após 5s
+    const timer = setTimeout(() => dismissToast(toast), 5000);
+    toast.dataset.timer = timer;
+}
+
+function dismissToast(toast) {
+    clearTimeout(Number(toast.dataset.timer));
+    toast.classList.remove("visit-toast--in");
+    toast.classList.add("visit-toast--out");
+    toast.addEventListener("transitionend", () => {
+        toast.remove();
+        toastShowing = false;
+        if (toastQueue.length) showVisitToast(toastQueue.shift());
+    }, { once: true });
+}
+
+function escHtml(str) {
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function queueToast(v) {
+    if (!toastShowing) {
+        toastShowing = true;
+        showVisitToast(v);
+    } else {
+        // Máximo 3 na fila para não acumular
+        if (toastQueue.length < 3) toastQueue.push(v);
+    }
 }
 
 function timeSince(date) {

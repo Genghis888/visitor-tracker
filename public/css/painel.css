@@ -1959,3 +1959,73 @@ tbody td:last-child{
     padding-top: 2px;
 }
 .relatorios-row1 h1{ font-size: 15px; white-space: nowrap; margin: 0; }
+
+/* ===== Toast de nova visita ===== */
+.visit-toast{
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+    border: 1px solid rgba(99,102,241,.35);
+    border-left: 3px solid #6366f1;
+    border-radius: 10px;
+    padding: 12px 14px;
+    min-width: 280px;
+    max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.45);
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity .25s ease, transform .25s ease;
+    pointer-events: all;
+}
+.visit-toast--in{
+    opacity: 1;
+    transform: translateX(0);
+}
+.visit-toast--out{
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.visit-toast-icon{
+    font-size: 22px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.visit-toast-body{
+    flex: 1;
+    min-width: 0;
+}
+.visit-toast-title{
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.visit-toast-sub{
+    font-size: 11px;
+    color: var(--text-soft);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.visit-toast-close{
+    background: transparent;
+    border: none;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 4px;
+    flex-shrink: 0;
+    line-height: 1;
+    opacity: .6;
+    transition: opacity .15s;
+}
+.visit-toast-close:hover{ opacity: 1; }
