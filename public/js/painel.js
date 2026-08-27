@@ -1036,20 +1036,41 @@ function initIpSearch() {
     // Atalho: preenche comparação automática (período anterior equivalente)
     document.getElementById("compareAuto")?.addEventListener("click", () => {
         const range = getCurrentRange();
-        let days = 30;
-        if (range === "today") days = 1;
-        else if (range === "7")  days = 7;
-        else if (typeof range === "object" && range.start && range.end) {
-            const ms = new Date(range.end) - new Date(range.start);
-            days = Math.max(1, Math.round(ms / 86400000));
-        }
-        const end   = new Date(); end.setDate(end.getDate() - 1);
-        const start = new Date(); start.setDate(start.getDate() - 1 - days);
         const fmt   = d => d.toISOString().slice(0, 10);
-        document.getElementById("compareStart").value = fmt(start);
-        document.getElementById("compareEnd").value   = fmt(end);
-        compareStart = fmt(start);
-        compareEnd   = fmt(end);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let periodStart, periodEnd, days;
+
+        if (typeof range === "object" && range.start && range.end) {
+            // Custom: usa as datas exatas do período atual
+            periodStart = new Date(range.start);
+            periodEnd   = new Date(range.end);
+            const ms    = periodEnd - periodStart;
+            days        = Math.max(1, Math.round(ms / 86400000)) + 1;
+        } else {
+            // Predefinido: calcula as datas reais do período atual
+            periodEnd   = new Date(today);
+            if (range === "today") {
+                periodStart = new Date(today);
+                days = 1;
+            } else {
+                days = parseInt(range) || 30;
+                periodStart = new Date(today);
+                periodStart.setDate(today.getDate() - days + 1);
+            }
+        }
+
+        // Período anterior = mesma duração, imediatamente antes
+        const compareEndDate   = new Date(periodStart);
+        compareEndDate.setDate(compareEndDate.getDate() - 1);
+        const compareStartDate = new Date(compareEndDate);
+        compareStartDate.setDate(compareEndDate.getDate() - days + 1);
+
+        document.getElementById("compareStart").value = fmt(compareStartDate);
+        document.getElementById("compareEnd").value   = fmt(compareEndDate);
+        compareStart = fmt(compareStartDate);
+        compareEnd   = fmt(compareEndDate);
         carregarRelatorios();
     });
 
