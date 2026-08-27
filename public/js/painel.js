@@ -717,8 +717,17 @@ function stopRealtime() {
 }
 
 async function carregarRealtime() {
-    const stats  = await getStats("today");
-    const visits = await getVisits("today", 1, 20);
+    let stats, visits;
+    try {
+        [stats, visits] = await Promise.all([
+            getStats("today"),
+            getVisits("today", 1, 20)
+        ]);
+    } catch (e) {
+        console.error("[realtime] erro ao buscar dados:", e);
+        return;
+    }
+    if (!stats || !visits) return;
 
     document.getElementById("realtimeCount").textContent     = stats.online ?? 0;
     document.getElementById("realtimeToday").textContent     = stats.today ?? 0;
@@ -727,7 +736,7 @@ async function carregarRealtime() {
 
     // Top cidades e países a partir das visitas
     const allVisits = await getVisits("today", 1, 200);
-    const rows = allVisits.rows || [];
+    const rows = allVisits?.rows || [];
 
     const cityCount    = {};
     const countryCount = {};
@@ -776,14 +785,19 @@ async function carregarRealtime() {
     // Detecta novas visitas e dispara toasts
     if (visits.rows && visits.rows.length > 0) {
         const newest = visits.rows[0].created_at;
+        console.log("[toast] lastVisitTimestamp:", lastVisitTimestamp, "| newest:", newest);
         if (lastVisitTimestamp === null) {
             // Primeira carga — só registra, não notifica
             lastVisitTimestamp = newest;
+            console.log("[toast] primeira carga, timestamp registrado:", newest);
         } else if (newest > lastVisitTimestamp) {
             // Há visitas novas — notifica cada uma
             const novas = visits.rows.filter(v => v.created_at > lastVisitTimestamp);
+            console.log("[toast] novas visitas detectadas:", novas.length);
             novas.reverse().forEach(v => queueToast(v));
             lastVisitTimestamp = newest;
+        } else {
+            console.log("[toast] nenhuma visita nova detectada");
         }
     }
 
