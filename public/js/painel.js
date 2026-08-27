@@ -710,6 +710,7 @@ function startRealtime() {
     // Garante que toastShowing não está travado
     toastShowing = false;
     toastQueue   = [];
+
     carregarRealtime();
     realtimeTimer = setInterval(carregarRealtime, 10000);
 }
@@ -829,17 +830,12 @@ async function pollToastGlobal() {
 function detectNovasVisitas(rows) {
     if (!rows || rows.length === 0) return;
     const newest = rows[0].created_at;
-    console.log("[toast] detectNovasVisitas | last:", lastVisitTimestamp, "| newest:", newest, "| realtimeTimer:", !!realtimeTimer);
     if (lastVisitTimestamp === null) {
         lastVisitTimestamp = newest;
-        console.log("[toast] primeiro timestamp registrado:", newest);
     } else if (newest > lastVisitTimestamp) {
         const novas = rows.filter(v => v.created_at > lastVisitTimestamp);
-        console.log("[toast] novas:", novas.length, "| chamando queueToast");
         novas.reverse().forEach(v => queueToast(v));
         lastVisitTimestamp = newest;
-    } else {
-        console.log("[toast] nenhuma visita nova");
     }
 }
 
@@ -848,6 +844,19 @@ function showVisitToast(v) {
     const label    = v.page_title || v.page || v.host || "Nova visita";
     const location = [v.city, v.country].filter(Boolean).join(" · ") || "Localização desconhecida";
     const browser  = v.browser || "";
+
+    // Notificação nativa do OS (funciona em outras abas e com browser minimizado)
+    if ("Notification" in window && Notification.permission === "granted") {
+        try {
+            const n = new Notification("Nova visita — " + label, {
+                body: location + (browser ? " · " + browser : ""),
+                tag:  "visit-" + (v.ip || Date.now()), // evita duplicatas do mesmo IP
+                silent: false
+            });
+            n.onclick = () => { window.focus(); n.close(); };
+            setTimeout(() => n.close(), 6000);
+        } catch (e) { /* silencioso — alguns browsers bloqueiam em background */ }
+    }
 
     const toast = document.createElement("div");
     toast.className = "visit-toast";
@@ -1231,6 +1240,11 @@ function initTableSearch() {
 document.addEventListener("DOMContentLoaded", async () => {
     const user = await requireAuth();
     if (!user) return;
+
+    // Pede permissão de notificação nativa ao logar (só na primeira vez)
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+    }
 
     // Preenche dados do dropdown
     const nameEl = document.getElementById("userName");
