@@ -826,12 +826,17 @@ async function pollToastGlobal() {
 function detectNovasVisitas(rows) {
     if (!rows || rows.length === 0) return;
     const newest = rows[0].created_at;
+    console.log("[toast] detectNovasVisitas | last:", lastVisitTimestamp, "| newest:", newest, "| realtimeTimer:", !!realtimeTimer);
     if (lastVisitTimestamp === null) {
         lastVisitTimestamp = newest;
+        console.log("[toast] primeiro timestamp registrado:", newest);
     } else if (newest > lastVisitTimestamp) {
         const novas = rows.filter(v => v.created_at > lastVisitTimestamp);
+        console.log("[toast] novas:", novas.length, "| chamando queueToast");
         novas.reverse().forEach(v => queueToast(v));
         lastVisitTimestamp = newest;
+    } else {
+        console.log("[toast] nenhuma visita nova");
     }
 }
 
