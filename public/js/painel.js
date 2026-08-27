@@ -713,7 +713,7 @@ function startRealtime() {
 
 function stopRealtime() {
     if (realtimeTimer) { clearInterval(realtimeTimer); realtimeTimer = null; }
-    lastVisitTimestamp = null; toastQueue = []; toastShowing = false;
+    // Não reseta lastVisitTimestamp — preserva para detectar novas visitas ao voltar
 }
 
 async function carregarRealtime() {
@@ -782,24 +782,8 @@ async function carregarRealtime() {
         ` : ""}
     `;
 
-    // Detecta novas visitas e dispara toasts
-    if (visits.rows && visits.rows.length > 0) {
-        const newest = visits.rows[0].created_at;
-        console.log("[toast] lastVisitTimestamp:", lastVisitTimestamp, "| newest:", newest);
-        if (lastVisitTimestamp === null) {
-            // Primeira carga — só registra, não notifica
-            lastVisitTimestamp = newest;
-            console.log("[toast] primeira carga, timestamp registrado:", newest);
-        } else if (newest > lastVisitTimestamp) {
-            // Há visitas novas — notifica cada uma
-            const novas = visits.rows.filter(v => v.created_at > lastVisitTimestamp);
-            console.log("[toast] novas visitas detectadas:", novas.length);
-            novas.reverse().forEach(v => queueToast(v));
-            lastVisitTimestamp = newest;
-        } else {
-            console.log("[toast] nenhuma visita nova detectada");
-        }
-    }
+    // Detecta novas visitas (também chamado pelo poll global)
+    detectNovasVisitas(visits.rows);
 
     const feed = document.getElementById("realtimeFeed");
     feed.innerHTML = visits.rows.map(v => {
@@ -829,6 +813,26 @@ async function carregarRealtime() {
     }).join("");
 }
 
+// ===== Poll global de toasts (roda independente da aba ativa) =====
+async function pollToastGlobal() {
+    try {
+        const visits = await getVisits("today", 1, 20);
+        if (visits?.rows) detectNovasVisitas(visits.rows);
+    } catch (e) { /* silencioso */ }
+}
+
+function detectNovasVisitas(rows) {
+    if (!rows || rows.length === 0) return;
+    const newest = rows[0].created_at;
+    if (lastVisitTimestamp === null) {
+        lastVisitTimestamp = newest;
+    } else if (newest > lastVisitTimestamp) {
+        const novas = rows.filter(v => v.created_at > lastVisitTimestamp);
+        novas.reverse().forEach(v => queueToast(v));
+        lastVisitTimestamp = newest;
+    }
+}
+
 // ===== Toast de nova visita =====
 function showVisitToast(v) {
     const label    = v.page_title || v.page || v.host || "Nova visita";
@@ -847,8 +851,6 @@ function showVisitToast(v) {
     `;
     toast.querySelector(".visit-toast-close").addEventListener("click", () => dismissToast(toast));
     document.body.appendChild(toast);
-    console.log("[toast] elemento inserido no DOM:", toast);
-
     // Anima entrada — duplo rAF garante que a transição CSS funciona
     requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add("visit-toast--in")));
 
@@ -873,7 +875,6 @@ function escHtml(str) {
 }
 
 function queueToast(v) {
-    console.log("[toast] queueToast chamado, toastShowing:", toastShowing);
     if (!toastShowing) {
         toastShowing = true;
         showVisitToast(v);
@@ -1470,4 +1471,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     setInterval(carregarOverview, 30000);
+
+    // Poll global de toasts — roda em qualquer aba a cada 15s
+    pollToastGlobal(); // primeira carga para registrar timestamp
+    setInterval(pollToastGlobal, 15000);
 });
