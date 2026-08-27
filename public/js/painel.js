@@ -847,9 +847,10 @@ function showVisitToast(v) {
     `;
     toast.querySelector(".visit-toast-close").addEventListener("click", () => dismissToast(toast));
     document.body.appendChild(toast);
+    console.log("[toast] elemento inserido no DOM:", toast);
 
-    // Anima entrada
-    requestAnimationFrame(() => toast.classList.add("visit-toast--in"));
+    // Anima entrada — duplo rAF garante que a transição CSS funciona
+    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add("visit-toast--in")));
 
     // Auto-dismiss após 5s
     const timer = setTimeout(() => dismissToast(toast), 5000);
@@ -872,11 +873,11 @@ function escHtml(str) {
 }
 
 function queueToast(v) {
+    console.log("[toast] queueToast chamado, toastShowing:", toastShowing);
     if (!toastShowing) {
         toastShowing = true;
         showVisitToast(v);
     } else {
-        // Máximo 3 na fila para não acumular
         if (toastQueue.length < 3) toastQueue.push(v);
     }
 }
