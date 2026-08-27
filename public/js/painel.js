@@ -815,6 +815,8 @@ async function carregarRealtime() {
 
 // ===== Poll global de toasts (roda independente da aba ativa) =====
 async function pollToastGlobal() {
+    // Não roda se a aba Tempo Real já está fazendo o poll
+    if (realtimeTimer) return;
     try {
         const visits = await getVisits("today", 1, 20);
         if (visits?.rows) detectNovasVisitas(visits.rows);
