@@ -358,9 +358,9 @@
 
     <!-- RELATÓRIOS -->
     <section id="section-relatorios" class="section hidden">
-        <div class="section-header-new">
-            <h1>📈 Relatórios</h1>
-            <div class="section-controls">
+        <div class="section-header-new relatorios-header">
+            <div class="relatorios-row1">
+                <h1>📈 Relatórios</h1>
                 <div class="period-filters period-filters-inline">
                     <button class="filter active" data-range="today">Hoje</button>
                     <button class="filter" data-range="7">7d</button>
@@ -373,6 +373,10 @@
                     <input type="date" id="dateEndRelatorios">
                     <button id="applyRangeRelatorios">OK</button>
                 </div>
+                <button id="compareToggle" class="btn-compare" title="Comparar períodos">⚖️ Comparar</button>
+                <button id="refreshRelatorios" class="btn-icon" title="Atualizar">↺</button>
+            </div>
+            <div class="relatorios-row2">
                 <div class="relatorio-stats-header">
                     <span class="relatorio-stat-mini"><span class="relatorio-stat-mini-label">Total</span> <span id="reportTotal">—</span></span>
                     <span class="relatorio-stat-mini"><span class="relatorio-stat-mini-label">Média</span> <span id="reportAvg">—</span></span>
@@ -383,16 +387,14 @@
                     <button class="chart-type-btn" data-type="area" title="Linha + Área">◭</button>
                     <button class="chart-type-btn" data-type="bar" title="Barras">▦</button>
                 </div>
-                <button id="compareToggle" class="btn-compare" title="Comparar períodos">⚖️ Comparar</button>
-                <button id="refreshRelatorios" class="btn-icon" title="Atualizar">↺</button>
-            </div>
-            <div id="comparePanel" class="compare-panel hidden">
-                <span class="compare-label">Comparar com:</span>
-                <input type="date" id="compareStart" class="compare-date">
-                <span>até</span>
-                <input type="date" id="compareEnd" class="compare-date">
-                <button id="applyCompare" class="btn-compare-apply">Aplicar</button>
-                <button id="compareAuto" class="btn-compare-auto">Período anterior</button>
+                <div id="comparePanel" class="compare-panel hidden">
+                    <span class="compare-label">Comparar com:</span>
+                    <input type="date" id="compareStart" class="compare-date">
+                    <span>até</span>
+                    <input type="date" id="compareEnd" class="compare-date">
+                    <button id="applyCompare" class="btn-compare-apply">Aplicar</button>
+                    <button id="compareAuto" class="btn-compare-auto">Período anterior</button>
+                </div>
             </div>
         </div>
 

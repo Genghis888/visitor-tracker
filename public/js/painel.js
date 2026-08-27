@@ -1030,8 +1030,26 @@ function initIpSearch() {
     document.getElementById("applyCompare")?.addEventListener("click", () => {
         compareStart = document.getElementById("compareStart")?.value || "";
         compareEnd   = document.getElementById("compareEnd")?.value   || "";
-        if (compareStart && compareEnd) carregarRelatorios();
+        if (!compareStart || !compareEnd) return;
+        if (compareEnd < compareStart) {
+            alert("A data final de comparação não pode ser anterior à data inicial.");
+            return;
+        }
+        carregarRelatorios();
     });
+
+    // Validação: data final nunca menor que inicial (custom range e compare)
+    function bindDateValidation(startId, endId) {
+        const s = document.getElementById(startId);
+        const e = document.getElementById(endId);
+        if (!s || !e) return;
+        s.addEventListener("change", () => { if (e.value && e.value < s.value) e.value = s.value; });
+        e.addEventListener("change", () => { if (s.value && e.value < s.value) e.value = s.value; });
+    }
+    bindDateValidation("dateStartRelatorios", "dateEndRelatorios");
+    bindDateValidation("compareStart", "compareEnd");
+    bindDateValidation("dateStartOverview", "dateEndOverview");
+    bindDateValidation("dateStartVisitantes", "dateEndVisitantes");
 
     // Atalho: preenche comparação automática (período anterior equivalente)
     document.getElementById("compareAuto")?.addEventListener("click", () => {
