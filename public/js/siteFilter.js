@@ -46,7 +46,18 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
 
         // Se veio com ?site= na URL, dispara onChange para carregar dados filtrados
         // Só dispara no seletor principal (siteSelect) para evitar múltiplos reloads
-        if (urlSite && selectId === "siteSelect") onChange();
+        if (urlSite && selectId === "siteSelect") {
+            onChange();
+            // Atualiza badge de site ativo
+            const urlParams = new URLSearchParams(location.search);
+            const siteName  = urlParams.get("siteName") || urlSite;
+            const badge  = document.getElementById("siteActiveBadge");
+            const nameEl = document.getElementById("siteActiveName");
+            if (badge && nameEl) {
+                nameEl.textContent = "📊 " + siteName;
+                badge.classList.remove("hidden");
+            }
+        }
 
     } catch (err) {
 

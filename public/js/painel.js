@@ -1446,8 +1446,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (select) { select.value = "all"; select.dispatchEvent(new Event("change")); }
     });
 
-    // Inicia badge após initSiteFilter terminar de pré-selecionar via URL
-    setTimeout(updateSiteActiveBadge, 500);
+    // Badge atualizado diretamente no siteFilter.js ao pré-selecionar via URL
 
     // Seletor de sites da aba Visitantes (independente)
     initSiteFilter(() => {
