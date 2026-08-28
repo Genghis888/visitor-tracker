@@ -1507,5 +1507,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Poll global de toasts — roda em qualquer aba a cada 15s
     pollToastGlobal(); // primeira carga para registrar timestamp
-    setInterval(pollToastGlobal, 15000);
+    let toastPollTimer = setInterval(pollToastGlobal, 15000);
+
+    // Page Visibility API — retoma poll imediatamente ao voltar ao foco
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            // Roda imediatamente e reinicia o intervalo limpo
+            pollToastGlobal();
+            clearInterval(toastPollTimer);
+            toastPollTimer = setInterval(pollToastGlobal, 15000);
+        }
+    });
 });
