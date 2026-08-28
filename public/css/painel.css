@@ -2029,3 +2029,39 @@ tbody td:last-child{
     transition: opacity .15s;
 }
 .visit-toast-close:hover{ opacity: 1; }
+
+/* ===== Site Active Badge ===== */
+.site-active-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(99,102,241,.2);
+    border: 1px solid rgba(99,102,241,.4);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: #a5b4fc;
+    white-space: nowrap;
+}
+.site-active-badge button{
+    background: transparent;
+    border: none;
+    color: #a5b4fc;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0 2px;
+    opacity: .7;
+    transition: opacity .15s;
+}
+.site-active-badge button:hover{ opacity: 1; }
+.site-active-badge.hidden{ display: none; }
+
+/* ===== Botão Dashboard em Meus Sites ===== */
+.btn-dashboard{
+    background: rgba(99,102,241,.15) !important;
+    border-color: rgba(99,102,241,.3) !important;
+    color: #a5b4fc !important;
+}
+.btn-dashboard:hover{
+    background: rgba(99,102,241,.3) !important;
+}

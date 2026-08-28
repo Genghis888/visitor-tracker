@@ -62,6 +62,9 @@ function renderSites() {
             </div>
 
             <div class="site-actions">
+                <button class="btn-icon-sm btn-dashboard" onclick="abrirDashboard('${escHtml(site.domain)}', '${escHtml(site.name)}')">
+                    📊 Dashboard
+                </button>
                 <button class="btn-icon-sm" onclick="verEmbed(${site.id})">
                     📋 Script
                 </button>
@@ -110,6 +113,11 @@ function gerarEmbedIframe(site) {
   style="display:none;width:0;height:0;border:0"
   referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 }
+
+// ===== Dashboard por site =====
+window.abrirDashboard = function(domain, name) {
+    window.location.href = `/painel.html?site=${encodeURIComponent(domain)}&siteName=${encodeURIComponent(name)}`;
+};
 
 // ===== Modal: Adicionar / Editar =====
 window.abrirModal = function(id = null) {

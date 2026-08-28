@@ -30,8 +30,15 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
 
         });
 
+        // Pré-seleciona site via parâmetro URL (?site=domain)
+        const urlSite = new URLSearchParams(location.search).get("site");
+        if (urlSite) {
+            select.value = urlSite;
+            currentSite  = urlSite;
+        }
+
         // Se só existe 1 site (ou nenhum), não faz sentido mostrar o seletor
-        if (sites.length <= 1) {
+        if (sites.length <= 1 && !urlSite) {
 
             select.closest(".site-filter-wrapper")?.classList.add("hidden");
 

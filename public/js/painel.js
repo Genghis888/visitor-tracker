@@ -1421,7 +1421,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (searchInput) searchInput.value = "";
         carregarOverview();
         carregarVisitantes(1, null);
+        updateSiteActiveBadge();
     });
+
+    // Badge de site ativo (quando vem de ?site=domain)
+    function updateSiteActiveBadge() {
+        const badge    = document.getElementById("siteActiveBadge");
+        const nameEl   = document.getElementById("siteActiveName");
+        const site     = getCurrentSite();
+        const urlParams = new URLSearchParams(location.search);
+        const siteName  = urlParams.get("siteName") || site;
+        if (site && site !== "all") {
+            nameEl.textContent = "📊 " + siteName;
+            badge?.classList.remove("hidden");
+        } else {
+            badge?.classList.add("hidden");
+        }
+    }
+
+    document.getElementById("clearSiteFilter")?.addEventListener("click", () => {
+        // Remove params da URL e seleciona "Todos"
+        history.replaceState({}, "", location.pathname);
+        const select = document.getElementById("siteSelect");
+        if (select) { select.value = "all"; select.dispatchEvent(new Event("change")); }
+    });
+
+    // Inicia badge se veio com ?site= na URL
+    updateSiteActiveBadge();
 
     // Seletor de sites da aba Visitantes (independente)
     initSiteFilter(() => {
