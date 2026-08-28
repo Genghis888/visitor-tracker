@@ -44,6 +44,10 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
 
         }
 
+        // Se veio com ?site= na URL, dispara onChange para carregar dados filtrados
+        // Só dispara no seletor principal (siteSelect) para evitar múltiplos reloads
+        if (urlSite && selectId === "siteSelect") onChange();
+
     } catch (err) {
 
         console.error("Erro ao carregar sites:", err);
