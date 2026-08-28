@@ -51,14 +51,11 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
             // Atualiza badge de site ativo
             const urlParams = new URLSearchParams(location.search);
             const siteName  = urlParams.get("siteName") || urlSite;
-            console.log("[badge] urlSite:", urlSite, "siteName:", siteName);
             const badge  = document.getElementById("siteActiveBadge");
             const nameEl = document.getElementById("siteActiveName");
-            console.log("[badge] badge el:", badge, "nameEl:", nameEl);
             if (badge && nameEl) {
                 nameEl.textContent = "📊 " + siteName;
                 badge.classList.remove("hidden");
-                console.log("[badge] badge atualizado!");
             }
         }
 
