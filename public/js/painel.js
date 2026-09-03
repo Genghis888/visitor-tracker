@@ -1406,10 +1406,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // Seletor de sites da aba Overview
-    initSiteFilter(() => {
-        carregarOverview();
-    }, "siteSelectOverview");
-
     // Refresh da aba Overview
     document.getElementById("refreshOverview")?.addEventListener("click", () => {
         carregarOverview();
@@ -1445,17 +1441,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         history.replaceState({}, "", location.pathname);
         const select = document.getElementById("siteSelect");
         if (select) { select.value = "all"; select.dispatchEvent(new Event("change")); }
+        document.getElementById("siteActiveBadge")?.classList.add("hidden");
     });
 
     // Badge atualizado diretamente no siteFilter.js ao pré-selecionar via URL
-
-    // Seletor de sites da aba Visitantes (independente)
-    initSiteFilter(() => {
-        currentSearch = null;
-        const searchInput = document.getElementById("searchVisits");
-        if (searchInput) searchInput.value = "";
-        carregarVisitantes(1, null);
-    }, "siteSelectVisitantes");
 
     // Refresh da aba Visitantes
     document.getElementById("refreshVisitantes")?.addEventListener("click", () => {
