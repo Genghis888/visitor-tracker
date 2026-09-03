@@ -1431,6 +1431,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const site     = getCurrentSite();
         const urlParams = new URLSearchParams(location.search);
         const siteName  = urlParams.get("siteName") || site;
+        // site agora é token — badge só aparece se há siteToken na URL
         if (site && site !== "all") {
             nameEl.textContent = "📊 " + siteName;
             badge?.classList.remove("hidden");

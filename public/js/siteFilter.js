@@ -22,7 +22,7 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
 
             const option = document.createElement("option");
 
-            option.value = site.domain || site.host || '';
+            option.value = site.token || site.domain || '';
 
             option.textContent = site.name || site.domain || site.host || "";
 
@@ -30,8 +30,8 @@ export async function initSiteFilter(onChange, selectId = "siteSelect") {
 
         });
 
-        // Pré-seleciona site via parâmetro URL (?site=domain)
-        const urlSite = new URLSearchParams(location.search).get("site");
+        // Pré-seleciona site via parâmetro URL (?siteToken=token)
+        const urlSite = new URLSearchParams(location.search).get("siteToken");
         if (urlSite) {
             select.value = urlSite;
             currentSite  = urlSite;

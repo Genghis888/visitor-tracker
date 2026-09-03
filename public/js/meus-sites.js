@@ -62,7 +62,7 @@ function renderSites() {
             </div>
 
             <div class="site-actions">
-                <button class="btn-icon-sm btn-dashboard" onclick="abrirDashboard('${escHtml(site.domain)}', '${escHtml(site.name)}')">
+                <button class="btn-icon-sm btn-dashboard" onclick="abrirDashboard('${escHtml(site.token)}', '${escHtml(site.name)}')">
                     📊 Dashboard
                 </button>
                 <button class="btn-icon-sm" onclick="verEmbed(${site.id})">
@@ -115,8 +115,8 @@ function gerarEmbedIframe(site) {
 }
 
 // ===== Dashboard por site =====
-window.abrirDashboard = function(domain, name) {
-    window.location.href = `/painel.html?site=${encodeURIComponent(domain)}&siteName=${encodeURIComponent(name)}`;
+window.abrirDashboard = function(token, name) {
+    window.location.href = `/painel.html?siteToken=${encodeURIComponent(token)}&siteName=${encodeURIComponent(name)}`;
 };
 
 // ===== Modal: Adicionar / Editar =====
