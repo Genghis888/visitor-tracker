@@ -836,7 +836,14 @@ function detectNovasVisitas(rows) {
     } else if (newest > lastVisitTimestamp) {
         const novas = rows.filter(v => v.created_at > lastVisitTimestamp);
         console.log("[toast] novas:", novas.length);
-        novas.reverse().forEach(v => queueToast(v));
+        novas.reverse().forEach(v => {
+            try {
+                console.log("[toast] chamando queueToast para:", v.ip, v.page_title);
+                queueToast(v);
+            } catch(e) {
+                console.error("[toast] erro em queueToast:", e);
+            }
+        });
         lastVisitTimestamp = newest;
     }
 }
