@@ -912,10 +912,18 @@ function escHtml(str) {
 }
 
 function queueToast(v) {
+    console.log("[toast] queueToast chamado | toastShowing:", toastShowing);
     if (!toastShowing) {
         toastShowing = true;
-        showVisitToast(v);
+        try {
+            showVisitToast(v);
+            console.log("[toast] showVisitToast executado OK");
+        } catch(e) {
+            console.error("[toast] ERRO em showVisitToast:", e);
+            toastShowing = false;
+        }
     } else {
+        console.log("[toast] já exibindo, adicionando à fila");
         if (toastQueue.length < 3) toastQueue.push(v);
     }
 }
