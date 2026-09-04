@@ -912,18 +912,10 @@ function escHtml(str) {
 }
 
 function queueToast(v) {
-    console.log("[toast] queueToast chamado | toastShowing:", toastShowing);
     if (!toastShowing) {
         toastShowing = true;
-        try {
-            showVisitToast(v);
-            console.log("[toast] showVisitToast executado OK");
-        } catch(e) {
-            console.error("[toast] ERRO em showVisitToast:", e);
-            toastShowing = false;
-        }
+        showVisitToast(v);
     } else {
-        console.log("[toast] já exibindo, adicionando à fila");
         if (toastQueue.length < 3) toastQueue.push(v);
     }
 }
@@ -1258,9 +1250,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     const user = await requireAuth();
     if (!user) return;
 
-    // Pede permissão de notificação nativa ao logar (só na primeira vez)
-    if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
+    // Notificação: mostra botão no menu se permissão ainda não foi concedida
+    const btnNotif = document.getElementById("btnEnableNotifications");
+    if (btnNotif) {
+        if ("Notification" in window && Notification.permission !== "granted") {
+            btnNotif.style.display = "";
+            btnNotif.addEventListener("click", async () => {
+                const result = await Notification.requestPermission();
+                if (result === "granted") {
+                    btnNotif.style.display = "none";
+                    new Notification("✅ Notificações ativadas!", {
+                        body: "Você será avisado de novas visitas em tempo real."
+                    });
+                } else {
+                    btnNotif.textContent = "🔕 Bloqueado — libere nas config. do browser";
+                    btnNotif.disabled = true;
+                }
+            });
+        } else {
+            btnNotif.style.display = "none";
+        }
     }
 
     // Preenche dados do dropdown
