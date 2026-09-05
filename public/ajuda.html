@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajuda · Visitor Tracker</title>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/painel.css">
+<style>
+    .help-wrap{
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+    .help-header{
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 36px;
+    }
+    .help-header h1{
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+    }
+    .help-back{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.1);
+        color: var(--text-soft);
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 13px;
+        text-decoration: none;
+        transition: .15s;
+        margin-left: auto;
+    }
+    .help-back:hover{ background: rgba(255,255,255,.1); color: var(--text); }
+
+    .help-section{
+        background: var(--card-bg);
+        border: 1px solid rgba(255,255,255,.07);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 20px;
+    }
+    .help-section-title{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0 0 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .help-section-title span{
+        font-size: 20px;
+    }
+    .help-desc{
+        font-size: 13px;
+        color: var(--text-soft);
+        line-height: 1.7;
+        margin: 0 0 16px;
+    }
+    .help-features{
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .help-feature{
+        display: flex;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text-soft);
+        line-height: 1.5;
+    }
+    .help-feature-icon{
+        flex-shrink: 0;
+        width: 20px;
+        text-align: center;
+        color: var(--primary);
+        font-size: 14px;
+    }
+    .help-tip{
+        margin-top: 14px;
+        background: rgba(99,102,241,.1);
+        border-left: 3px solid #6366f1;
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: #a5b4fc;
+        line-height: 1.6;
+    }
+    .help-tip strong{ color: #c7d2fe; }
+</style>
+</head>
+<body>
+
+<div class="help-wrap">
+
+    <div class="help-header">
+        <h1>❓ Central de Ajuda</h1>
+        <a href="painel.html" class="help-back">← Voltar ao Painel</a>
+    </div>
+
+    <!-- Overview -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>📊</span> Overview</h2>
+        <p class="help-desc">Visão geral do desempenho do seu site no período selecionado. É a primeira aba que você vê ao entrar no painel.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Cards de métricas</strong> — Total de visitas, visitantes únicos, países alcançados e média por dia.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Gráfico de visitas</strong> — Evolução das visitas ao longo do período selecionado.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Top Páginas</strong> — As páginas mais acessadas no período.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Navegadores, Sistemas e Dispositivos</strong> — Distribuição dos visitantes por tecnologia.</span></div>
+        </div>
+        <div class="help-tip"><strong>Dica:</strong> Use os botões "Hoje", "7d", "30d" ou "⚙ Custom" para filtrar o período. O painel atualiza automaticamente a cada 30 segundos.</div>
+    </div>
+
+    <!-- Tempo Real -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>🟢</span> Tempo Real</h2>
+        <p class="help-desc">Monitore as visitas do dia em tempo real. A aba atualiza automaticamente a cada 10 segundos.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Online agora</strong> — Estimativa de visitantes ativos nos últimos minutos.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Últimas entradas</strong> — Feed das visitas mais recentes com IP, localização, browser e página visitada.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Toast de nova visita</strong> — Notificação visual no canto da tela quando chega uma nova visita.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Notificação nativa</strong> — Com permissão concedida, receba alertas mesmo em outras abas ou com o browser minimizado.</span></div>
+        </div>
+        <div class="help-tip"><strong>Dica:</strong> Para ativar as notificações nativas, clique no seu nome no canto superior direito e selecione <strong>🔔 Ativar Notificações</strong>.</div>
+    </div>
+
+    <!-- Visitantes -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>👥</span> Visitantes</h2>
+        <p class="help-desc">Lista detalhada de todas as sessões de visita no período. Permite pesquisa, agrupamento e exportação.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Agrupar por Visita</strong> — Exibe cada acesso individualmente, sem agrupamento.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Agrupar por Visitante</strong> — Agrupa todas as páginas visitadas pelo mesmo IP em um único card.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Busca</strong> — Filtre por IP, cidade, página, browser ou qualquer outro campo.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Bloquear IP 🚫</strong> — Impede que novas visitas daquele IP sejam registradas.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Favoritar IP ⭐</strong> — Marca o IP com destaque visual para fácil identificação (plano Pro).</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Exportar CSV ⬇</strong> — Baixa todos os registros do período em formato planilha.</span></div>
+        </div>
+        <div class="help-tip"><strong>Dica:</strong> Clique em qualquer sessão para expandir e ver todas as páginas visitadas naquela sessão.</div>
+    </div>
+
+    <!-- Países -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>🌍</span> Países</h2>
+        <p class="help-desc">Distribuição geográfica dos visitantes com mapa interativo e hierarquia expansível.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Mapa interativo</strong> — Visualize a origem dos visitantes no mapa-múndi.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Hierarquia</strong> — Expanda País → Região → Cidade → IPs para ver o detalhamento completo.</span></div>
+        </div>
+    </div>
+
+    <!-- Relatórios -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>📈</span> Relatórios</h2>
+        <p class="help-desc">Análise aprofundada do tráfego com gráfico, rankings e comparação de períodos.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Gráfico de visitas</strong> — Escolha entre linha, linha+área ou barras usando os botões de tipo.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Total, Média e Pico</strong> — Resumo estatístico do período no header.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Rankings</strong> — Páginas, browsers, sistemas, dispositivos e origens de tráfego mais frequentes.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>⚖️ Comparar períodos</strong> — Sobreponha dois períodos no mesmo gráfico para comparar o desempenho. Use "Período anterior" para preencher automaticamente.</span></div>
+        </div>
+        <div class="help-tip"><strong>Dica:</strong> Ao usar "Custom" como período principal, o botão "Período anterior" calcula automaticamente o intervalo equivalente imediatamente anterior.</div>
+    </div>
+
+    <!-- Por IP -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>🔍</span> Por IP</h2>
+        <p class="help-desc">Tabela de todos os IPs únicos que visitaram seu site, com busca e ordenação por qualquer coluna.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Busca global</strong> — Filtre por IP, país, cidade, ISP, browser, OS, referrer ou URL.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Ordenação</strong> — Clique em qualquer cabeçalho de coluna para ordenar asc/desc.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Painel de detalhes</strong> — Clique em qualquer linha para expandir e ver todas as páginas visitadas por aquele IP, com horário e origem.</span></div>
+        </div>
+        <div class="help-tip"><strong>Dica:</strong> Clique em um link na coluna "Última Página" para abrir a URL diretamente — sem expandir o painel de detalhes.</div>
+    </div>
+
+    <!-- Meus Sites -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>🌐</span> Meus Sites</h2>
+        <p class="help-desc">Gerencie todos os sites que você está monitorando e obtenha o script de rastreamento.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Adicionar site</strong> — Cadastre um novo site e receba um token único de rastreamento.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>📋 Script</strong> — Copia o código de rastreamento para colar no seu site.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>📊 Dashboard</strong> — Abre o painel já filtrado para aquele site específico.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>Pausar / Ativar</strong> — Suspende ou reativa o rastreamento de um site sem deletá-lo.</span></div>
+        </div>
+        <div class="help-tip"><strong>Dica:</strong> Ao entrar via "📊 Dashboard", um badge aparece no topo do painel mostrando qual site está filtrado. Clique no <strong>✕</strong> para voltar a ver todos os sites.</div>
+    </div>
+
+    <!-- Menu do usuário -->
+    <div class="help-section">
+        <h2 class="help-section-title"><span>👤</span> Menu do Usuário</h2>
+        <p class="help-desc">Clique no seu nome no canto superior direito para acessar as configurações da conta.</p>
+        <div class="help-features">
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>🔔 Ativar Notificações</strong> — Solicita permissão para enviar notificações nativas do sistema operacional.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>⭐ IPs Favoritos</strong> — Gerencia a lista de IPs marcados como favoritos (plano Pro).</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>🚫 IPs Bloqueados</strong> — Gerencia a lista de IPs bloqueados, com opção de desbloquear.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>🔑 Alterar Senha</strong> — Troca a senha da sua conta.</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>✉ Alterar Email</strong> — Atualiza o email da conta (requer confirmação).</span></div>
+            <div class="help-feature"><span class="help-feature-icon">•</span><span><strong>🚪 Sair</strong> — Encerra a sessão.</span></div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
