@@ -830,18 +830,14 @@ async function pollToastGlobal() {
 function detectNovasVisitas(rows) {
     if (!rows || rows.length === 0) return;
     const newest = rows[0].created_at;
-    console.log("[toast] detect | last:", lastVisitTimestamp, "| newest:", newest, "| toastShowing:", toastShowing);
     if (lastVisitTimestamp === null) {
         lastVisitTimestamp = newest;
     } else if (newest > lastVisitTimestamp) {
         const novas = rows.filter(v => v.created_at > lastVisitTimestamp);
-        console.log("[toast] novas:", novas.length);
         novas.reverse().forEach(v => {
             try {
-                console.log("[toast] chamando queueToast para:", v.ip, v.page_title);
                 queueToast(v);
             } catch(e) {
-                console.error("[toast] erro em queueToast:", e);
             }
         });
         lastVisitTimestamp = newest;
