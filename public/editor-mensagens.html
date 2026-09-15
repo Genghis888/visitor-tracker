@@ -6,180 +6,72 @@
 <title>Editor de Mensagens — Painel Multi</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: Arial, sans-serif;
-  background: #050505;
-  color: #fff;
-  padding: 30px 20px 60px;
-}
-
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; padding: 30px 20px 60px; }
 h1 { text-align: center; color: #00ffff; font-size: 28px; margin-bottom: 6px; }
 .sub { text-align: center; color: #666; font-size: 13px; margin-bottom: 30px; }
-.container { max-width: 800px; margin: auto; }
-
-.card {
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 20px;
-}
-
+.container { max-width: 860px; margin: auto; }
+.card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
 .card h2 { color: #0ff; font-size: 16px; margin-bottom: 16px; }
-
 label { display: block; color: #aaa; font-size: 13px; margin-bottom: 6px; }
-
 input[type=text], input[type=number] {
-  width: 100%;
-  padding: 10px 14px;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 14px;
+  width: 100%; padding: 10px 14px; background: #1a1a1a;
+  border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 14px;
 }
+input[type=text]:focus, input[type=number]:focus { outline: none; border-color: #0ff; }
 
-input[type=text]:focus, input[type=number]:focus {
-  outline: none; border-color: #0ff;
-}
-
-/* busca de presentes */
-.busca-row {
-  display: grid;
-  grid-template-columns: 1fr 100px auto;
-  gap: 10px;
-  align-items: end;
-  margin-bottom: 16px;
-}
-
+.busca-row { display: grid; grid-template-columns: 1fr 100px auto; gap: 10px; align-items: end; margin-bottom: 16px; }
 .busca-row label { margin-bottom: 4px; }
 
-/* lista de presentes */
 #presentes-wrap { display: none; }
-
-.presentes-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
+.presentes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
 .presentes-header span { color: #888; font-size: 13px; }
-
 .presentes-acoes { display: flex; gap: 8px; }
 
 #lista-presentes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
-  max-height: 320px;
-  overflow-y: auto;
-  padding-right: 4px;
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 380px; overflow-y: auto; padding-right: 4px;
 }
 
 .presente-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
-  padding: 9px 12px;
-  cursor: pointer;
-  transition: border-color .15s;
-  user-select: none;
+  display: flex; align-items: center; gap: 12px;
+  background: #1a1a1a; border: 1px solid #2a2a2a;
+  border-radius: 10px; padding: 9px 14px;
+  cursor: pointer; transition: border-color .15s; user-select: none;
 }
-
 .presente-item:hover { border-color: #0ff; }
-.presente-item.desmarcado { opacity: 0.35; }
+.presente-item.desmarcado { opacity: 0.3; }
+.presente-item input[type=checkbox] { width: 16px; height: 16px; accent-color: #0ff; cursor: pointer; flex-shrink: 0; }
 
-.presente-item input[type=checkbox] {
-  width: 16px; height: 16px;
-  accent-color: #0ff;
-  cursor: pointer;
-  flex-shrink: 0;
-}
+.presente-id { font-size: 12px; color: #0ff; font-family: monospace; min-width: 90px; flex-shrink: 0; }
+.presente-nome { font-size: 14px; color: #ddd; word-break: break-all; }
 
-.presente-nome {
-  font-size: 13px;
-  color: #ddd;
-  word-break: break-all;
-}
-
-/* mensagens */
 #lista-msgs { display: flex; flex-direction: column; gap: 10px; }
-
 .msg-row { display: flex; gap: 8px; align-items: center; }
 .msg-row input { flex: 1; padding: 10px 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 14px; }
 .msg-row input:focus { outline: none; border-color: #0ff; }
-
-.btn-del {
-  background: #330000; color: #ff4444; border: 1px solid #550000;
-  border-radius: 8px; width: 36px; height: 36px; font-size: 18px;
-  cursor: pointer; flex-shrink: 0; display: flex; align-items: center;
-  justify-content: center; transition: background .15s;
-}
+.btn-del { background: #330000; color: #ff4444; border: 1px solid #550000; border-radius: 8px; width: 36px; height: 36px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .btn-del:hover { background: #550000; }
-
-.btn-add {
-  margin-top: 12px; width: 100%; padding: 11px;
-  background: #002222; color: #0ff; border: 1px dashed #0ff;
-  border-radius: 10px; font-size: 14px; cursor: pointer;
-  transition: background .15s;
-}
+.btn-add { margin-top: 12px; width: 100%; padding: 11px; background: #002222; color: #0ff; border: 1px dashed #0ff; border-radius: 10px; font-size: 14px; cursor: pointer; }
 .btn-add:hover { background: #003333; }
 
-/* ações principais */
 .acoes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
-
-.btn {
-  flex: 1; min-width: 140px; padding: 14px; border: none;
-  border-radius: 12px; font-size: 15px; font-weight: bold;
-  cursor: pointer; transition: transform .15s;
-}
+.btn { flex: 1; min-width: 140px; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; transition: transform .15s; }
 .btn:hover { transform: scale(1.02); }
 .btn-primary { background: #00ffff; color: #000; }
 .btn-sec     { background: #1a1a1a; color: #0ff; border: 1px solid #0ff; }
 .btn-danger  { background: #1a1a1a; color: #ff4444; border: 1px solid #ff4444; }
 
-/* spinner */
-.spinner {
-  display: inline-block; width: 16px; height: 16px;
-  border: 2px solid #333; border-top-color: #0ff;
-  border-radius: 50%; animation: spin .6s linear infinite;
-  vertical-align: middle; margin-right: 6px;
-}
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #333; border-top-color: #0ff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* preview */
-#preview {
-  background: #1a1a1a; border: 1px solid #222; border-radius: 12px;
-  padding: 14px; font-size: 13px; color: #888;
-  white-space: pre-wrap; word-break: break-all;
-  max-height: 200px; overflow-y: auto; margin-top: 16px;
-}
+#preview { background: #1a1a1a; border: 1px solid #222; border-radius: 12px; padding: 14px; font-size: 13px; color: #888; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; margin-top: 16px; }
 
-/* toast */
-#toast {
-  position: fixed; bottom: 30px; left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: #00ffff; color: #000;
-  padding: 12px 28px; border-radius: 30px;
-  font-weight: bold; font-size: 15px;
-  transition: transform .3s; z-index: 99;
-}
+#toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: #00ffff; color: #000; padding: 12px 28px; border-radius: 30px; font-weight: bold; font-size: 15px; transition: transform .3s; z-index: 99; }
 #toast.show { transform: translateX(-50%) translateY(0); }
 #toast.erro { background: #ff4444; color: #fff; }
 
-/* contador */
-.badge {
-  display: inline-block; background: #0ff; color: #000;
-  border-radius: 20px; padding: 2px 10px;
-  font-size: 12px; font-weight: bold; margin-left: 8px;
-}
+.badge { display: inline-block; background: #0ff; color: #000; border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: bold; margin-left: 8px; }
+.dica { margin-top: 10px; color: #555; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -192,7 +84,6 @@ input[type=text]:focus, input[type=number]:focus {
   <!-- BUSCAR PRESENTES -->
   <div class="card">
     <h2>👥 Presentes no Evento</h2>
-
     <div class="busca-row">
       <div>
         <label>Nome do Local</label>
@@ -211,18 +102,15 @@ input[type=text]:focus, input[type=number]:focus {
 
     <div id="presentes-wrap">
       <div class="presentes-header">
-        <span id="presentes-info">0 presentes</span>
+        <span id="presentes-info"></span>
         <div class="presentes-acoes">
-          <button class="btn btn-sec" style="padding:6px 14px;font-size:13px;min-width:auto" onclick="marcarTodos(true)">✅ Todos</button>
+          <button class="btn btn-sec"    style="padding:6px 14px;font-size:13px;min-width:auto" onclick="marcarTodos(true)">✅ Todos</button>
           <button class="btn btn-danger" style="padding:6px 14px;font-size:13px;min-width:auto" onclick="marcarTodos(false)">❌ Nenhum</button>
         </div>
       </div>
       <div id="lista-presentes"></div>
-      <div style="margin-top:10px;color:#666;font-size:12px;">
-        💡 Clique para marcar/desmarcar. Apenas os marcados serão saudados no painel.
-      </div>
+      <p class="dica">💡 Lista ordenada por ID — cruze com sua lista física e desmarque os ausentes.</p>
     </div>
-
   </div>
 
   <!-- SAUDAÇÃO -->
@@ -242,7 +130,7 @@ input[type=text]:focus, input[type=number]:focus {
   <!-- AÇÕES -->
   <div class="acoes">
     <button class="btn btn-primary" onclick="baixar()">⬇️ Baixar JSON</button>
-    <button class="btn btn-sec" onclick="carregarArquivo()">📂 Carregar JSON</button>
+    <button class="btn btn-sec"     onclick="carregarArquivo()">📂 Carregar JSON</button>
   </div>
   <input type="file" id="fileInput" accept=".json" style="display:none" onchange="lerArquivo(event)">
 
@@ -257,21 +145,19 @@ input[type=text]:focus, input[type=number]:focus {
 <div id="toast"></div>
 
 <script>
-
 let mensagens = [
   "Bem-vindos! 🎶",
   "Curta a festa! 🎸",
   "Obrigado por estar aqui! 🙏"
 ];
 
-// { nome: string, marcado: boolean }
+// [ { nome, id, marcado } ]
 let todosPresentes = [];
 
 /* ===== BUSCAR PRESENTES ===== */
 async function buscarPresentes() {
   const local = document.getElementById('local').value.trim();
   const horas = document.getElementById('horas').value || 18;
-
   if (!local) { toast('⚠️ Informe o nome do local!', true); return; }
 
   const btn = document.getElementById('btn-buscar');
@@ -287,9 +173,10 @@ async function buscarPresentes() {
     const jaExistiam = {};
     todosPresentes.forEach(p => jaExistiam[p.nome] = p.marcado);
 
-    todosPresentes = (data.nomes || []).map(nome => ({
-      nome,
-      marcado: jaExistiam[nome] !== undefined ? jaExistiam[nome] : true
+    todosPresentes = (data.presentes || []).map(p => ({
+      nome:    p.nome,
+      id:      p.id,
+      marcado: jaExistiam[p.nome] !== undefined ? jaExistiam[p.nome] : true
     }));
 
     renderPresentes();
@@ -297,7 +184,7 @@ async function buscarPresentes() {
     toast(`✅ ${data.total} presentes encontrados!`);
 
   } catch(e) {
-    toast('❌ Erro ao buscar: ' + e.message, true);
+    toast('❌ Erro: ' + e.message, true);
   } finally {
     btn.innerHTML = '🔍 Buscar';
     btn.disabled = false;
@@ -305,7 +192,7 @@ async function buscarPresentes() {
 }
 
 function renderPresentes() {
-  const lista = document.getElementById('lista-presentes');
+  const lista    = document.getElementById('lista-presentes');
   const marcados = todosPresentes.filter(p => p.marcado).length;
   document.getElementById('presentes-info').innerHTML =
     `<b>${marcados}</b> de ${todosPresentes.length} marcados <span class="badge">${marcados}</span>`;
@@ -316,9 +203,10 @@ function renderPresentes() {
     div.className = 'presente-item' + (p.marcado ? '' : ' desmarcado');
     div.innerHTML = `
       <input type="checkbox" ${p.marcado ? 'checked' : ''} onchange="togglePresente(${i}, this.checked)">
+      <span class="presente-id">#${escHtml(p.id)}</span>
       <span class="presente-nome">${escHtml(p.nome)}</span>
     `;
-    div.addEventListener('click', (e) => {
+    div.addEventListener('click', e => {
       if (e.target.tagName === 'INPUT') return;
       togglePresente(i, !todosPresentes[i].marcado);
     });
@@ -358,40 +246,29 @@ function renderMsgs() {
 function adicionarMsg() {
   mensagens.push('');
   renderMsgs();
+  document.querySelectorAll('.msg-row input');
   const inputs = document.querySelectorAll('.msg-row input');
   inputs[inputs.length - 1].focus();
 }
 
-function removerMsg(i) {
-  mensagens.splice(i, 1);
-  renderMsgs();
-}
+function removerMsg(i) { mensagens.splice(i, 1); renderMsgs(); }
 
 /* ===== JSON ===== */
 function getJSON() {
-  document.querySelectorAll('.msg-row input').forEach((inp, i) => {
-    mensagens[i] = inp.value;
-  });
-
-  const nomesMarcados = todosPresentes
-    .filter(p => p.marcado)
-    .map(p => p.nome);
-
+  document.querySelectorAll('.msg-row input').forEach((inp, i) => { mensagens[i] = inp.value; });
   return {
-    saudacao: document.getElementById('saudacao').value,
+    saudacao:  document.getElementById('saudacao').value,
     mensagens: mensagens.filter(m => m.trim() !== ''),
-    presentes: nomesMarcados
+    presentes: todosPresentes.filter(p => p.marcado).map(p => p.nome)
   };
 }
 
 function atualizarPreview() {
-  document.getElementById('preview').textContent =
-    JSON.stringify(getJSON(), null, 2);
+  document.getElementById('preview').textContent = JSON.stringify(getJSON(), null, 2);
 }
 
 function baixar() {
-  const json = JSON.stringify(getJSON(), null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(getJSON(), null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'mensagens-multi.json';
@@ -408,11 +285,10 @@ function lerArquivo(e) {
   reader.onload = ev => {
     try {
       const d = JSON.parse(ev.target.result);
-      if (d.saudacao) document.getElementById('saudacao').value = d.saudacao;
+      if (d.saudacao)              document.getElementById('saudacao').value = d.saudacao;
       if (Array.isArray(d.mensagens)) mensagens = d.mensagens;
       if (Array.isArray(d.presentes)) {
-        // restaura presentes do JSON (todos marcados)
-        todosPresentes = d.presentes.map(n => ({ nome: n, marcado: true }));
+        todosPresentes = d.presentes.map(n => ({ nome: n, id: '', marcado: true }));
         document.getElementById('presentes-wrap').style.display = 'block';
         renderPresentes();
       }
@@ -426,7 +302,7 @@ function lerArquivo(e) {
 
 /* ===== UTILS ===== */
 function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function toast(msg, erro = false) {
@@ -439,7 +315,6 @@ function toast(msg, erro = false) {
 /* ===== INIT ===== */
 renderMsgs();
 document.getElementById('saudacao').addEventListener('input', atualizarPreview);
-
 </script>
 </body>
 </html>
