@@ -14,17 +14,16 @@ const router = express.Router();
  *   horas  {number}  — janela de tempo em horas (padrão: 1)
  */
 router.get("/", async (req, res) => {
-    // CORS aberto para o Neocities conseguir consumir
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
 
-    const { local, horas = 1 } = req.query;
+    const { local, horas = 1, callback } = req.query;
 
     if (!local || !local.trim()) {
         return res.status(400).json({ error: "Parâmetro 'local' é obrigatório." });
     }
 
-    const horasNum = Math.min(Math.max(Number(horas) || 1, 1), 24); // entre 1 e 24h
+    const horasNum = Math.min(Math.max(Number(horas) || 1, 1), 48);
     const localNorm = local.trim();
 
     try {
@@ -42,25 +41,26 @@ router.get("/", async (req, res) => {
             [`%${localNorm}%`, horasNum]
         );
 
-        // Extrai a parte 1 (nome) do formato "Nome - ID - Local"
         const nomes = rows
             .map(r => {
                 const partes = r.page_title.split(" - ");
                 return partes[0]?.trim() || null;
             })
             .filter(Boolean)
-            // Remove duplicatas case-insensitive (mesmo nome com grafias iguais)
             .filter((nome, idx, arr) =>
                 arr.findIndex(n => n.toLowerCase() === nome.toLowerCase()) === idx
             )
             .sort();
 
-        res.json({
-            local: localNorm,
-            horas: horasNum,
-            total: nomes.length,
-            nomes
-        });
+        const payload = { local: localNorm, horas: horasNum, total: nomes.length, nomes };
+
+        // Suporte a JSONP — contorna CSP do Neocities
+        if (callback && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(callback)) {
+            res.setHeader("Content-Type", "application/javascript");
+            return res.send(`${callback}(${JSON.stringify(payload)})`);
+        }
+
+        res.json(payload);
 
     } catch (err) {
         console.error("[presentes]", err.message);
