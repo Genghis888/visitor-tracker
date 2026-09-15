@@ -410,7 +410,7 @@ async function loadDJs() {
 
 async function loadMensagens() {
   try {
-    const res = await fetch('/mensagens-multi.json?t=' + Date.now());
+    const res = await fetch('https://baixocidade.neocities.org/painel-multi/mensagens-multi.json?t=' + Date.now());
     if (res.ok) {
       const d = await res.json();
       mensagens = d.mensagens || [];
@@ -422,7 +422,7 @@ async function loadMensagens() {
 
 async function loadMensagens() {
   try {
-    const res = await fetch('/mensagens-multi.json?t=' + Date.now());
+    const res = await fetch('https://baixocidade.neocities.org/painel-multi/mensagens-multi.json?t=' + Date.now());
     if (res.ok) {
       const d = await res.json();
       mensagens  = d.mensagens || [];
