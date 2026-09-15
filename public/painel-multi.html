@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel Multi</title>
+
+  <link rel="stylesheet" href="https://baixocidade.neocities.org/painel-multi/style.css">
+  <link rel="stylesheet" href="https://baixocidade.neocities.org/painel-multi/themes.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@700&family=Lobster&family=Montserrat:wght@700&family=Roboto+Condensed:wght@700&family=Press+Start+2P&family=Anton&family=Pacifico&family=Righteous&display=swap" rel="stylesheet">
+
+  <style>
+
+    /* ===================== RESET / BASE ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--theme-bg, #111);
+      color: var(--theme-text, #fff);
+      position: relative;
+    }
+
+    /* ===================== FUNDO DECORATIVO ===================== */
+    #bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* ===================== TELAS ===================== */
+    #tela-painel,
+    #tela-msg {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* ===================== PAINEL DE DJs ===================== */
+    #djsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      width: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* reutiliza classes do style.css existente */
+
+    /* ===================== TELA DE MENSAGEM ===================== */
+    #tela-msg { display: none; }
+
+    /* --- TICKER (horizontal scroll) --- */
+    #msg-ticker {
+      position: absolute;
+      top: 50%; left: 0;
+      white-space: nowrap;
+      transform: translateY(-50%);
+      font-weight: bold;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* --- CARD (centralizado) --- */
+    #msg-card {
+      max-width: 80vw;
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.3;
+      padding: 30px 40px;
+      border-radius: 20px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      z-index: 2;
+    }
+
+    /* --- PULSE (tela cheia) --- */
+    #msg-pulse {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-weight: bold;
+      padding: 40px;
+      z-index: 2;
+    }
+
+    /* esconde os três por padrão; engine ativa o correto */
+    #msg-ticker, #msg-card, #msg-pulse { display: none; }
+
+    /* ===================== ANIMAÇÕES DE TRANSIÇÃO ===================== */
+
+    /* FADE */
+    .trans-fade-out { animation: fadeOut 0.6s forwards; }
+    .trans-fade-in  { animation: fadeIn  0.6s forwards; }
+    @keyframes fadeOut { from{opacity:1} to{opacity:0} }
+    @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+
+    /* SLIDE */
+    .trans-slide-out { animation: slideOut 0.5s forwards; }
+    .trans-slide-in  { animation: slideIn  0.5s forwards; }
+    @keyframes slideOut { from{transform:translateY(0)} to{transform:translateY(-100vh)} }
+    @keyframes slideIn  { from{transform:translateY(100vh)} to{transform:translateY(0)} }
+
+    /* FLASH / GLITCH */
+    .trans-flash { animation: flash 0.4s forwards; }
+    @keyframes flash {
+      0%  { filter: brightness(1); }
+      20% { filter: brightness(8) saturate(0); }
+      40% { filter: brightness(0.2); }
+      60% { filter: brightness(5) hue-rotate(90deg); }
+      80% { filter: brightness(0.5); }
+      100%{ filter: brightness(1); }
+    }
+
+    /* ZOOM */
+    .trans-zoom-out { animation: zoomOut 0.5s forwards; }
+    .trans-zoom-in  { animation: zoomIn  0.5s forwards; }
+    @keyframes zoomOut { from{transform:scale(1);opacity:1} to{transform:scale(2);opacity:0} }
+    @keyframes zoomIn  { from{transform:scale(0.3);opacity:0} to{transform:scale(1);opacity:1} }
+
+    /* ===================== PULSE DO TEXTO ===================== */
+    @keyframes pulseText {
+      0%,100% { transform: scale(1);   opacity: 1; }
+      50%      { transform: scale(1.06); opacity: 0.85; }
+    }
+    .pulse-anim { animation: pulseText 2s ease-in-out infinite; }
+
+    /* ===================== FUNDO — KEYFRAMES ===================== */
+    @keyframes moveStripesH   { from{background-position:0 0}    to{background-position:120px 0} }
+    @keyframes moveStripesV   { from{background-position:0 0}    to{background-position:0 120px} }
+    @keyframes moveStripesD   { from{background-position:0 0}    to{background-position:120px 120px} }
+    @keyframes moveDots       { from{background-position:0 0}    to{background-position:40px 40px} }
+    @keyframes moveGrid       { from{background-position:0 0,0 0} to{background-position:60px 60px,60px 60px} }
+    @keyframes moveScanlines  { from{background-position:0 0}    to{background-position:0 80px} }
+    @keyframes pulseBg        { 0%,100%{background-size:100% 100%} 50%{background-size:120% 120%} }
+    @keyframes moveWaves      { from{background-position:0 0}    to{background-position:200px 0} }
+    @keyframes moveMatrix     { from{background-position:0 0}    to{background-position:0 200px} }
+    @keyframes moveSmoke      {
+      0%,100%{background-position:0 0,0 0,0 0}
+      50%{background-position:40px 20px,-30px 10px,20px -20px}
+    }
+    @keyframes starFloat      { from{transform:translateY(0)} to{transform:translateY(-200px)} }
+
+  </style>
+</head>
+<body>
+
+  <!-- Camada de fundo decorativa -->
+  <div id="bg-layer">
+    <div id="stars-container" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;"></div>
+  </div>
+
+  <!-- TELA 1: Painel de DJs -->
+  <div id="tela-painel">
+    <div id="djsGrid"></div>
+  </div>
+
+  <!-- TELA 2: Mensagens -->
+  <div id="tela-msg">
+    <div id="msg-ticker"></div>
+    <div id="msg-card"></div>
+    <div id="msg-pulse"></div>
+  </div>
+
+<script>
+/* ================================================================
+   PAINEL-MULTI — engine principal
+   Parâmetros de URL:
+     theme        — tema visual (default, neon, cabaret, etc.)
+     painelTime   — segundos exibindo o painel de DJs (padrão: 30)
+     msgTime      — segundos por mensagem (padrão: 8)
+     transition   — fade | slide | flash | zoom (padrão: fade)
+     msgStyle     — ticker | card | pulse (padrão: card)
+     local        — nome do local para buscar presentes (ex: SertanejaUP)
+     horas        — janela de tempo para presentes (padrão: 1)
+     apiUrl       — URL base do Visitor Tracker (padrão: https://visitor-tracker-fs2b.onrender.com)
+     saudacao     — template de saudação. Use {nome}. (padrão: "Olá {nome}! Seja bem-vindo(a)! 🎉")
+     — Parâmetros de fundo (iguais ao dj-ao-vivo-json) —
+     b, bo        — cor e opacidade do fundo
+     d, do        — cor e opacidade da decoração
+     bgstyle      — none|stripes|dots|grid|scanlines|stars|pulse|waves|matrix|smoke
+     decorstyle   — 1|2|3
+     bganim       — 0|1
+     — Parâmetros de fonte/texto das mensagens —
+     c, o         — cor e opacidade do texto
+     s            — tamanho da fonte em px (padrão: 65)
+     f            — índice da fonte (0=Arial... igual ao gerador)
+     sc, sb       — cor e intensidade do glow
+================================================================ */
+
+const p = new URLSearchParams(location.search);
+
+/* ===== PARÂMETROS GERAIS ===== */
+const THEME       = p.get('theme')      || 'default';
+const PAINEL_TIME = (+(p.get('painelTime') || 30)) * 1000;
+const MSG_TIME    = (+(p.get('msgTime')    || 8))  * 1000;
+const TRANSITION  = p.get('transition') || 'fade';
+const MSG_STYLE   = p.get('msgStyle')   || 'card';
+const LOCAL       = p.get('local')      || '';
+const HORAS       = p.get('horas')      || '1';
+const API_URL     = ''; // mesmo domínio — sem necessidade de URL absoluta
+const _saudRaw    = p.get('saudacao');
+const SAUDACAO    = _saudRaw ? decodeURIComponent(_saudRaw) : 'Olá {nome}! Seja bem-vindo(a)! 🎉';
+let   SAUDACAO_ATIVA = SAUDACAO; // pode ser sobrescrita pelo mensagens-multi.json
+
+/* ===== PARÂMETROS DE FUNDO ===== */
+const bgHex      = p.get('b')          || '111111';
+const bgOpacity  = +(p.get('bo')       || 1);
+const decoHex    = p.get('d')          || 'ab82ff';
+const decoOp     = +(p.get('do')       || 0.8);
+const bgstyle    = p.get('bgstyle')    || 'none';
+const decorstyle = +(p.get('decorstyle') || 1);
+const bganim     = +(p.get('bganim')   || 0);
+
+/* ===== PARÂMETROS DE TEXTO DE MENSAGEM ===== */
+const textHex    = p.get('c')          || '00ffff';
+const textOp     = +(p.get('o')        || 1);
+const fontSize   = +(p.get('s')        || 65);
+const fontIndex  = +(p.get('f')        || 0);
+const glowColor  = '#' + (p.get('sc') || 'ab82ff');
+const glowBlur   = +(p.get('sb')       || 30);
+const msgSpeed   = +(p.get('w')        || 22); // velocidade do ticker
+
+const FONTS = [
+  'Arial Black, Arial, sans-serif',
+  "'Bebas Neue', sans-serif",
+  "'Orbitron', monospace",
+  "'Lobster', cursive",
+  "'Montserrat', sans-serif",
+  "'Roboto Condensed', sans-serif",
+  "'Press Start 2P', monospace",
+  'Georgia, serif',
+  'Verdana, sans-serif',
+  "'Anton', sans-serif",
+  "'Pacifico', cursive",
+  "'Righteous', sans-serif",
+  "'Courier New', monospace"
+];
+
+/* ===== ELEMENTOS ===== */
+const telaPainel = document.getElementById('tela-painel');
+const telaMsg    = document.getElementById('tela-msg');
+const djsGrid    = document.getElementById('djsGrid');
+const msgTicker  = document.getElementById('msg-ticker');
+const msgCard    = document.getElementById('msg-card');
+const msgPulse   = document.getElementById('msg-pulse');
+const bgLayer    = document.getElementById('bg-layer');
+const starsEl    = document.getElementById('stars-container');
+
+/* ===== ESTADO ===== */
+let DJs          = [];
+let mensagens    = [];   // do banners.json
+let presentes    = [];   // da API /api/presentes
+let filaMensagens = [];  // fila montada para exibição
+let filaIdx      = 0;
+let modoAtual    = 'painel'; // 'painel' | 'msg'
+let emTransicao  = false;
+
+/* ================================================================
+   TEMA
+================================================================ */
+function applyTheme(name) {
+  const temas = ['default','borntorock','cabaret','ecstasy','fantasia','ilhaazul',
+                  'neon','orange','paraiso','rockstar','roxinho','silverblack',
+                  'silverblue','wood','woodstockrock'];
+  document.documentElement.classList.remove(...temas.map(t => 'theme-' + t));
+  if (temas.includes(name)) document.documentElement.classList.add('theme-' + name);
+}
+
+/* ================================================================
+   FUNDO DECORATIVO (mesmo sistema do dj-ao-vivo-json)
+================================================================ */
+function hexToRgba(hex, op) {
+  hex = hex.replace('#', '');
+  const r = parseInt(hex.substr(0,2), 16);
+  const g = parseInt(hex.substr(2,2), 16);
+  const b = parseInt(hex.substr(4,2), 16);
+  return `rgba(${r},${g},${b},${op})`;
+}
+
+function criarStars() {
+  starsEl.innerHTML = '';
+  if (bgstyle !== 'stars') return;
+  const total = decorstyle === 1 ? 60 : decorstyle === 2 ? 100 : 200;
+  const cor = '#' + decoHex;
+  for (let i = 0; i < total; i++) {
+    const s = document.createElement('div');
+    const sz = Math.random() < .7 ? 4 : Math.random() < .93 ? 7 : 11;
+    Object.assign(s.style, {
+      position:'absolute', width:sz+'px', height:sz+'px',
+      borderRadius:'50%', background:cor,
+      left: Math.random()*100+'%', top: Math.random()*100+'%',
+      opacity: .7 + Math.random()*.3,
+      boxShadow: sz >= 4 ? `0 0 12px ${cor}` : ''
+    });
+    if (bganim === 1) {
+      const sp = sz <= 4 ? 45+Math.random()*20 : sz <= 7 ? 25+Math.random()*12 : 10+Math.random()*6;
+      s.style.animation = `starFloat ${sp}s linear infinite`;
+    }
+    starsEl.appendChild(s);
+  }
+}
+
+function aplicarFundo() {
+  const body = document.body;
+  const deco = hexToRgba('#' + decoHex, decoOp);
+
+  body.style.backgroundColor = hexToRgba('#' + bgHex, bgOpacity);
+  body.style.backgroundImage = 'none';
+  body.style.backgroundSize  = '';
+  body.style.backgroundRepeat = '';
+  body.style.animation = 'none';
+
+  starsEl.style.display = bgstyle === 'stars' ? 'block' : 'none';
+
+  if (bgstyle === 'none') return;
+  if (bgstyle === 'stars') { criarStars(); return; }
+
+  let img = '', sz = '';
+
+  if (bgstyle === 'stripes') {
+    img = decorstyle === 1
+      ? `repeating-linear-gradient(0deg,${deco} 0px,${deco} 10px,transparent 10px,transparent 20px)`
+      : decorstyle === 2
+      ? `repeating-linear-gradient(90deg,${deco} 0px,${deco} 5px,transparent 5px,transparent 15px)`
+      : `repeating-linear-gradient(45deg,${deco} 0px,${deco} 15px,transparent 15px,transparent 30px)`;
+  } else if (bgstyle === 'dots') {
+    const r = decorstyle === 1 ? 2 : decorstyle === 2 ? 4 : 6;
+    img = `radial-gradient(circle,${deco} ${r}px,transparent ${r}px)`;
+    sz  = `${r*6}px ${r*6}px`;
+  } else if (bgstyle === 'grid') {
+    const w = decorstyle === 1 ? 3 : decorstyle === 2 ? 4 : 6;
+    const g = decorstyle === 1 ? 18 : decorstyle === 2 ? 24 : 36;
+    img = `linear-gradient(90deg,${deco} ${w}px,transparent ${w}px),linear-gradient(0deg,${deco} ${w}px,transparent ${w}px)`;
+    sz  = `${g}px ${g}px`;
+  } else if (bgstyle === 'scanlines') {
+    const [a,b2,c2] = decorstyle === 1 ? [1,4,'4px'] : decorstyle === 2 ? [2,8,'8px'] : [4,12,'12px'];
+    img = `repeating-linear-gradient(0deg,${deco} 0px,${deco} ${a}px,transparent ${a}px,transparent ${b2}px)`;
+    sz  = `100% ${c2}`;
+  } else if (bgstyle === 'pulse') {
+    const pct = decorstyle === 1 ? 70 : decorstyle === 2 ? 55 : 40;
+    img = `radial-gradient(circle,${deco} 0%,transparent ${pct}%)`;
+    sz  = '100% 100%';
+  } else if (bgstyle === 'waves') {
+    const [at,st] = decorstyle === 1 ? [8,'80px'] : decorstyle === 2 ? [14,'120px'] : [22,'180px'];
+    img = `repeating-radial-gradient(circle at 0 50%,${deco} 0px,transparent ${at}px)`;
+    sz  = `${st} ${st}`;
+  } else if (bgstyle === 'matrix') {
+    const [t,bt,st] = decorstyle === 1 ? [2,8,'14px'] : decorstyle === 2 ? [4,12,'21px'] : [6,16,'28px'];
+    img = `repeating-linear-gradient(180deg,transparent 0px,transparent ${t}px,${deco} ${t+4}px,${deco} ${bt}px)`;
+    sz  = `${st} ${st}`;
+  } else if (bgstyle === 'smoke') {
+    img = decorstyle === 1
+      ? `radial-gradient(circle at 20% 50%,${deco},transparent 60%),radial-gradient(circle at 80% 50%,${deco},transparent 60%)`
+      : decorstyle === 2
+      ? `radial-gradient(circle at 50% 50%,${deco},transparent 50%)`
+      : `radial-gradient(circle at 30% 30%,${deco},transparent 70%),radial-gradient(circle at 70% 70%,${deco},transparent 70%)`;
+    sz = '100% 100%';
+  }
+
+  if (img) {
+    body.style.backgroundImage = img;
+    if (sz) body.style.backgroundSize = sz;
+    body.style.backgroundRepeat = 'repeat';
+  }
+
+  if (bganim === 1) {
+    const animMap = {
+      stripes:   decorstyle === 1 ? 'moveStripesV 8s linear infinite'
+                : decorstyle === 2 ? 'moveStripesH 8s linear infinite'
+                : 'moveStripesD 8s linear infinite',
+      dots:      'moveDots 10s linear infinite',
+      grid:      'moveGrid 10s linear infinite',
+      scanlines: 'moveScanlines 4s linear infinite',
+      pulse:     'pulseBg 4s ease-in-out infinite',
+      waves:     'moveWaves 10s linear infinite',
+      matrix:    'moveMatrix 6s linear infinite',
+      smoke:     'moveSmoke 12s ease-in-out infinite',
+    };
+    if (animMap[bgstyle]) body.style.animation = animMap[bgstyle];
+  }
+}
+
+/* ================================================================
+   CARREGAR DADOS
+================================================================ */
+async function loadDJs() {
+  try {
+    const res = await fetch('https://baixocidade.neocities.org/painel-multi/djs.json?t=' + Date.now());
+    if (res.ok) { const d = await res.json(); DJs = d.djs || []; }
+  } catch(e) { DJs = []; }
+}
+
+async function loadMensagens() {
+  try {
+    const res = await fetch('/mensagens-multi.json?t=' + Date.now());
+    if (res.ok) {
+      const d = await res.json();
+      mensagens = d.mensagens || [];
+      // saudação do JSON tem prioridade sobre parâmetro de URL
+      if (d.saudacao) SAUDACAO_ATIVA = d.saudacao;
+    }
+  } catch(e) { mensagens = []; }
+}
+
+async function loadMensagens() {
+  try {
+    const res = await fetch('/mensagens-multi.json?t=' + Date.now());
+    if (res.ok) {
+      const d = await res.json();
+      mensagens  = d.mensagens || [];
+      presentes  = d.presentes || []; // lista curada pelo editor
+      if (d.saudacao) SAUDACAO_ATIVA = d.saudacao;
+    }
+  } catch(e) { mensagens = []; }
+}
+
+// presentes vêm do mensagens-multi.json — sem fetch separado
+async function loadPresentes() {}
+function iniciarPollingPresentes() {
+  // recarrega mensagens-multi.json a cada 5min para pegar atualizações do editor
+  setInterval(loadMensagens, 5 * 60 * 1000);
+}
+
+/* ================================================================
+   GRID DE DJs (mesmo padrão do engine.js)
+================================================================ */
+function getBrasiliaTime() {
+  const now = new Date();
+  return new Date(now.getTime() + now.getTimezoneOffset()*60000 - 3*3600000);
+}
+function timeToMin(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+function getCurrentMin() { const t = getBrasiliaTime(); return t.getHours()*60+t.getMinutes(); }
+
+function renderGrid() {
+  djsGrid.innerHTML = '';
+  const now = getCurrentMin();
+
+  DJs.forEach(dj => {
+    let s = timeToMin(dj.start), e = timeToMin(dj.end);
+    if (e < s) e += 1440;
+    let check = now;
+    if (e > 1440 && now < s) check += 1440;
+    const isActive = check >= s && check < e;
+
+    const card = document.createElement('div');
+    card.className = 'dj-card' + (isActive ? ' active' : '');
+    card.innerHTML = `
+      <div class="dj-name">${dj.name}</div>
+      <div class="dj-time">${dj.start} - ${dj.end}</div>
+      <div class="dj-genre">${dj.genre || ''}</div>
+      <div class="dj-status ${isActive ? 'on':'off'}">${isActive ? '● NO AR AGORA' : 'Programado'}</div>
+    `;
+    djsGrid.appendChild(card);
+  });
+}
+
+/* ================================================================
+   MONTAR FILA DE MENSAGENS
+   Intercala: mensagem normal → saudação → mensagem → saudação...
+================================================================ */
+/* índice circular de saudações — avança 1 por ciclo de mensagens */
+let saudIdx = 0;
+
+function substituirNome(texto, nome) {
+  return texto
+    .replace(/\[nome\]/gi, nome)   // formato do banners.json
+    .replace(/\{nome\}/gi, nome);  // formato alternativo
+}
+
+function montarFila() {
+  const nome = presentes.length > 0
+    ? presentes[saudIdx % presentes.length]
+    : null;
+
+  // mensagens do banners.json — substitui [nome] se houver presente
+  const fila = mensagens.map(m => ({
+    tipo: 'msg',
+    texto: nome ? substituirNome(m, nome) : m
+  }));
+
+  // saudação extra da API no final do ciclo (só se tiver presentes)
+  if (nome) {
+    fila.push({
+      tipo: 'saudacao',
+      texto: substituirNome(SAUDACAO_ATIVA, nome)
+    });
+    saudIdx++; // avança para o próximo nome no ciclo seguinte
+  }
+
+  if (fila.length === 0) {
+    fila.push({ tipo: 'msg', texto: '🎧 Bem-vindos!' });
+  }
+
+  filaMensagens = fila;
+}
+
+/* ================================================================
+   EXIBIR MENSAGEM ATUAL
+================================================================ */
+function estilizarElementoMsg(el) {
+  el.style.color      = hexToRgba('#' + textHex, textOp);
+  el.style.fontSize   = fontSize + 'px';
+  el.style.fontFamily = FONTS[fontIndex] || FONTS[0];
+  if (glowBlur > 0) {
+    el.style.textShadow = `0 0 ${glowBlur}px ${glowColor}, 0 0 ${glowBlur*1.5}px ${glowColor}`;
+  } else {
+    el.style.textShadow = 'none';
+  }
+}
+
+function exibirMensagemAtual() {
+  const item = filaMensagens[filaIdx % filaMensagens.length];
+  const texto = item.texto;
+
+  // esconde todos os sub-elementos
+  msgTicker.style.display = 'none';
+  msgCard.style.display   = 'none';
+  msgPulse.style.display  = 'none';
+  msgTicker.classList.remove('pulse-anim');
+  msgCard.classList.remove('pulse-anim');
+  msgPulse.classList.remove('pulse-anim');
+
+  if (MSG_STYLE === 'ticker') {
+    msgTicker.style.display = 'block';
+    msgTicker.textContent = texto;
+    estilizarElementoMsg(msgTicker);
+    animarTicker();
+
+  } else if (MSG_STYLE === 'card') {
+    msgCard.style.display = 'flex';
+    msgCard.textContent = texto;
+    estilizarElementoMsg(msgCard);
+    msgCard.classList.add('pulse-anim');
+
+  } else if (MSG_STYLE === 'pulse') {
+    msgPulse.style.display = 'flex';
+    msgPulse.textContent = texto;
+    estilizarElementoMsg(msgPulse);
+    msgPulse.classList.add('pulse-anim');
+  }
+}
+
+/* Ticker: scroll horizontal */
+let tickerAnimId = null;
+function animarTicker() {
+  cancelAnimationFrame(tickerAnimId);
+  msgTicker.style.animation = 'none';
+  msgTicker.offsetHeight; // reflow
+
+  const largura = msgTicker.offsetWidth;
+  const tela    = window.innerWidth;
+  const duracao = msgSpeed; // segundos
+
+  const styleId = 'ticker-anim-style';
+  let st = document.getElementById(styleId);
+  if (!st) { st = document.createElement('style'); st.id = styleId; document.head.appendChild(st); }
+  st.innerHTML = `
+    @keyframes tickerScroll {
+      from { transform: translateX(${tela}px) translateY(-50%); }
+      to   { transform: translateX(-${largura}px) translateY(-50%); }
+    }
+  `;
+  msgTicker.style.animation = `tickerScroll ${duracao}s linear infinite`;
+}
+
+/* ================================================================
+   TRANSIÇÕES ENTRE TELAS
+================================================================ */
+function getTransClass(entrada) {
+  switch (TRANSITION) {
+    case 'slide': return entrada ? 'trans-slide-in'  : 'trans-slide-out';
+    case 'flash': return 'trans-flash';
+    case 'zoom':  return entrada ? 'trans-zoom-in'   : 'trans-zoom-out';
+    default:      return entrada ? 'trans-fade-in'   : 'trans-fade-out'; // fade
+  }
+}
+
+function limparClasses(el) {
+  el.classList.remove(
+    'trans-fade-in','trans-fade-out',
+    'trans-slide-in','trans-slide-out',
+    'trans-flash',
+    'trans-zoom-in','trans-zoom-out'
+  );
+}
+
+function duracaoTransicao() {
+  switch (TRANSITION) {
+    case 'flash': return 400;
+    default:      return 550;
+  }
+}
+
+/* ================================================================
+   TRANSIÇÃO ENTRE TELAS — retorna Promise que resolve após a troca
+================================================================ */
+function trocarTela(saindo, entrando, callback, aoConcluir) {
+  const dur = duracaoTransicao();
+
+  limparClasses(saindo);
+  saindo.classList.add(getTransClass(false));
+
+  setTimeout(() => {
+    saindo.style.display = 'none';
+    limparClasses(saindo);
+
+    if (callback) callback();
+
+    entrando.style.display = 'flex';
+    limparClasses(entrando);
+    entrando.classList.add(getTransClass(true));
+
+    setTimeout(() => {
+      limparClasses(entrando);
+      if (aoConcluir) aoConcluir();
+    }, dur);
+
+  }, dur);
+}
+
+/* ================================================================
+   LOOP PRINCIPAL — baseado em setTimeout encadeado
+================================================================ */
+function iniciarLoop() {
+  telaPainel.style.display = 'flex';
+  telaMsg.style.display    = 'none';
+  renderGrid();
+
+  // atualiza grid a cada 30s independentemente
+  setInterval(renderGrid, 30000);
+
+  // aguarda o tempo do painel e dispara o ciclo
+  setTimeout(proximoPasso, PAINEL_TIME);
+}
+
+// Estado do loop
+let loopFase = 'painel'; // 'painel' | 'msg'
+
+function proximoPasso() {
+  if (loopFase === 'painel') {
+    // painel terminou → vai para mensagens
+    loopFase = 'msg';
+    filaIdx = 0;
+    montarFila();
+
+    trocarTela(
+      telaPainel, telaMsg,
+      () => { exibirMensagemAtual(); },          // prepara conteúdo
+      () => { setTimeout(proximoPasso, MSG_TIME); } // agenda próxima msg após transição
+    );
+
+  } else {
+    // mensagem terminou → avança fila
+    filaIdx++;
+
+    if (filaIdx >= filaMensagens.length) {
+      // fila esgotada → volta ao painel
+      loopFase = 'painel';
+      trocarTela(
+        telaMsg, telaPainel,
+        () => { renderGrid(); },
+        () => { setTimeout(proximoPasso, PAINEL_TIME); }
+      );
+
+    } else {
+      // próxima mensagem (sem transição de tela, só troca conteúdo)
+      exibirMensagemAtual();
+      setTimeout(proximoPasso, MSG_TIME);
+    }
+  }
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+async function init() {
+  applyTheme(THEME);
+  aplicarFundo();
+
+  await Promise.all([loadDJs(), loadMensagens(), loadPresentes()]);
+  montarFila();
+  iniciarPollingPresentes();
+  iniciarLoop();
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
