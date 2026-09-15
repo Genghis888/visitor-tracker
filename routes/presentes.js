@@ -6,18 +6,14 @@ const router = express.Router();
 /**
  * GET /api/presentes?local=SertanejaUP&horas=1
  *
- * Retorna os nomes únicos de visitantes presentes no evento
- * a partir do campo page_title (formato: "Nome - ID - Local")
- *
- * Query params:
- *   local  {string}  — parte 3 do page_title (nome do local/evento) — obrigatório
- *   horas  {number}  — janela de tempo em horas (padrão: 1)
+ * Retorna visitantes únicos ordenados por ID ascendente
+ * page_title formato: "Nome - ID - Local"
  */
 router.get("/", async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
 
-    const { local, horas = 1, callback } = req.query;
+    const { local, horas = 1 } = req.query;
 
     if (!local || !local.trim()) {
         return res.status(400).json({ error: "Parâmetro 'local' é obrigatório." });
@@ -36,31 +32,35 @@ router.get("/", async (req, res) => {
                 AND page_title <> ''
                 AND page_title ILIKE $1
                 AND created_at >= NOW() - ($2 || ' hours')::interval
-            ORDER BY page_title
             `,
             [`%${localNorm}%`, horasNum]
         );
 
-        const nomes = rows
-            .map(r => {
-                const partes = r.page_title.split(" - ");
-                return partes[0]?.trim() || null;
-            })
-            .filter(Boolean)
-            .filter((nome, idx, arr) =>
-                arr.findIndex(n => n.toLowerCase() === nome.toLowerCase()) === idx
-            )
-            .sort();
+        // Extrai nome e ID, deduplica por nome (case-insensitive)
+        const vistos = new Map();
+        rows.forEach(r => {
+            const partes = r.page_title.split(" - ");
+            const nome = partes[0]?.trim();
+            const id   = partes[1]?.trim() || "";
+            if (!nome) return;
+            const key = nome.toLowerCase();
+            if (!vistos.has(key)) vistos.set(key, { nome, id });
+        });
 
-        const payload = { local: localNorm, horas: horasNum, total: nomes.length, nomes };
+        // Ordena por ID ascendente (numérico se possível)
+        const presentes = Array.from(vistos.values())
+            .sort((a, b) => {
+                const ia = parseInt(a.id) || 0;
+                const ib = parseInt(b.id) || 0;
+                return ia !== ib ? ia - ib : a.id.localeCompare(b.id);
+            });
 
-        // Suporte a JSONP — contorna CSP do Neocities
-        if (callback && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(callback)) {
-            res.setHeader("Content-Type", "application/javascript");
-            return res.send(`${callback}(${JSON.stringify(payload)})`);
-        }
-
-        res.json(payload);
+        res.json({
+            local: localNorm,
+            horas: horasNum,
+            total: presentes.length,
+            presentes // [ { nome, id }, ... ]
+        });
 
     } catch (err) {
         console.error("[presentes]", err.message);
@@ -68,7 +68,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Responde OPTIONS para preflight do Neocities
 router.options("/", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
