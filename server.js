@@ -28,6 +28,7 @@ import adminRoutes from "./routes/admin.js";
 import { requireApiAuth, requireSuperAdmin } from "./middlewares/auth.js";
 import blockedIpsRoutes from "./routes/blockedIps.js";
 import favoriteIpsRoutes from "./routes/favoriteIps.js";
+import presentesRoutes from "./routes/presentes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -68,6 +69,9 @@ app.get("/t.html", (req, res) => {
 });
 
 // ===== Arquivos estáticos =====
+// rota pública — consumida pelo Neocities
+app.use("/api/presentes", presentesRoutes);
+
 app.use(express.static("public"));
 
 // ===== APIs protegidas =====
